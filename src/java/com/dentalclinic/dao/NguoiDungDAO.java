@@ -270,4 +270,41 @@ public class NguoiDungDAO {
         }
         return false;
     }
+
+    /**
+     * Tìm kiếm bác sĩ theo họ tên
+     */
+    public List<NguoiDung> searchDoctors(String keyword) {
+        List<NguoiDung> list = new ArrayList<>();
+        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, vt.maVaiTro, vt.tenVaiTro "
+                + "FROM NguoiDung nd JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+                + "WHERE vt.tenVaiTro = 'DOCTOR' AND nd.hoTen LIKE ? ORDER BY nd.hoTen";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, "%" + keyword + "%");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    VaiTro vt = new VaiTro();
+                    vt.setMaVaiTro(rs.getInt("maVaiTro"));
+                    vt.setTenVaiTro(rs.getString("tenVaiTro"));
+
+                    NguoiDung nd = new NguoiDung();
+                    nd.setMaND(rs.getInt("maND"));
+                    nd.setHoTen(rs.getString("hoTen"));
+                    nd.setEmail(rs.getString("email"));
+                    nd.setMatKhau(rs.getString("matKhau"));
+                    nd.setSoDienThoai(rs.getString("soDienThoai"));
+                    nd.setVaiTro(vt);
+
+                    list.add(nd);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

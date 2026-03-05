@@ -13,6 +13,7 @@
 
             <h2>TRANG LỄ TÂN</h2>
             <p>Xin chào: ${sessionScope.user.hoTen}</p>
+            <a href="${pageContext.request.contextPath}/">Trang chủ</a> |
             <a href="dichvu">Dịch vụ</a> |
             <c:if test="${sessionScope.role == 'ADMIN'}"><a href="admin">Dashboard</a> | </c:if>
             <a href="logout">Đăng xuất</a>

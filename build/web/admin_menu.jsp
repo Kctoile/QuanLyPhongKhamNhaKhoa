@@ -3,6 +3,7 @@
         <div style="width:220px; float:left; background:#f4f4f4; height:100vh; padding:15px;">
             <h3>ADMIN PANEL</h3>
             <hr>
+            <p><a href="${pageContext.request.contextPath}/">Trang chủ</a></p>
             <p><a href="admin">Dashboard</a></p>
             <p><a href="nguoidung">Quản lý người dùng</a></p>
             <p><a href="dichvu">Quản lý dịch vụ</a></p>
