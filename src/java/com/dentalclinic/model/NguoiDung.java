@@ -6,16 +6,18 @@ public class NguoiDung {
     private String hoTen;
     private String email;
     private String matKhau;
+    private String soDienThoai;
     private VaiTro vaiTro;
 
     public NguoiDung() {
     }
 
-    public NguoiDung(int maND, String hoTen, String email, String matKhau, VaiTro vaiTro) {
+    public NguoiDung(int maND, String hoTen, String email, String matKhau, String soDienThoai, VaiTro vaiTro) {
         this.maND = maND;
         this.hoTen = hoTen;
         this.email = email;
         this.matKhau = matKhau;
+        this.soDienThoai = soDienThoai;
         this.vaiTro = vaiTro;
     }
 
@@ -49,6 +51,14 @@ public class NguoiDung {
 
     public void setMatKhau(String matKhau) {
         this.matKhau = matKhau;
+    }
+
+    public String getSoDienThoai() {
+        return soDienThoai;
+    }
+
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = soDienThoai;
     }
 
     public VaiTro getVaiTro() {

@@ -18,10 +18,10 @@
 
     <c:forEach var="l" items="${list}">
         <tr>
-            <td>${l.id}</td>
+            <td>${l.maLich}</td>
             <td>${l.tenKhachHang}</td>
             <td>${l.tenBacSi}</td>
-            <td>${l.ngayHen}</td>
+            <td>${l.ngayKham} ${l.gioKham}</td>
             <td>${l.trangThai}</td>
         </tr>
     </c:forEach>

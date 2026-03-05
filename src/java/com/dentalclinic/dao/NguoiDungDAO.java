@@ -17,13 +17,15 @@ public class NguoiDungDAO {
 
         List<NguoiDung> list = new ArrayList<>();
 
-        String sql
-                = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, "
+        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, "
                 + "vt.maVaiTro, vt.tenVaiTro "
                 + "FROM NguoiDung nd "
-                + "JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro";
+                + "JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+                + "ORDER BY nd.maND ASC";
 
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
 
@@ -36,6 +38,7 @@ public class NguoiDungDAO {
                 nd.setHoTen(rs.getString("hoTen"));
                 nd.setEmail(rs.getString("email"));
                 nd.setMatKhau(rs.getString("matKhau"));
+                nd.setSoDienThoai(rs.getString("soDienThoai"));
                 nd.setVaiTro(vaiTro);
 
                 list.add(nd);
@@ -51,8 +54,7 @@ public class NguoiDungDAO {
     // Login
     public NguoiDung login(String email, String matKhau) {
 
-        String sql
-                = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, "
+        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, "
                 + "vt.maVaiTro, vt.tenVaiTro "
                 + "FROM NguoiDung nd "
                 + "JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
@@ -76,6 +78,7 @@ public class NguoiDungDAO {
                 nd.setHoTen(rs.getString("hoTen"));
                 nd.setEmail(rs.getString("email"));
                 nd.setMatKhau(rs.getString("matKhau"));
+                nd.setSoDienThoai(rs.getString("soDienThoai"));
                 nd.setVaiTro(vaiTro);
 
                 return nd;
@@ -93,7 +96,9 @@ public class NguoiDungDAO {
 
         String sql = "SELECT COUNT(*) FROM NguoiDung";
 
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
                 return rs.getInt(1);
@@ -109,12 +114,13 @@ public class NguoiDungDAO {
     // Đếm số Doctor
     public int countDoctors() {
 
-        String sql
-                = "SELECT COUNT(*) FROM NguoiDung nd "
+        String sql = "SELECT COUNT(*) FROM NguoiDung nd "
                 + "JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
                 + "WHERE vt.tenVaiTro = 'DOCTOR'";
 
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
                 return rs.getInt(1);
@@ -125,5 +131,143 @@ public class NguoiDungDAO {
         }
 
         return 0;
+    }
+
+    /**
+     * Lấy danh sách bác sĩ (role DOCTOR)
+     */
+    public List<NguoiDung> getDoctors() {
+        List<NguoiDung> list = new ArrayList<>();
+        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, vt.maVaiTro, vt.tenVaiTro "
+                + "FROM NguoiDung nd JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+                + "WHERE vt.tenVaiTro = 'DOCTOR' ORDER BY nd.hoTen";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                VaiTro vt = new VaiTro();
+                vt.setMaVaiTro(rs.getInt("maVaiTro"));
+                vt.setTenVaiTro(rs.getString("tenVaiTro"));
+                NguoiDung nd = new NguoiDung();
+                nd.setMaND(rs.getInt("maND"));
+                nd.setHoTen(rs.getString("hoTen"));
+                nd.setEmail(rs.getString("email"));
+                nd.setMatKhau(rs.getString("matKhau"));
+                nd.setSoDienThoai(rs.getString("soDienThoai"));
+                nd.setVaiTro(vt);
+                list.add(nd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Lấy danh sách khách hàng (role CUSTOMER) - dùng cho Staff đặt lịch walk-in
+     */
+    public List<NguoiDung> getCustomers() {
+        List<NguoiDung> list = new ArrayList<>();
+        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, vt.maVaiTro, vt.tenVaiTro "
+                + "FROM NguoiDung nd JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+                + "WHERE vt.tenVaiTro = 'CUSTOMER' ORDER BY nd.hoTen";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                VaiTro vt = new VaiTro();
+                vt.setMaVaiTro(rs.getInt("maVaiTro"));
+                vt.setTenVaiTro(rs.getString("tenVaiTro"));
+                NguoiDung nd = new NguoiDung();
+                nd.setMaND(rs.getInt("maND"));
+                nd.setHoTen(rs.getString("hoTen"));
+                nd.setEmail(rs.getString("email"));
+                nd.setMatKhau(rs.getString("matKhau"));
+                nd.setSoDienThoai(rs.getString("soDienThoai"));
+                nd.setVaiTro(vt);
+                list.add(nd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // CRUD Methods
+    public NguoiDung getUserById(int id) {
+        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, vt.maVaiTro, vt.tenVaiTro "
+                + "FROM NguoiDung nd JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+                + "WHERE nd.maND = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                VaiTro vt = new VaiTro();
+                vt.setMaVaiTro(rs.getInt("maVaiTro"));
+                vt.setTenVaiTro(rs.getString("tenVaiTro"));
+
+                NguoiDung nd = new NguoiDung();
+                nd.setMaND(rs.getInt("maND"));
+                nd.setHoTen(rs.getString("hoTen"));
+                nd.setEmail(rs.getString("email"));
+                nd.setMatKhau(rs.getString("matKhau"));
+                nd.setSoDienThoai(rs.getString("soDienThoai"));
+                nd.setVaiTro(vt);
+                return nd;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean addUser(NguoiDung nd, int maVaiTro) {
+        String sql = "INSERT INTO NguoiDung (HoTen, Email, MatKhau, SoDienThoai, MaVaiTro) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nd.getHoTen());
+            ps.setString(2, nd.getEmail());
+            ps.setString(3, nd.getMatKhau());
+            ps.setString(4, nd.getSoDienThoai());
+            ps.setInt(5, maVaiTro);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateUser(NguoiDung nd, int maVaiTro) {
+        String sql = "UPDATE NguoiDung SET HoTen = ?, Email = ?, MatKhau = ?, SoDienThoai = ?, MaVaiTro = ? WHERE MaND = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nd.getHoTen());
+            ps.setString(2, nd.getEmail());
+            ps.setString(3, nd.getMatKhau());
+            ps.setString(4, nd.getSoDienThoai());
+            ps.setInt(5, maVaiTro);
+            ps.setInt(6, nd.getMaND());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteUser(int maND) {
+        // Must delete related records if they exist (LichHen, etc.) to avoid foreign
+        // key constraints
+        // For simplicity, we just delete the user here. A robust system would
+        // soft-delete or cascade.
+        String sql = "DELETE FROM NguoiDung WHERE MaND = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, maND);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

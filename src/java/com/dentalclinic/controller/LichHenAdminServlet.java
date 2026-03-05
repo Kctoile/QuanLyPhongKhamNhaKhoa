@@ -25,7 +25,7 @@ public class LichHenAdminServlet extends HttpServlet {
         }
 
         LichHenDAO dao = new LichHenDAO();
-        request.setAttribute("list", dao.getAll()); // getAll đã có sẵn
+        request.setAttribute("list", dao.getAllDisplay());
 
         request.getRequestDispatcher("lichhen_admin.jsp")
                 .forward(request, response);

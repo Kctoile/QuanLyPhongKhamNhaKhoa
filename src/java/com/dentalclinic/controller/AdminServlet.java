@@ -13,7 +13,8 @@ import java.io.IOException;
 public class AdminServlet extends HttpServlet {
 
     /**
-     * Kiểm tra session có đăng nhập và role = ADMIN, không thì redirect login hoặc 403
+     * Kiểm tra session có đăng nhập và role = ADMIN, không thì redirect login hoặc
+     * 403
      */
     private boolean checkAdmin(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -36,7 +37,8 @@ public class AdminServlet extends HttpServlet {
     }
 
     /**
-     * GET: Hiển thị dashboard admin với thống kê (số user, bác sĩ, lịch hẹn hôm nay, doanh thu, số thuốc)
+     * GET: Hiển thị dashboard admin với thống kê (số user, bác sĩ, lịch hẹn hôm
+     * nay, doanh thu, số thuốc)
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -48,13 +50,12 @@ public class AdminServlet extends HttpServlet {
 
         NguoiDungDAO userDAO = new NguoiDungDAO();
         LichHenDAO lichDAO = new LichHenDAO();
-        ThanhToanDAO thanhToanDAO = new ThanhToanDAO();
+
         ThuocDAO thuocDAO = new ThuocDAO();
 
         request.setAttribute("totalUsers", userDAO.countUsers());
         request.setAttribute("totalDoctors", userDAO.countDoctors());
         request.setAttribute("totalAppointmentsToday", lichDAO.countToday());
-        request.setAttribute("totalRevenueToday", thanhToanDAO.totalRevenueToday());
         request.setAttribute("totalThuoc", thuocDAO.countThuoc());
 
         request.getRequestDispatcher("admin_dashboard.jsp")
