@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
             } else if ("DOCTOR".equals(role)) {
                 response.sendRedirect(request.getContextPath() + "/bacsi.jsp");
             } else if ("STAFF".equals(role)) {
-                response.sendRedirect(request.getContextPath() + "/thanhtoan.jsp");
+                response.sendRedirect(request.getContextPath() + "/thanhtoan");
             } else {
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
             }

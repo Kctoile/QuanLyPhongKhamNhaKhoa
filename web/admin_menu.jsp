@@ -8,4 +8,5 @@
     <p><a href="dichvu">Quản lý dịch vụ</a></p>
     <p><a href="thuoc">Quản lý thuốc</a></p>
     <p><a href="lichhen_admin">Quản lý lịch hẹn</a></p>
+    <p><a href="thanhtoan_admin">Quản lý thanh toán</a></p>
 </div>

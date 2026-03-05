@@ -24,7 +24,7 @@ public class ThanhToanAdminServlet extends HttpServlet {
         }
 
         ThanhToanDAO dao = new ThanhToanDAO();
-        request.setAttribute("list", dao.getAll());
+        request.setAttribute("listThanhToan", dao.getAllDisplay());
 
         request.getRequestDispatcher("thanhtoan_admin.jsp")
                 .forward(request, response);

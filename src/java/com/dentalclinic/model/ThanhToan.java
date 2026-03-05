@@ -1,29 +1,41 @@
 package com.dentalclinic.model;
 
 /**
- * Model đại diện bảng ThanhToan
+ * Model bảng ThanhToan: MaTT, MaLich, TongTien, PhuongThuc, TrangThai
  */
 public class ThanhToan {
 
-    private int id;
+    private int maTT;
+    private int maLich;
     private double tongTien;
+    private String phuongThuc;
     private String trangThai;
 
     public ThanhToan() {
     }
 
-    public ThanhToan(int id, double tongTien, String trangThai) {
-        this.id = id;
+    public ThanhToan(int maTT, int maLich, double tongTien, String phuongThuc, String trangThai) {
+        this.maTT = maTT;
+        this.maLich = maLich;
         this.tongTien = tongTien;
+        this.phuongThuc = phuongThuc;
         this.trangThai = trangThai;
     }
 
-    public int getId() {
-        return id;
+    public int getMaTT() {
+        return maTT;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMaTT(int maTT) {
+        this.maTT = maTT;
+    }
+
+    public int getMaLich() {
+        return maLich;
+    }
+
+    public void setMaLich(int maLich) {
+        this.maLich = maLich;
     }
 
     public double getTongTien() {
@@ -32,6 +44,14 @@ public class ThanhToan {
 
     public void setTongTien(double tongTien) {
         this.tongTien = tongTien;
+    }
+
+    public String getPhuongThuc() {
+        return phuongThuc;
+    }
+
+    public void setPhuongThuc(String phuongThuc) {
+        this.phuongThuc = phuongThuc;
     }
 
     public String getTrangThai() {
