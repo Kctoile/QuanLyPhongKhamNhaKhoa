@@ -13,7 +13,7 @@
 
             <a href="giohoatdong.jsp">Giờ hoạt động</a> |
             <c:if test="${sessionScope.role eq 'CUSTOMER'}">
-                <a href="datlich">Đặt lịch khám</a> | <a href="muathuoc">Mua thuốc</a> |
+                <a href="datlich">Đặt lịch khám</a> |
             </c:if>
             <c:if test="${sessionScope.role eq 'ADMIN'}">
                 <a href="admin">Dashboard</a> | <a href="dichvu?action=add">➕ Thêm dịch vụ</a>
