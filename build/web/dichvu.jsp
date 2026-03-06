@@ -11,6 +11,7 @@
 
             <h2>Danh sách dịch vụ & giá</h2>
 
+            <a href="${pageContext.request.contextPath}/">Trang chủ</a> |
             <a href="giohoatdong.jsp">Giờ hoạt động</a> |
             <c:if test="${sessionScope.role eq 'CUSTOMER'}">
                 <a href="datlich">Đặt lịch khám</a> |

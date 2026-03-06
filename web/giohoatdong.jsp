@@ -11,6 +11,7 @@
         <body>
 
             <h2>GIỜ HOẠT ĐỘNG</h2>
+            <a href="${pageContext.request.contextPath}/">Trang chủ</a> |
             <a href="dichvu">Xem dịch vụ & giá</a> | <a href="datlich">Đặt lịch</a> | <c:if
                 test="${empty sessionScope.user}"><a href="login.jsp">Đăng nhập</a></c:if>
             <hr>

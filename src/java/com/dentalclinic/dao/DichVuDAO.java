@@ -20,7 +20,9 @@ public class DichVuDAO {
 
         String sql = "SELECT maDV, tenDV, moTa, gia, thoiGianThucHien FROM dbo.DichVu";
 
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 DichVu dv = new DichVu();
@@ -114,5 +116,37 @@ public class DichVuDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Tìm kiếm dịch vụ theo tên hoặc mô tả
+     */
+    public List<DichVu> searchDichVu(String keyword) {
+        List<DichVu> list = new ArrayList<>();
+        String sql = "SELECT maDV, tenDV, moTa, gia, thoiGianThucHien FROM dbo.DichVu "
+                + "WHERE tenDV LIKE ? OR moTa LIKE ?";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            String searchPattern = "%" + keyword + "%";
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    DichVu dv = new DichVu();
+                    dv.setMaDV(rs.getInt("maDV"));
+                    dv.setTenDV(rs.getString("tenDV"));
+                    dv.setMoTa(rs.getString("moTa"));
+                    dv.setGia(rs.getInt("gia"));
+                    dv.setThoiGian(rs.getInt("thoiGianThucHien"));
+                    list.add(dv);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
