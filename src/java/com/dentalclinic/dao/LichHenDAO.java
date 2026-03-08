@@ -156,7 +156,8 @@ public class LichHenDAO {
     }
 
     /**
-     * Lịch hẹn của bác sĩ - trạng thái Đã vào khám (để khám) hoặc Đã khám xong
+     * Lịch hẹn của bác sĩ - tất cả lịch chưa hủy (để xem lịch khám đầy đủ)
+     * Bao gồm: Chờ xác nhận, Đã xác nhận, Đã vào khám, Đã khám xong
      */
     public List<LichHenDisplayDTO> getByMaBacSi(int maBacSi) {
         List<LichHenDisplayDTO> list = new ArrayList<>();
@@ -166,8 +167,45 @@ public class LichHenDAO {
                 + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
                 + "LEFT JOIN NguoiDung bs ON lh.MaBacSi = bs.MaND "
                 + "JOIN DichVu dv ON lh.MaDV = dv.MaDV "
-                + "WHERE lh.MaBacSi = ? AND lh.TrangThai IN (N'Đã vào khám', N'Đã khám xong') "
-                + "ORDER BY lh.NgayKham DESC, lh.GioKham DESC";
+                + "WHERE lh.MaBacSi = ? AND lh.TrangThai NOT IN (N'Đã hủy') "
+                + "ORDER BY lh.NgayKham ASC, lh.GioKham ASC";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, maBacSi);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    LichHenDisplayDTO dto = new LichHenDisplayDTO();
+                    dto.setMaLich(rs.getInt("MaLich"));
+                    dto.setTenKhachHang(rs.getString("TenKhachHang"));
+                    dto.setTenBacSi(rs.getString("TenBacSi"));
+                    dto.setTenDichVu(rs.getString("TenDichVu"));
+                    dto.setNgayKham(rs.getDate("NgayKham"));
+                    dto.setGioKham(rs.getTime("GioKham"));
+                    dto.setTrangThai(rs.getString("TrangThai"));
+                    dto.setGhiChu(rs.getString("GhiChu"));
+                    list.add(dto);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Lịch hẹn hôm nay của bác sĩ (để hiển thị nổi bật)
+     */
+    public List<LichHenDisplayDTO> getByMaBacSiHomNay(int maBacSi) {
+        List<LichHenDisplayDTO> list = new ArrayList<>();
+        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
+                + "lh.NgayKham, lh.GioKham, lh.TrangThai, lh.GhiChu "
+                + "FROM LichHen lh "
+                + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
+                + "LEFT JOIN NguoiDung bs ON lh.MaBacSi = bs.MaND "
+                + "JOIN DichVu dv ON lh.MaDV = dv.MaDV "
+                + "WHERE lh.MaBacSi = ? AND CAST(lh.NgayKham AS DATE) = CAST(GETDATE() AS DATE) "
+                + "AND lh.TrangThai NOT IN (N'Đã hủy') "
+                + "ORDER BY lh.GioKham ASC";
 
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, maBacSi);
