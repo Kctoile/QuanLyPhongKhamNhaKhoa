@@ -17,12 +17,18 @@
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/LoginServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/LogoutServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/dao/NguoiDungDAO.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/add_thuoc.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/KetQuaKham.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/LichHenDisplayDTO.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/LichHenAdminServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/DichVu.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/bacsi.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/login.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/LichHen.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/coming_soon.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/ChiTietDonThuoc.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/admin_dashboard.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/BacSiServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/DichVuServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/lichhen_admin.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/PrescriptionDisplayDTO.java</file>
