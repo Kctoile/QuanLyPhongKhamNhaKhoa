@@ -33,6 +33,13 @@ public class LoginServlet extends HttpServlet {
 
         if (user != null) {
 
+            // If user has no role assigned yet, deny login and ask to wait for admin
+            if (user.getVaiTro() == null) {
+                request.setAttribute("error", "Tài khoản chưa được gán vai trò. Vui lòng chờ quản trị viên xét duyệt.");
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
+                return;
+            }
+
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("maND", user.getMaND());

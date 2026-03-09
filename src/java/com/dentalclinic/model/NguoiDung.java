@@ -8,6 +8,7 @@ public class NguoiDung {
     private String matKhau;
     private String soDienThoai;
     private VaiTro vaiTro;
+    private Integer displayOrder;
 
     public NguoiDung() {
     }
@@ -67,5 +68,13 @@ public class NguoiDung {
 
     public void setVaiTro(VaiTro vaiTro) {
         this.vaiTro = vaiTro;
+    }
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }

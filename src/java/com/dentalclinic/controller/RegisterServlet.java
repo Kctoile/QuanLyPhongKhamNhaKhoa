@@ -45,8 +45,8 @@ public class RegisterServlet extends HttpServlet {
         nd.setMatKhau(matKhau);
         nd.setSoDienThoai(soDienThoai);
 
-        // 3 = CUSTOMER role id
-        boolean isSuccess = nguoiDungDAO.addUser(nd, 3);
+        // Do not assign a role at registration. Admin will assign roles later.
+        boolean isSuccess = nguoiDungDAO.addUser(nd, null);
 
         if (isSuccess) {
             request.setAttribute("message", "Đăng ký thành công! Bạn có thể đăng nhập.");

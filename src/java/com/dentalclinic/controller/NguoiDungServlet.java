@@ -66,9 +66,15 @@ public class NguoiDungServlet extends HttpServlet {
             // Lọc theo role nếu có tham số role
             String roleFilter = request.getParameter("role");
             if (roleFilter != null && !roleFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(roleFilter)) {
-                list = list.stream()
-                        .filter(u -> u.getVaiTro() != null && roleFilter.equalsIgnoreCase(u.getVaiTro().getTenVaiTro()))
-                        .collect(Collectors.toList());
+                if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
+                    list = list.stream()
+                            .filter(u -> u.getVaiTro() == null)
+                            .collect(Collectors.toList());
+                } else {
+                    list = list.stream()
+                            .filter(u -> u.getVaiTro() != null && roleFilter.equalsIgnoreCase(u.getVaiTro().getTenVaiTro()))
+                            .collect(Collectors.toList());
+                }
             }
 
             request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");

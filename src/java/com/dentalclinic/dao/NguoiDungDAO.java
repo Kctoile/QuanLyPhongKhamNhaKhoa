@@ -18,10 +18,10 @@ public class NguoiDungDAO {
         List<NguoiDung> list = new ArrayList<>();
 
         String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, "
-                + "vt.maVaiTro, vt.tenVaiTro "
-                + "FROM NguoiDung nd "
-                + "JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
-                + "ORDER BY nd.maND ASC";
+            + "vt.maVaiTro, vt.tenVaiTro, nd.CreatedAt, nd.DisplayOrder "
+            + "FROM NguoiDung nd "
+            + "LEFT JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+            + "ORDER BY COALESCE(nd.DisplayOrder, 999999), nd.maND ASC";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql);
@@ -29,9 +29,13 @@ public class NguoiDungDAO {
 
             while (rs.next()) {
 
-                VaiTro vaiTro = new VaiTro();
-                vaiTro.setMaVaiTro(rs.getInt("maVaiTro"));
-                vaiTro.setTenVaiTro(rs.getString("tenVaiTro"));
+                VaiTro vaiTro = null;
+                Integer maVT = rs.getObject("maVaiTro") != null ? rs.getInt("maVaiTro") : null;
+                if (maVT != null) {
+                    vaiTro = new VaiTro();
+                    vaiTro.setMaVaiTro(maVT);
+                    vaiTro.setTenVaiTro(rs.getString("tenVaiTro"));
+                }
 
                 NguoiDung nd = new NguoiDung();
                 nd.setMaND(rs.getInt("maND"));
@@ -40,6 +44,8 @@ public class NguoiDungDAO {
                 nd.setMatKhau(rs.getString("matKhau"));
                 nd.setSoDienThoai(rs.getString("soDienThoai"));
                 nd.setVaiTro(vaiTro);
+                Integer disp = rs.getObject("DisplayOrder") != null ? rs.getInt("DisplayOrder") : null;
+                nd.setDisplayOrder(disp);
 
                 list.add(nd);
             }
@@ -55,9 +61,9 @@ public class NguoiDungDAO {
     public NguoiDung login(String email, String matKhau) {
 
         String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, "
-                + "vt.maVaiTro, vt.tenVaiTro "
+            + "vt.maVaiTro, vt.tenVaiTro, nd.DisplayOrder "
                 + "FROM NguoiDung nd "
-                + "JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+                + "LEFT JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
                 + "WHERE nd.email = ? AND nd.matKhau = ?";
 
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -69,9 +75,13 @@ public class NguoiDungDAO {
 
             if (rs.next()) {
 
-                VaiTro vaiTro = new VaiTro();
-                vaiTro.setMaVaiTro(rs.getInt("maVaiTro"));
-                vaiTro.setTenVaiTro(rs.getString("tenVaiTro"));
+                VaiTro vaiTro = null;
+                Integer maVT = rs.getObject("maVaiTro") != null ? rs.getInt("maVaiTro") : null;
+                if (maVT != null) {
+                    vaiTro = new VaiTro();
+                    vaiTro.setMaVaiTro(maVT);
+                    vaiTro.setTenVaiTro(rs.getString("tenVaiTro"));
+                }
 
                 NguoiDung nd = new NguoiDung();
                 nd.setMaND(rs.getInt("maND"));
@@ -80,7 +90,8 @@ public class NguoiDungDAO {
                 nd.setMatKhau(rs.getString("matKhau"));
                 nd.setSoDienThoai(rs.getString("soDienThoai"));
                 nd.setVaiTro(vaiTro);
-
+                Integer disp = rs.getObject("DisplayOrder") != null ? rs.getInt("DisplayOrder") : null;
+                nd.setDisplayOrder(disp);
                 return nd;
             }
 
@@ -199,16 +210,20 @@ public class NguoiDungDAO {
 
     // CRUD Methods
     public NguoiDung getUserById(int id) {
-        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, vt.maVaiTro, vt.tenVaiTro "
-                + "FROM NguoiDung nd JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
-                + "WHERE nd.maND = ?";
+        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, vt.maVaiTro, vt.tenVaiTro, nd.DisplayOrder "
+            + "FROM NguoiDung nd LEFT JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+            + "WHERE nd.maND = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                VaiTro vt = new VaiTro();
-                vt.setMaVaiTro(rs.getInt("maVaiTro"));
-                vt.setTenVaiTro(rs.getString("tenVaiTro"));
+                VaiTro vt = null;
+                Integer maVT = rs.getObject("maVaiTro") != null ? rs.getInt("maVaiTro") : null;
+                if (maVT != null) {
+                    vt = new VaiTro();
+                    vt.setMaVaiTro(maVT);
+                    vt.setTenVaiTro(rs.getString("tenVaiTro"));
+                }
 
                 NguoiDung nd = new NguoiDung();
                 nd.setMaND(rs.getInt("maND"));
@@ -217,6 +232,8 @@ public class NguoiDungDAO {
                 nd.setMatKhau(rs.getString("matKhau"));
                 nd.setSoDienThoai(rs.getString("soDienThoai"));
                 nd.setVaiTro(vt);
+                Integer disp = rs.getObject("DisplayOrder") != null ? rs.getInt("DisplayOrder") : null;
+                nd.setDisplayOrder(disp);
                 return nd;
             }
         } catch (Exception e) {
@@ -225,14 +242,18 @@ public class NguoiDungDAO {
         return null;
     }
 
-    public boolean addUser(NguoiDung nd, int maVaiTro) {
+    public boolean addUser(NguoiDung nd, Integer maVaiTro) {
         String sql = "INSERT INTO NguoiDung (HoTen, Email, MatKhau, SoDienThoai, MaVaiTro) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, nd.getHoTen());
             ps.setString(2, nd.getEmail());
             ps.setString(3, nd.getMatKhau());
             ps.setString(4, nd.getSoDienThoai());
-            ps.setInt(5, maVaiTro);
+            if (maVaiTro == null) {
+                ps.setNull(5, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(5, maVaiTro);
+            }
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -250,6 +271,21 @@ public class NguoiDungDAO {
             ps.setInt(5, maVaiTro);
             ps.setInt(6, nd.getMaND());
             return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Recompute DisplayOrder = 1..N by maND ascending.
+     */
+    public boolean recomputeDisplayOrderByMaNDAsc() {
+        String sql = "WITH Ordered AS (SELECT maND, ROW_NUMBER() OVER (ORDER BY maND ASC) AS rn FROM NguoiDung) "
+                + "UPDATE n SET DisplayOrder = o.rn FROM NguoiDung n JOIN Ordered o ON n.maND = o.maND";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
