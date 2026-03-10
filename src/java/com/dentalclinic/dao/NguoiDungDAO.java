@@ -243,7 +243,10 @@ public class NguoiDungDAO {
     }
 
     public boolean addUser(NguoiDung nd, Integer maVaiTro) {
-        String sql = "INSERT INTO NguoiDung (HoTen, Email, MatKhau, SoDienThoai, MaVaiTro) VALUES (?, ?, ?, ?, ?)";
+        // DisplayOrder column in DB is NOT NULL; compute next display order to avoid
+        // INSERT failures when DisplayOrder has no default.
+        String sql = "INSERT INTO NguoiDung (HoTen, Email, MatKhau, SoDienThoai, MaVaiTro, DisplayOrder) "
+                + "SELECT ?, ?, ?, ?, ?, COALESCE(MAX(DisplayOrder), 0) + 1 FROM NguoiDung";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, nd.getHoTen());
             ps.setString(2, nd.getEmail());

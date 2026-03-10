@@ -86,20 +86,11 @@ public class LichHenDAO {
                 + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
                 + "LEFT JOIN NguoiDung bs ON lh.MaBacSi = bs.MaND "
                 + "JOIN DichVu dv ON lh.MaDV = dv.MaDV "
-                + "ORDER BY lh.NgayKham DESC, lh.GioKham DESC";
+                + "ORDER BY lh.MaLich ASC";
 
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                LichHenDisplayDTO dto = new LichHenDisplayDTO();
-                dto.setMaLich(rs.getInt("MaLich"));
-                dto.setTenKhachHang(rs.getString("TenKhachHang"));
-                dto.setTenBacSi(rs.getString("TenBacSi"));
-                dto.setTenDichVu(rs.getString("TenDichVu"));
-                dto.setNgayKham(rs.getDate("NgayKham"));
-                dto.setGioKham(rs.getTime("GioKham"));
-                dto.setTrangThai(rs.getString("TrangThai"));
-                dto.setGhiChu(rs.getString("GhiChu"));
-                list.add(dto);
+                list.add(mapDisplayResultSet(rs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,7 +103,7 @@ public class LichHenDAO {
      */
     public List<LichHen> getAll() {
         List<LichHen> list = new ArrayList<>();
-        String sql = "SELECT MaLich, MaND, MaBacSi, MaDV, NgayKham, GioKham, TrangThai, GhiChu FROM LichHen ORDER BY NgayKham DESC, GioKham DESC";
+        String sql = "SELECT MaLich, MaND, MaBacSi, MaDV, NgayKham, GioKham, TrangThai, GhiChu FROM LichHen ORDER BY MaLich ASC";
 
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -174,16 +165,7 @@ public class LichHenDAO {
             ps.setInt(1, maBacSi);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    LichHenDisplayDTO dto = new LichHenDisplayDTO();
-                    dto.setMaLich(rs.getInt("MaLich"));
-                    dto.setTenKhachHang(rs.getString("TenKhachHang"));
-                    dto.setTenBacSi(rs.getString("TenBacSi"));
-                    dto.setTenDichVu(rs.getString("TenDichVu"));
-                    dto.setNgayKham(rs.getDate("NgayKham"));
-                    dto.setGioKham(rs.getTime("GioKham"));
-                    dto.setTrangThai(rs.getString("TrangThai"));
-                    dto.setGhiChu(rs.getString("GhiChu"));
-                    list.add(dto);
+                    list.add(mapDisplayResultSet(rs));
                 }
             }
         } catch (Exception e) {
@@ -211,16 +193,7 @@ public class LichHenDAO {
             ps.setInt(1, maBacSi);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    LichHenDisplayDTO dto = new LichHenDisplayDTO();
-                    dto.setMaLich(rs.getInt("MaLich"));
-                    dto.setTenKhachHang(rs.getString("TenKhachHang"));
-                    dto.setTenBacSi(rs.getString("TenBacSi"));
-                    dto.setTenDichVu(rs.getString("TenDichVu"));
-                    dto.setNgayKham(rs.getDate("NgayKham"));
-                    dto.setGioKham(rs.getTime("GioKham"));
-                    dto.setTrangThai(rs.getString("TrangThai"));
-                    dto.setGhiChu(rs.getString("GhiChu"));
-                    list.add(dto);
+                    list.add(mapDisplayResultSet(rs));
                 }
             }
         } catch (Exception e) {
@@ -250,5 +223,18 @@ public class LichHenDAO {
         l.setTrangThai(rs.getString("TrangThai"));
         l.setGhiChu(rs.getString("GhiChu"));
         return l;
+    }
+
+    private LichHenDisplayDTO mapDisplayResultSet(ResultSet rs) throws SQLException {
+        LichHenDisplayDTO dto = new LichHenDisplayDTO();
+        dto.setMaLich(rs.getInt("MaLich"));
+        dto.setTenKhachHang(rs.getString("TenKhachHang"));
+        dto.setTenBacSi(rs.getString("TenBacSi"));
+        dto.setTenDichVu(rs.getString("TenDichVu"));
+        dto.setNgayKham(rs.getDate("NgayKham"));
+        dto.setGioKham(rs.getTime("GioKham"));
+        dto.setTrangThai(rs.getString("TrangThai"));
+        dto.setGhiChu(rs.getString("GhiChu"));
+        return dto;
     }
 }

@@ -19,6 +19,11 @@
             <a href="logout">Đăng xuất</a>
             <hr>
 
+            <c:if test="${not empty sessionScope.staffError}">
+                <p style="color:red">${sessionScope.staffError}</p>
+                <c:remove var="staffError" scope="session"/>
+            </c:if>
+
             <h3>1. Danh sách lịch hẹn</h3>
             <table border="1" cellpadding="8">
                 <tr>

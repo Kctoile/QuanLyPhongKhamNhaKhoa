@@ -71,9 +71,17 @@ public class StaffLeTanServlet extends HttpServlet {
         int maND = Integer.parseInt(request.getParameter("maND"));
         int maBacSi = Integer.parseInt(request.getParameter("maBacSi"));
         Date ngayKham = Date.valueOf(request.getParameter("ngayKham"));
-        Time gioKham = Time.valueOf(request.getParameter("gioKham") + ":00");
+        String gioStr = request.getParameter("gioKham");
+        Time gioKham = Time.valueOf(gioStr + ":00");
         int maDV = Integer.parseInt(request.getParameter("maDV"));
         String ghiChu = request.getParameter("ghiChu");
+
+        // Chặn đặt trùng: kiểm tra slot còn trống trước khi insert
+        if (!lhDAO.getAvailableSlots(maBacSi, ngayKham).contains(gioStr)) {
+            request.getSession().setAttribute("staffError", "Giờ khám đã được đặt. Vui lòng chọn giờ khác.");
+            response.sendRedirect("staff");
+            return;
+        }
 
         LichHen lh = new LichHen();
         lh.setMaND(maND);

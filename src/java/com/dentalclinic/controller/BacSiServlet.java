@@ -8,7 +8,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Servlet bác sĩ - Ghi kết quả khám, kê đơn thuốc
@@ -101,6 +104,16 @@ public class BacSiServlet extends HttpServlet {
                 String[] soLuongArr = request.getParameterValues("soLuong");
                 if (maThuocArr != null && soLuongArr != null) {
                     int len = Math.min(maThuocArr.length, soLuongArr.length);
+                    // Tối ưu: load đơn giá theo danh sách mã thuốc (tránh gọi getById trong vòng lặp)
+                    Set<Integer> ids = new HashSet<>();
+                    for (int i = 0; i < len; i++) {
+                        try {
+                            ids.add(Integer.parseInt(maThuocArr[i]));
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                    Map<Integer, Double> donGiaMap = thuocDAO.getDonGiaMapByIds(ids);
+
                     for (int i = 0; i < len; i++) {
                         int sl;
                         try {
@@ -115,13 +128,13 @@ public class BacSiServlet extends HttpServlet {
                         } catch (NumberFormatException e) {
                             continue;
                         }
-                        var thuoc = thuocDAO.getById(maThuoc);
-                        if (thuoc == null) continue;
+                        Double donGia = donGiaMap.get(maThuoc);
+                        if (donGia == null) continue;
                         ChiTietDonThuoc ct = new ChiTietDonThuoc();
                         ct.setMaDon(maDon);
                         ct.setMaThuoc(maThuoc);
                         ct.setSoLuong(sl);
-                        ct.setDonGia(thuoc.getDonGia());
+                        ct.setDonGia(donGia);
                         dtDAO.insertChiTiet(ct);
                     }
                 }

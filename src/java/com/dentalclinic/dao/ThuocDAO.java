@@ -5,8 +5,11 @@ import com.dentalclinic.utils.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * DAO thao tác với bảng Thuoc
@@ -79,6 +82,40 @@ public class ThuocDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Lấy đơn giá theo danh sách mã thuốc (tối ưu: tránh N+1 query)
+     */
+    public Map<Integer, Double> getDonGiaMapByIds(Set<Integer> maThuocIds) {
+        Map<Integer, Double> map = new HashMap<>();
+        if (maThuocIds == null || maThuocIds.isEmpty()) {
+            return map;
+        }
+
+        StringBuilder sb = new StringBuilder("SELECT MaThuoc, DonGia FROM Thuoc WHERE MaThuoc IN (");
+        int i = 0;
+        for (Integer ignored : maThuocIds) {
+            if (i++ > 0) sb.append(",");
+            sb.append("?");
+        }
+        sb.append(")");
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sb.toString())) {
+            int idx = 1;
+            for (Integer id : maThuocIds) {
+                ps.setInt(idx++, id);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getInt("MaThuoc"), rs.getDouble("DonGia"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return map;
     }
 
     /**
