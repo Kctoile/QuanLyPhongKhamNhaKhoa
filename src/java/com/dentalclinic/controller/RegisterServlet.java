@@ -1,7 +1,8 @@
 package com.dentalclinic.controller;
 
-import com.dentalclinic.dao.NguoiDungDAO;
-import com.dentalclinic.model.NguoiDung;
+import com.dentalclinic.dao.RoleDAO;
+import com.dentalclinic.dao.UserDAO;
+import com.dentalclinic.model.User;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,13 +12,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-/**
- * Servlet xử lý đăng ký người dùng mới (Customer)
- */
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 
-    private final NguoiDungDAO nguoiDungDAO = new NguoiDungDAO();
+    private final UserDAO userDAO = new UserDAO();
+    private final RoleDAO roleDAO = new RoleDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -25,28 +24,44 @@ public class RegisterServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        String hoTen = request.getParameter("hoTen");
+        String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
-        String matKhau = request.getParameter("matKhau");
-        String soDienThoai = request.getParameter("soDienThoai");
+        String password = request.getParameter("password");
+        String phone = request.getParameter("phone");
+        String gender = request.getParameter("gender");
+        String dobStr = request.getParameter("dob");
+        String address = request.getParameter("address");
 
         // Validate basic
-        if (hoTen == null || email == null || matKhau == null || soDienThoai == null ||
-                hoTen.trim().isEmpty() || email.trim().isEmpty() || matKhau.trim().isEmpty()
-                || soDienThoai.trim().isEmpty()) {
+        if (fullName == null || email == null || password == null || phone == null ||
+                fullName.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()
+                || phone.trim().isEmpty()) {
             request.setAttribute("error", "Vui lòng điền đầy đủ thông tin!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        NguoiDung nd = new NguoiDung();
-        nd.setHoTen(hoTen);
-        nd.setEmail(email);
-        nd.setMatKhau(matKhau);
-        nd.setSoDienThoai(soDienThoai);
+        User user = new User();
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setPhone(phone);
+        user.setGender(gender);
+        user.setAddress(address);
 
-        // Do not assign a role at registration. Admin will assign roles later.
-        boolean isSuccess = nguoiDungDAO.addUser(nd, null);
+        if (dobStr != null && !dobStr.trim().isEmpty()) {
+            try {
+                user.setDob(java.sql.Date.valueOf(dobStr));
+            } catch (IllegalArgumentException e) {
+                // Ignore parsing errors for now, or log them
+            }
+        }
+
+        // Assign null role directly, admin will assign it later,
+        // per user request.
+        Integer unassignedRoleId = null;
+
+        boolean isSuccess = userDAO.addUser(user, unassignedRoleId);
 
         if (isSuccess) {
             request.setAttribute("message", "Đăng ký thành công! Bạn có thể đăng nhập.");

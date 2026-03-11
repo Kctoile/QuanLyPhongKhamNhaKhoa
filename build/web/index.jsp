@@ -1,20 +1,27 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-            <%@ page import="com.dentalclinic.dao.DichVuDAO, com.dentalclinic.dao.NguoiDungDAO" %>
-                <%@ page import="com.dentalclinic.model.DichVu, com.dentalclinic.model.NguoiDung" %>
+            <%@ page import="com.dentalclinic.dao.ServiceDAO, com.dentalclinic.dao.UserDAO" %>
+                <%@ page import="com.dentalclinic.model.Service, com.dentalclinic.model.User" %>
                     <%@ page import="java.util.List" %>
-                        <% String keyword=request.getParameter("keyword"); DichVuDAO dichVuDAO=new DichVuDAO();
-                            NguoiDungDAO nguoiDungDAO=new NguoiDungDAO(); List<DichVu> listDichVu;
-                            List<NguoiDung> listBacSi;
+                            <% String keyword = request.getParameter("keyword");
+                                ServiceDAO serviceDAO = new ServiceDAO();
+                                UserDAO userDAO = new UserDAO();
+                                com.dentalclinic.dao.ClinicConfigDAO configDAO = new com.dentalclinic.dao.ClinicConfigDAO();
+
+                                List<Service> listDichVu;
+                                List<User> listBacSi;
+                                
+                                com.dentalclinic.model.ClinicConfig clinicConfig = configDAO.getConfig();
+                                request.setAttribute("clinicConfig", clinicConfig);
 
                                 if (keyword != null && !keyword.trim().isEmpty()) {
-                                listDichVu = dichVuDAO.searchDichVu(keyword);
-                                listBacSi = nguoiDungDAO.searchDoctors(keyword);
+                                listDichVu = serviceDAO.searchServices(keyword);
+                                listBacSi = userDAO.searchDoctors(keyword);
                                 request.setAttribute("keyword", keyword);
                                 } else {
-                                listDichVu = dichVuDAO.getAll();
-                                listBacSi = nguoiDungDAO.getDoctors();
+                                listDichVu = serviceDAO.getAll();
+                                listBacSi = userDAO.getDoctors();
                                 }
                                 request.setAttribute("listDichVu", listDichVu);
                                 request.setAttribute("listBacSi", listBacSi);
@@ -40,7 +47,7 @@
                                                     class="fas fa-tooth"></i>
                                                 Dental Clinic</a>
                                             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                                                data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                                                data-bs-target="#navbarNav">
                                                 <span class="navbar-toggler-icon"></span>
                                             </button>
                                             <div class="collapse navbar-collapse" id="navbarNav">
@@ -53,7 +60,7 @@
                                                     <c:choose>
                                                         <c:when test="${not empty sessionScope.user}">
                                                             <li class="nav-item me-3"><span class="text-white">Xin chào,
-                                                                    ${sessionScope.user.hoTen}
+                                                                    ${sessionScope.user.fullName}
                                                                     (${sessionScope.role})</span></li>
                                                             <c:if test="${sessionScope.role == 'ADMIN'}">
                                                                 <li class="nav-item"><a class="nav-link text-white"
@@ -62,7 +69,7 @@
                                                             </c:if>
                                                             <c:if test="${sessionScope.role == 'DOCTOR'}">
                                                                 <li class="nav-item"><a class="nav-link text-white"
-                                                                        href="${pageContext.request.contextPath}/bacsi">Bác
+                                                                        href="${pageContext.request.contextPath}/doctor">Bác
                                                                         sĩ</a></li>
                                                             </c:if>
                                                             <c:if test="${sessionScope.role == 'STAFF'}">
@@ -72,12 +79,12 @@
                                                             </c:if>
                                                             <c:if test="${sessionScope.role == 'CUSTOMER'}">
                                                                 <li class="nav-item"><a class="nav-link text-white"
-                                                                        href="${pageContext.request.contextPath}/lichhen">Lịch
+                                                                        href="${pageContext.request.contextPath}/appointments">Lịch
                                                                         hẹn của
                                                                         tôi</a></li>
                                                                 <li class="nav-item"><a
                                                                         class="btn btn-warning text-dark fw-bold me-2"
-                                                                        href="${pageContext.request.contextPath}/datlich.jsp">Đặt
+                                                                        href="${pageContext.request.contextPath}/booking">Đặt
                                                                         lịch
                                                                         khám</a></li>
                                                             </c:if>
@@ -104,9 +111,34 @@
                                         <div class="row">
                                             <div class="col-12 text-center mb-5">
                                                 <h1 class="display-4"><i class="fas fa-hospital-alt text-primary"></i>
-                                                    Nha Khoa Nụ Cười</h1>
-                                                <p class="lead text-muted">Chào mừng bạn đến với hệ thống quản lý phòng
-                                                    khám nha khoa.</p>
+                                                    Dental Clinic Center</h1>
+                                                <p class="lead text-muted">Chào mừng bạn đến với hệ thống quản lý phòng khám nha khoa.</p>
+                                                
+                                                <!-- Clinic Configuration Section -->
+                                                <div class="mt-4 p-4 bg-light rounded shadow-sm text-start" style="display: inline-block; text-align: left;">
+                                                    <h4 class="text-primary mb-3"><i class="fas fa-info-circle"></i> Thông Tin Phòng Khám</h4>
+                                                    <p class="mb-2"><i class="fas fa-clock text-secondary me-2"></i><strong>Giờ mở cửa:</strong> 
+                                                        <c:choose>
+                                                            <c:when test="${not empty clinicConfig}">
+                                                                <fmt:formatDate value="${clinicConfig.openingTime}" pattern="HH:mm" /> - 
+                                                                <fmt:formatDate value="${clinicConfig.closingTime}" pattern="HH:mm" />
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                08:00 - 20:00 (Mặc định)
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </p>
+                                                    <p class="mb-0"><i class="fas fa-bullhorn text-secondary me-2"></i><strong>Thông báo:</strong> 
+                                                        <c:choose>
+                                                            <c:when test="${not empty clinicConfig}">
+                                                                ${clinicConfig.clinicInfo}
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                Đang cập nhật...
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </p>
+                                                </div>
                                             </div>
 
                                             <div class="col-md-6 mb-4">
@@ -122,20 +154,22 @@
                                                                 <div
                                                                     class="list-group-item d-flex justify-content-between align-items-center border-bottom py-3">
                                                                     <div>
-                                                                        <h5 class="mb-1 text-dark fw-bold">${dv.tenDV}
+                                                                        <h5 class="mb-1 text-dark fw-bold">
+                                                                            ${dv.serviceName}
                                                                         </h5>
                                                                         <small
-                                                                            class="text-muted d-block">${dv.moTa}</small>
+                                                                            class="text-muted d-block">${dv.description}</small>
                                                                     </div>
                                                                     <div class="text-end">
                                                                         <span
                                                                             class="badge bg-success rounded-pill px-3 py-2 fs-6">
-                                                                            <fmt:formatNumber value="${dv.gia}"
+                                                                            <fmt:formatNumber value="${dv.price}"
                                                                                 type="currency" currencySymbol="VNĐ" />
                                                                         </span>
                                                                         <small class="text-muted d-block mt-1"><i
                                                                                 class="far fa-clock"></i>
-                                                                            ${dv.thoiGian} phút</small>
+                                                                            ${dv.durationMinutes != null ?
+                                                                            dv.durationMinutes : 'N/A'} phút</small>
                                                                     </div>
                                                                 </div>
                                                             </c:forEach>
@@ -167,14 +201,15 @@
                                                                             </div>
                                                                             <h5
                                                                                 class="card-title fw-bold text-dark mb-1">
-                                                                                Bs. ${bs.hoTen}
+                                                                                Bs. ${bs.fullName}
                                                                             </h5>
                                                                             <p class="card-text text-muted small"><i
                                                                                     class="fas fa-phone-alt"></i>
-                                                                                ${bs.soDienThoai}</p>
+                                                                                ${bs.phone}</p>
                                                                             <p class="card-text text-muted small mb-0">
                                                                                 <i class="fas fa-envelope"></i>
-                                                                                ${bs.email}</p>
+                                                                                ${bs.email}
+                                                                            </p>
                                                                         </div>
                                                                     </div>
                                                                 </div>

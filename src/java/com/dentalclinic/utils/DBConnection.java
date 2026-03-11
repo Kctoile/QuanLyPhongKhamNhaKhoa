@@ -7,7 +7,7 @@ public class DBConnection {
 
     private static final String URL
             = "jdbc:sqlserver://localhost:1433;"
-            + "databaseName=PhongKhamNhaKhoa;"
+            + "databaseName=Dental;"
             + "encrypt=true;trustServerCertificate=true";
 
     // Nếu không có biến môi trường → dùng mặc định

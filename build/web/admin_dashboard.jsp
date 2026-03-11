@@ -2,7 +2,8 @@
     <%@ include file="admin_menu.jsp" %>
         <h2>ADMIN DASHBOARD</h2>
 
-        <p style="display:flex; align-items:center; gap:12px">Xin chào: <strong>${sessionScope.user.hoTen}</strong> (ADMIN)
+        <p style="display:flex; align-items:center; gap:12px">Xin chào: <strong>${sessionScope.user.fullName}</strong>
+            (ADMIN)
             <a href="logout" style="margin-left:12px;">Đăng xuất</a>
         </p>
 
@@ -29,4 +30,3 @@
         </table>
 
         <hr>
-        <!-- Links are available in the left admin menu; avoid duplicate links here -->

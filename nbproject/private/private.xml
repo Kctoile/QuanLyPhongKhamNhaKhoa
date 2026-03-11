@@ -11,16 +11,20 @@
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/dao/DichVuDAO.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/index.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/NguoiDungServlet.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/META-INF/context.xml</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/NguoiDung.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/dao/ThuocDAO.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/utils/DBConnection.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/LoginServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/LogoutServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/dao/NguoiDungDAO.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/RecomputeDisplayOrderServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/add_thuoc.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/staff_le_tan.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/KetQuaKham.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/datlich.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/LichHenDisplayDTO.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/DatLichServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/thuoc.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/LichHenAdminServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/register.jsp</file>
@@ -30,9 +34,11 @@
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/giohoatdong.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/LichHen.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/coming_soon.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/RegisterServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/ChiTietDonThuoc.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/admin_dashboard.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/BacSiServlet.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/nguoidung_form.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/DichVuServlet.java</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/lichhen_admin.jsp</file>
             <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/PrescriptionDisplayDTO.java</file>

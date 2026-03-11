@@ -1,6 +1,6 @@
 package com.dentalclinic.controller;
 
-import com.dentalclinic.dao.NguoiDungDAO;
+import com.dentalclinic.dao.UserDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,7 +13,7 @@ import java.io.IOException;
 @WebServlet("/RecomputeDisplayOrder")
 public class RecomputeDisplayOrderServlet extends HttpServlet {
 
-    private final NguoiDungDAO dao = new NguoiDungDAO();
+    private final UserDAO dao = new UserDAO();
 
     private boolean checkAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
@@ -30,14 +30,16 @@ public class RecomputeDisplayOrderServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (!checkAdmin(request, response)) return;
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (!checkAdmin(request, response))
+            return;
 
-        boolean ok = dao.recomputeDisplayOrderByMaNDAsc();
+        boolean ok = dao.recomputeDisplayOrderByIdAsc();
         if (ok) {
-            response.sendRedirect("nguoidung?message=DisplayOrder+updated");
+            response.sendRedirect("users?message=DisplayOrder+updated");
         } else {
-            response.sendRedirect("nguoidung?error=DisplayOrder+update+failed");
+            response.sendRedirect("users?error=DisplayOrder+update+failed");
         }
     }
 }
