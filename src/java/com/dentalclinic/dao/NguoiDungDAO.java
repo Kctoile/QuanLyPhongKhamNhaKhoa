@@ -208,6 +208,57 @@ public class NguoiDungDAO {
         return list;
     }
 
+    /**
+     * Tìm một khách hàng theo họ tên chính xác (CASE-INSENSITIVE).
+     */
+    public NguoiDung getCustomerByName(String hoTen) {
+        String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, "
+                + "vt.maVaiTro, vt.tenVaiTro "
+                + "FROM NguoiDung nd JOIN VaiTro vt ON nd.maVaiTro = vt.maVaiTro "
+                + "WHERE vt.tenVaiTro = 'CUSTOMER' AND LOWER(nd.hoTen) = LOWER(?)";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hoTen);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    VaiTro vt = new VaiTro();
+                    vt.setMaVaiTro(rs.getInt("maVaiTro"));
+                    vt.setTenVaiTro(rs.getString("tenVaiTro"));
+                    NguoiDung nd = new NguoiDung();
+                    nd.setMaND(rs.getInt("maND"));
+                    nd.setHoTen(rs.getString("hoTen"));
+                    nd.setEmail(rs.getString("email"));
+                    nd.setMatKhau(rs.getString("matKhau"));
+                    nd.setSoDienThoai(rs.getString("soDienThoai"));
+                    nd.setVaiTro(vt);
+                    return nd;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Lấy id vai trò dựa theo tên (ví dụ 'CUSTOMER', 'DOCTOR').
+     */
+    public Integer getRoleIdByName(String tenVaiTro) {
+        String sql = "SELECT maVaiTro FROM VaiTro WHERE tenVaiTro = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, tenVaiTro);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // CRUD Methods
     public NguoiDung getUserById(int id) {
         String sql = "SELECT nd.maND, nd.hoTen, nd.email, nd.matKhau, nd.soDienThoai, vt.maVaiTro, vt.tenVaiTro, nd.DisplayOrder "
