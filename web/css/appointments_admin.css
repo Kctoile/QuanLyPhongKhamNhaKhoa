@@ -1,0 +1,57 @@
+.appointments-page{
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.appointment-table{
+    width:100%;
+}
+
+.appointment-table th,
+.appointment-table td{
+    padding:12px;
+     
+}
+
+.appointment-table th{
+    background:#f7f7f7;
+}
+
+/* căn giữa cột trạng thái */
+.appointment-table td:nth-child(6),
+.appointment-table th:nth-child(6){
+    text-align:center;
+}
+
+/* căn giữa ID */
+.appointment-table td:first-child,
+.appointment-table th:first-child{
+    text-align:center;
+}
+.appointment-container{
+    background:white;
+    border-radius:14px;
+    padding:30px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.12);
+    max-width:1200px;
+}
+
+.appointment-container{
+    width: calc(100% - 260px);
+    max-width: none;
+}
+
+.appointments-page table{
+    width:100%;
+}
+
+.appointments-page th,
+.appointments-page td{
+    padding:20px;
+    text-align:center;
+}
+.admin-layout{
+    width:100%;
+}

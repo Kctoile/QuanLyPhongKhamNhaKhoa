@@ -1,0 +1,97 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f4f6fb;
+    margin:0;
+}
+
+.doctor-container{
+    width:1100px;
+    margin:auto;
+    padding:30px;
+}
+
+.doctor-header h2{
+    margin-bottom:5px;
+}
+
+.doctor-nav{
+    margin-top:10px;
+}
+
+.doctor-nav a{
+    text-decoration:none;
+    margin-right:15px;
+    color:#4a6cf7;
+    font-weight:500;
+}
+
+.doctor-nav a:hover{
+    text-decoration:underline;
+}
+
+/* card giống dashboard */
+.card{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    margin-top:20px;
+}
+
+/* bảng */
+.doctor-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+.doctor-table th{
+    background:#f5f7fb;
+    text-align:left;
+    padding:12px;
+}
+
+.doctor-table td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+
+.doctor-table tr:hover{
+    background:#fafafa;
+}
+
+/* thuốc */
+.thuoc-row{
+    padding:6px 0;
+}
+
+/* input */
+input, textarea, select{
+    border:1px solid #ddd;
+    border-radius:6px;
+    padding:8px;
+}
+
+/* button */
+button{
+    background:#4CAF50;
+    border:none;
+    color:white;
+    padding:10px 18px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#43a047;
+}
+
+/* lỗi */
+.error{
+    background:#ffebee;
+    color:#c62828;
+    padding:10px;
+    border-radius:6px;
+    margin-top:10px;
+}
+

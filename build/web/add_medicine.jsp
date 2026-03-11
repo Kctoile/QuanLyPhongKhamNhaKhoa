@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<link rel="stylesheet" href="css/add_medicine.css"/>
+<div class="admin-layout">
     <%@ include file="admin_menu.jsp" %>
-
-        <div style="margin-left: 240px; padding: 20px;">
+    <div class="admin-content">
             <h2>THÊM THUỐC MỚI</h2>
             <a href="medicines">← Quay lại danh sách</a>
             <hr>
@@ -33,3 +34,4 @@
                 </button>
             </form>
         </div>
+     </div>

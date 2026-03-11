@@ -1,14 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-        <%@ include file="admin_menu.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-            <div style="margin-left: 240px; padding: 20px;">
-                <h2>${formAction == 'update' ? 'SỬA NGƯỜI DÙNG' : 'THÊM NGƯỜI DÙNG'}</h2>
+<div class="admin-layout">
 
-                <a href="users">← Quay lại Danh sách</a>
-                <hr>
+    <%@ include file="admin_menu.jsp" %>
+    <link rel="stylesheet" href="css/user_form.css">
 
-                <form action="users" method="post" style="max-width: 500px;">
+    <div class="admin-content">
+
+    <h2>${formAction == 'update' ? 'SỬA NGƯỜI DÙNG' : 'THÊM NGƯỜI DÙNG'}</h2>
+
+    <a href="users">← Quay lại Danh sách</a>
+    <hr>
+
+    <form action="users" method="post" style="max-width: 500px;">
                     <input type="hidden" name="action" value="${formAction}">
                     <c:if test="${formAction == 'update'}">
                         <input type="hidden" name="userId" value="${user.userId}">
@@ -61,3 +66,4 @@
                     </button>
                 </form>
             </div>
+  </div>

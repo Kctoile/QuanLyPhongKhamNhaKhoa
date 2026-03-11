@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+    <link rel="stylesheet" href="css/add_service.css"/>
+<div class="admin-layout">
     <%@ include file="admin_menu.jsp" %>
-
-        <div style="margin-left: 240px; padding: 20px;">
+    <div class="admin-content">
             <h2>THÊM DỊCH VỤ MỚI</h2>
             <a href="services">← Quay lại danh sách</a>
             <hr>

@@ -1,27 +1,34 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-        <%@ include file="admin_menu.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<link rel="stylesheet" href="css/medicines.css"/>
+<div class="admin-layout">
 
-            <div style="margin-left: 240px; padding: 20px;">
+    <%@ include file="admin_menu.jsp" %>
+
+    <div class="admin-content">
+
+        <div class="medicines-page">
+
+            <div style="padding:20px;">
                 <h2>QUẢN LÝ THUỐC</h2>
 
                 <a href="add_medicine.jsp"
-                    style="display:inline-block; margin-bottom:15px; padding:8px 15px; background-color:#4CAF50; color:white; text-decoration:none; border-radius:4px;">
+                   style="display:inline-block; margin-bottom:15px; padding:8px 15px; background-color:#4CAF50; color:white; text-decoration:none; border-radius:4px;">
                     + Thêm Thuốc Mới
                 </a>
 
                 <!-- Form Tìm Kiếm -->
                 <form action="medicines" method="get" style="margin-bottom: 20px;">
                     <input type="text" name="keyword" value="${keyword}" placeholder="Tìm theo tên thuốc..."
-                        style="padding: 8px; width: 250px;">
+                           style="padding: 8px; width: 250px;">
                     <button type="submit"
-                        style="padding: 8px 15px; background-color: #008CBA; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            style="padding: 8px 15px; background-color: #008CBA; color: white; border: none; border-radius: 4px; cursor: pointer;">
                         Tìm kiếm
                     </button>
                     <c:if test="${not empty keyword}">
                         <a href="medicines" style="margin-left: 10px; text-decoration: none; color: red;">Xóa tìm
                             kiếm</a>
-                    </c:if>
+                        </c:if>
                 </form>
 
                 <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
@@ -40,13 +47,24 @@
                             <td>${m.price}</td>
                             <td>${m.stockQuantity}</td>
                             <td>
-                                <a
-                                    href="edit_medicine.jsp?id=${m.medicineId}&name=${m.medicineName}&price=${m.price}&stock=${m.stockQuantity}">Sửa</a>
-                                |
-                                <a href="medicines?action=delete&id=${m.medicineId}"
-                                    onclick="return confirm('Bạn có chắc chắn muốn xóa thuốc này?');">Xóa</a>
+                                <a class="btn-edit"
+                                   href="edit_medicine.jsp?id=${m.medicineId}&name=${m.medicineName}&price=${m.price}&stock=${m.stockQuantity}">
+                                    Sửa
+                                </a>
+
+                                <a class="btn-delete"
+                                   href="medicines?action=delete&id=${m.medicineId}"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa thuốc này?');">
+                                    Xóa
+                                </a>
                             </td>
                         </tr>
                     </c:forEach>
                 </table>
             </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -84,18 +84,18 @@ ant run
 
 | Vai trò   | Email              | Mật khẩu |
 |-----------|--------------------|----------|
-| Admin     | admin@gmail.com    | 123      |
-| Bác sĩ    | doctor@gmail.com   | 123      |
-| Nhân viên | staff@gmail.com    | 123      |
-| Khách hàng| customer@gmail.com | 123      |
+| Admin     | admin@gmail.com    | admin    |
+| Bác sĩ    | doctor1@gmail.com  | 123      |
+| Nhân viên | domixue@gmail.com  | 123      |
+| Khách hàng| hung@gmail.com     | 123      |
 
 ---
 
 ## Chức năng chính
 
 - **Admin:** Dashboard, quản lý người dùng, dịch vụ, thuốc, lịch hẹn, thanh toán
-- **Bác sĩ:** Trang bác sĩ (bacsi.jsp)
-- **Nhân viên:** Trang thanh toán (thanhtoan.jsp)
+- **Bác sĩ:** Trang bác sĩ (doctor.jsp)
+- **Nhân viên:** Trang lễ tân (staff.jsp)
 - **Khách hàng:** Xem dịch vụ, đặt lịch hẹn
 
 ---

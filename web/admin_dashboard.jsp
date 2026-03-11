@@ -1,32 +1,43 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+
+<div class="admin-layout">
+
     <%@ include file="admin_menu.jsp" %>
+    <link rel="stylesheet" href="css/admin_dashboard.css">
+
+    <div class="admin-content">
+
         <h2>ADMIN DASHBOARD</h2>
 
-        <p style="display:flex; align-items:center; gap:12px">Xin chào: <strong>${sessionScope.user.fullName}</strong>
-            (ADMIN)
-            <a href="logout" style="margin-left:12px;">Đăng xuất</a>
+        <p style="display:flex; align-items:center; gap:12px">
+            Xin chào: <strong>${sessionScope.user.fullName}</strong> (ADMIN)
+            
         </p>
 
         <hr>
+<div class="dashboard-cards">
 
-        <table border="1" cellpadding="10">
-            <tr>
-                <td>Tổng số User</td>
-                <td>${totalUsers}</td>
-            </tr>
-            <tr>
-                <td>Tổng số Doctor</td>
-                <td>${totalDoctors}</td>
-            </tr>
-            <tr>
-                <td>Lịch hẹn hôm nay</td>
-                <td>${totalAppointmentsToday}</td>
-            </tr>
+    <div class="card">
+        <h3>Tổng số User</h3>
+        <p>${totalUsers}</p>
+    </div>
 
-            <tr>
-                <td>Tổng số thuốc</td>
-                <td>${totalThuoc}</td>
-            </tr>
-        </table>
+    <div class="card">
+        <h3>Tổng số Doctor</h3>
+        <p>${totalDoctors}</p>
+    </div>
 
-        <hr>
+    <div class="card">
+        <h3>Lịch hẹn hôm nay</h3>
+        <p>${totalAppointmentsToday}</p>
+    </div>
+
+    <div class="card">
+        <h3>Tổng số thuốc</h3>
+        <p>${totalThuoc}</p>
+    </div>
+
+</div>
+    </div>
+
+</div>
