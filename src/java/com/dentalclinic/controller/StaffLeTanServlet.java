@@ -3,6 +3,7 @@ package com.dentalclinic.controller;
 import com.dentalclinic.dao.*;
 import com.dentalclinic.model.LichHen;
 import com.dentalclinic.model.LichHenDisplayDTO;
+import com.dentalclinic.model.NguoiDung;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
@@ -52,10 +53,32 @@ public class StaffLeTanServlet extends HttpServlet {
             response.sendRedirect("staff");
             return;
         }
+        if ("xong".equals(action)) {
+            int maLich = Integer.parseInt(request.getParameter("maLich"));
+            lhDAO.updateTrangThai(maLich, "Đã khám xong");
+            response.sendRedirect("staff");
+            return;
+        }
 
-        List<LichHenDisplayDTO> list = lhDAO.getAllDisplay();
+        String ngayParam = request.getParameter("ngay");
+        List<LichHenDisplayDTO> list;
+        if (ngayParam != null && !ngayParam.isEmpty()) {
+            System.out.println("[Staff] received filter date param: " + ngayParam);
+            try {
+                Date ngay = Date.valueOf(ngayParam);
+                list = lhDAO.getByDate(ngay);
+                System.out.println("[Staff] filtered list size: " + list.size());
+            } catch (IllegalArgumentException e) {
+                // bad format, show all
+                System.out.println("[Staff] invalid date format, showing all");
+                list = lhDAO.getAllDisplay();
+            }
+            request.setAttribute("filterNgay", ngayParam);
+        } else {
+            list = lhDAO.getAllDisplay();
+        }
         request.setAttribute("listLichHen", list);
-        request.setAttribute("customers", userDAO.getCustomers());
+        // gửi danh sách dịch vụ và bác sĩ cho phần đặt mới
         request.setAttribute("services", dvDAO.getAll());
         request.setAttribute("doctors", userDAO.getDoctors());
         request.getRequestDispatcher("staff_le_tan.jsp").forward(request, response);
@@ -68,7 +91,61 @@ public class StaffLeTanServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         if (!checkStaff(request, response)) return;
 
-        int maND = Integer.parseInt(request.getParameter("maND"));
+        // get customer's name as free text
+        String tenKhachHang = request.getParameter("tenKhachHang");
+        String email = request.getParameter("email");
+        String soDienThoai = request.getParameter("soDienThoai");
+        if (tenKhachHang == null || tenKhachHang.trim().isEmpty()) {
+            request.getSession().setAttribute("staffError", "Tên khách hàng không được để trống.");
+            response.sendRedirect("staff");
+            return;
+        }
+        tenKhachHang = tenKhachHang.trim();
+        if (email != null) email = email.trim();
+        if (soDienThoai != null) soDienThoai = soDienThoai.trim();
+
+        int maND;
+        // try to find existing customer by name
+        NguoiDung existing = userDAO.getCustomerByName(tenKhachHang);
+        if (existing != null) {
+            maND = existing.getMaND();
+            // update contact info if provided
+            boolean changed = false;
+            if (email != null && !email.isEmpty() && !email.equals(existing.getEmail())) {
+                existing.setEmail(email);
+                changed = true;
+            }
+            if (soDienThoai != null && !soDienThoai.isEmpty() && !soDienThoai.equals(existing.getSoDienThoai())) {
+                existing.setSoDienThoai(soDienThoai);
+                changed = true;
+            }
+            if (changed) {
+                userDAO.updateUser(existing, existing.getVaiTro().getMaVaiTro());
+            }
+        } else {
+            // create a new CUSTOMER entry using given info
+            NguoiDung nd = new NguoiDung();
+            nd.setHoTen(tenKhachHang);
+            nd.setEmail(email != null ? email : "");
+            nd.setMatKhau("");
+            nd.setSoDienThoai(soDienThoai != null ? soDienThoai : "");
+            Integer roleId = userDAO.getRoleIdByName("CUSTOMER");
+            if (roleId == null) {
+                request.getSession().setAttribute("staffError", "Không tìm thấy vai trò CUSTOMER.");
+                response.sendRedirect("staff");
+                return;
+            }
+            userDAO.addUser(nd, roleId);
+            // fetch again to get generated id
+            existing = userDAO.getCustomerByName(tenKhachHang);
+            if (existing == null) {
+                request.getSession().setAttribute("staffError", "Không thể tạo khách hàng mới.");
+                response.sendRedirect("staff");
+                return;
+            }
+            maND = existing.getMaND();
+        }
+
         int maBacSi = Integer.parseInt(request.getParameter("maBacSi"));
         Date ngayKham = Date.valueOf(request.getParameter("ngayKham"));
         String gioStr = request.getParameter("gioKham");
@@ -93,7 +170,7 @@ public class StaffLeTanServlet extends HttpServlet {
         lh.setGhiChu(ghiChu);
 
         lhDAO.insert(lh);
-
+        request.getSession().setAttribute("staffSuccess", "Đặt lịch thành công!");
         response.sendRedirect("staff");
     }
 }
