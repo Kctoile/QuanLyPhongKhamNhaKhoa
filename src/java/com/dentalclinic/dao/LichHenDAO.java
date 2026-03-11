@@ -80,13 +80,14 @@ public class LichHenDAO {
      */
     public List<LichHenDisplayDTO> getAllDisplay() {
         List<LichHenDisplayDTO> list = new ArrayList<>();
-        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
+        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, kh.Email AS EmailKhach, kh.SoDienThoai AS SDTKhach, "
+                + "bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
                 + "lh.NgayKham, lh.GioKham, lh.TrangThai, lh.GhiChu "
                 + "FROM LichHen lh "
                 + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
                 + "LEFT JOIN NguoiDung bs ON lh.MaBacSi = bs.MaND "
                 + "JOIN DichVu dv ON lh.MaDV = dv.MaDV "
-                + "ORDER BY lh.MaLich ASC";
+                + "ORDER BY lh.MaLich DESC"; // latest first
 
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -152,7 +153,8 @@ public class LichHenDAO {
      */
     public List<LichHenDisplayDTO> getByMaBacSi(int maBacSi) {
         List<LichHenDisplayDTO> list = new ArrayList<>();
-        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
+        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, kh.Email AS EmailKhach, kh.SoDienThoai AS SDTKhach, "
+                + "bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
                 + "lh.NgayKham, lh.GioKham, lh.TrangThai, lh.GhiChu "
                 + "FROM LichHen lh "
                 + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
@@ -179,7 +181,8 @@ public class LichHenDAO {
      */
     public List<LichHenDisplayDTO> getByMaBacSiHomNay(int maBacSi) {
         List<LichHenDisplayDTO> list = new ArrayList<>();
-        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
+        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, kh.Email AS EmailKhach, kh.SoDienThoai AS SDTKhach, "
+                + "bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
                 + "lh.NgayKham, lh.GioKham, lh.TrangThai, lh.GhiChu "
                 + "FROM LichHen lh "
                 + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
@@ -212,6 +215,91 @@ public class LichHenDAO {
         return 0;
     }
 
+    /**
+     * Lấy danh sách lịch hẹn cho một ngày cụ thể (dùng bởi lễ tân khi lọc theo ngày).
+     */
+    public List<LichHenDisplayDTO> getByDate(Date ngayKham) {
+        List<LichHenDisplayDTO> list = new ArrayList<>();
+        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, kh.Email AS EmailKhach, kh.SoDienThoai AS SDTKhach, "
+                + "bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
+                + "lh.NgayKham, lh.GioKham, lh.TrangThai, lh.GhiChu "
+                + "FROM LichHen lh "
+                + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
+                + "LEFT JOIN NguoiDung bs ON lh.MaBacSi = bs.MaND "
+                + "JOIN DichVu dv ON lh.MaDV = dv.MaDV "
+                + "WHERE CAST(lh.NgayKham AS DATE) = ? "
+                + "AND lh.TrangThai NOT IN (N'Đã hủy') "
+                + "ORDER BY lh.GioKham ASC";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, ngayKham);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapDisplayResultSet(rs));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    /**
+     * Lịch hẹn của khách hàng (theo MaND)
+     */
+    public List<LichHenDisplayDTO> getByMaND(int maND) {
+        List<LichHenDisplayDTO> list = new ArrayList<>();
+        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, kh.Email AS EmailKhach, kh.SoDienThoai AS SDTKhach, "
+                + "bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
+                + "lh.NgayKham, lh.GioKham, lh.TrangThai, lh.GhiChu "
+                + "FROM LichHen lh "
+                + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
+                + "LEFT JOIN NguoiDung bs ON lh.MaBacSi = bs.MaND "
+                + "JOIN DichVu dv ON lh.MaDV = dv.MaDV "
+                + "WHERE lh.MaND = ? AND lh.TrangThai NOT IN (N'Đã hủy') "
+                + "ORDER BY lh.NgayKham ASC, lh.GioKham ASC";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, maND);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapDisplayResultSet(rs));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Lịch hẹn của khách hàng trong một ngày cụ thể (dùng để lọc ngày)
+     */
+    public List<LichHenDisplayDTO> getByMaNDAndDate(int maND, Date ngayKham) {
+        List<LichHenDisplayDTO> list = new ArrayList<>();
+        String sql = "SELECT lh.MaLich, kh.HoTen AS TenKhachHang, kh.Email AS EmailKhach, kh.SoDienThoai AS SDTKhach, "
+                + "bs.HoTen AS TenBacSi, dv.TenDV AS TenDichVu, "
+                + "lh.NgayKham, lh.GioKham, lh.TrangThai, lh.GhiChu "
+                + "FROM LichHen lh "
+                + "JOIN NguoiDung kh ON lh.MaND = kh.MaND "
+                + "LEFT JOIN NguoiDung bs ON lh.MaBacSi = bs.MaND "
+                + "JOIN DichVu dv ON lh.MaDV = dv.MaDV "
+                + "WHERE lh.MaND = ? AND CAST(lh.NgayKham AS DATE) = ? AND lh.TrangThai NOT IN (N'Đã hủy') "
+                + "ORDER BY lh.GioKham ASC";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, maND);
+            ps.setDate(2, ngayKham);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapDisplayResultSet(rs));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     private LichHen mapResultSet(ResultSet rs) throws SQLException {
         LichHen l = new LichHen();
         l.setMaLich(rs.getInt("MaLich"));
@@ -229,6 +317,8 @@ public class LichHenDAO {
         LichHenDisplayDTO dto = new LichHenDisplayDTO();
         dto.setMaLich(rs.getInt("MaLich"));
         dto.setTenKhachHang(rs.getString("TenKhachHang"));
+        dto.setEmail(rs.getString("EmailKhach"));
+        dto.setSoDienThoai(rs.getString("SDTKhach"));
         dto.setTenBacSi(rs.getString("TenBacSi"));
         dto.setTenDichVu(rs.getString("TenDichVu"));
         dto.setNgayKham(rs.getDate("NgayKham"));
