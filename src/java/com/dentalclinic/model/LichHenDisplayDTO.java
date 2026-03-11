@@ -10,6 +10,8 @@ public class LichHenDisplayDTO {
 
     private int maLich;
     private String tenKhachHang;
+    private String email;
+    private String soDienThoai;
     private String tenBacSi;
     private String tenDichVu;
     private Date ngayKham;
@@ -21,6 +23,10 @@ public class LichHenDisplayDTO {
     public void setMaLich(int maLich) { this.maLich = maLich; }
     public String getTenKhachHang() { return tenKhachHang; }
     public void setTenKhachHang(String tenKhachHang) { this.tenKhachHang = tenKhachHang; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getSoDienThoai() { return soDienThoai; }
+    public void setSoDienThoai(String soDienThoai) { this.soDienThoai = soDienThoai; }
     public String getTenBacSi() { return tenBacSi; }
     public void setTenBacSi(String tenBacSi) { this.tenBacSi = tenBacSi; }
     public String getTenDichVu() { return tenDichVu; }
