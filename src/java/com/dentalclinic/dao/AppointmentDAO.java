@@ -239,4 +239,27 @@ public class AppointmentDAO {
         }
         return 0;
     }
+
+    public List<Appointment> searchAppointments(String query) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT a.*, p.full_name as patient_name, d.full_name as doctor_name "
+                + "FROM appointments a "
+                + "LEFT JOIN users p ON a.patient_id = p.user_id "
+                + "LEFT JOIN users d ON a.doctor_id = d.user_id "
+                + "WHERE p.full_name LIKE ? OR CAST(a.appointment_id AS VARCHAR) LIKE ? "
+                + "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + query + "%");
+            ps.setString(2, "%" + query + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

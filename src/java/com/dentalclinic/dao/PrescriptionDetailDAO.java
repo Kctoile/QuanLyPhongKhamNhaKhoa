@@ -49,6 +49,21 @@ public class PrescriptionDetailDAO {
         }
     }
 
+    public boolean addPrescriptionDetail(PrescriptionDetail detail) {
+        String sql = "INSERT INTO prescription_details (prescription_id, medicine_id, prescribed_quantity, unit_price) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, detail.getPrescriptionId());
+            ps.setInt(2, detail.getMedicineId());
+            ps.setInt(3, detail.getPrescribedQuantity());
+            ps.setDouble(4, detail.getUnitPrice());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public List<PrescriptionDetail> getDetailsByPrescriptionId(int prescriptionId) {
         List<PrescriptionDetail> list = new ArrayList<>();
         String sql = "SELECT pd.*, m.medicine_name, m.price, m.stock_quantity "

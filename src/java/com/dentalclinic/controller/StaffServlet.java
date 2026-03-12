@@ -53,6 +53,22 @@ public class StaffServlet extends HttpServlet {
             return;
         }
 
+        if ("search_appointments".equals(action)) {
+            String searchQuery = request.getParameter("query");
+            List<Appointment> appointments;
+            if (searchQuery == null || searchQuery.trim().isEmpty()) {
+                appointments = apptDAO.getAll();
+            } else {
+                appointments = apptDAO.searchAppointments(searchQuery);
+            }
+            for (Appointment a : appointments) {
+                a.setServices(apptServiceDAO.getServicesByAppointmentId(a.getAppointmentId()));
+            }
+            request.setAttribute("appointments", appointments);
+            request.getRequestDispatcher("staff.jsp").forward(request, response);
+            return;
+        }
+
         List<Appointment> list = apptDAO.getAll();
         for (Appointment a : list) {
             a.setServices(apptServiceDAO.getServicesByAppointmentId(a.getAppointmentId()));

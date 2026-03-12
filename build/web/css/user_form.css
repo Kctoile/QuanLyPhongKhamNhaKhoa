@@ -1,0 +1,74 @@
+.admin-content{
+    flex:1;
+    padding:30px;
+    background:#f4f6fb;
+}
+.admin-content{
+    flex:1;
+    padding:30px;
+    background:#f4f6fb;
+}
+
+/* chỉ form nổi lên */
+.admin-content form{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    max-width:520px;
+    margin-top:20px;
+}
+
+/* tiêu đề */
+.admin-content h2{
+    margin-bottom:10px;
+}
+
+/* nút quay lại */
+.admin-content a{
+    display:inline-block;
+    margin-bottom:10px;
+}
+
+/* input đẹp hơn */
+.admin-content input,
+.admin-content select{
+    width:100%;
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:6px;
+}
+
+/* button */
+.admin-content button{
+    margin-top:10px;
+    padding:10px 18px;
+    border:none;
+    border-radius:6px;
+    background:#4CAF50;
+    color:white;
+    font-weight:500;
+}
+
+/* bảng đẹp hơn */
+.admin-content table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+.admin-content th{
+    background:#f5f7fb;
+    font-weight:600;
+}
+
+.admin-content th,
+.admin-content td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+
+/* hover bảng */
+.admin-content tr:hover{
+    background:#fafafa;
+}

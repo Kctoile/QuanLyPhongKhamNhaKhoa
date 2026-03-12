@@ -1,0 +1,91 @@
+/* vùng nội dung bên phải menu */
+.content{
+    margin-left:240px;
+    padding:30px 40px;
+    background:#f3f4f6;
+    min-height:100vh;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* tiêu đề */
+.content h2{
+    margin-bottom:10px;
+    font-size:28px;
+}
+
+/* dòng xin chào */
+.content p{
+    color:#444;
+    margin-bottom:20px;
+}
+
+.content a{
+    color:#4f46e5;
+    text-decoration:none;
+}
+
+.content a:hover{
+    text-decoration:underline;
+}
+
+/* table dashboard */
+.content table{
+    border-collapse:separate;
+    border-spacing:20px;
+}
+
+/* mỗi dòng thành 1 card */
+.content table tr{
+    display:inline-block;
+    width:220px;
+}
+
+/* bỏ border table */
+.content table td{
+    border:none;
+    display:block;
+}
+
+/* tiêu đề card */
+.content table td:first-child{
+    background:#2563eb;
+    color:white;
+    padding:15px;
+    border-radius:8px 8px 0 0;
+    font-weight:600;
+    font-size:15px;
+}
+
+/* số thống kê */
+.content table td:last-child{
+    background:white;
+    padding:25px;
+    font-size:30px;
+    font-weight:bold;
+    border-radius:0 0 8px 8px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    text-align:center;
+}
+.dashboard-cards{
+    display:flex;
+    gap:20px;
+    margin-top:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    width:200px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.card h3{
+    font-size:16px;
+    margin-bottom:10px;
+}
+
+.card p{
+    font-size:28px;
+    font-weight:bold;
+}

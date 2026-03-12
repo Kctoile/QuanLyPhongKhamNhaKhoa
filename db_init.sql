@@ -10,6 +10,13 @@ CREATE TABLE roles (
     role_name NVARCHAR(50) NOT NULL
 );
 
+-- Insert roles
+INSERT INTO roles (role_name) VALUES
+('ADMIN'),
+('DOCTOR'),
+('STAFF'),
+('CUSTOMER');
+
 -- 2. Table: users
 CREATE TABLE users (
     user_id INT PRIMARY KEY IDENTITY(1,1),

@@ -74,43 +74,55 @@ public class DoctorServlet extends HttpServlet {
                 String[] medicineIds = request.getParameterValues("medicineIds");
                 String[] quantities = request.getParameterValues("quantities");
 
-                // 1. Save Examination Result
+                // Save Examination Result
                 ExaminationResult er = new ExaminationResult();
                 er.setAppointmentId(appointmentId);
                 er.setResultDetails(resultDetails);
                 int resultId = examDAO.saveResultReturnId(er);
 
                 if (resultId > 0) {
-                    // 2. Prescribe Services
+                    // Prescribe Services
                     if (serviceIds != null) {
                         prescribedServiceDAO.addPrescribedServices(resultId, serviceIds);
                     }
 
-                    // 3. Save Prescription
+                    // Save Prescription
                     Prescription p = new Prescription();
                     p.setResultId(resultId);
                     p.setInstructions(instructions);
                     int prescriptionId = prescriptionDAO.savePrescriptionReturnId(p);
 
-                    // 4. Save Prescription Details
-                    if (prescriptionId > 0 && medicineIds != null && quantities != null) {
+                    // Save Prescription Details
+                    if (prescriptionId > 0 && medicineIds != null && quantities != null && medicineIds.length == quantities.length) {
                         for (int i = 0; i < medicineIds.length; i++) {
                             try {
-                                int medId = Integer.parseInt(medicineIds[i]);
-                                int qty = Integer.parseInt(quantities[i]);
-                                if (qty > 0) {
-                                    Medicine m = medicineDAO.getMedicineById(medId);
-                                    if (m != null) {
-                                        detailDAO.addOrUpdateDetail(prescriptionId, medId, qty, m.getPrice());
+                                if (medicineIds[i] != null && !medicineIds[i].isEmpty() && quantities[i] != null && !quantities[i].isEmpty()) {
+                                    int medId = Integer.parseInt(medicineIds[i]);
+                                    int qty = Integer.parseInt(quantities[i]);
+                                    PrescriptionDetail detail = new PrescriptionDetail();
+                                    detail.setPrescriptionId(prescriptionId);
+                                    if (medId > 0 && qty > 0) {
+                                        if (medicineDAO.exists(medId)) { // Check if medicine exists in the database
+                                            detail.setMedicineId(medId);
+                                            detail.setQuantity(qty);
+                                            detailDAO.addPrescriptionDetail(detail);
+                                        } else {
+                                            System.err.println("Error: Medicine ID does not exist in the database. Medicine ID: " + medId);
+                                        }
+                                    } else {
+                                        System.err.println("Error: Invalid medicine ID or quantity. Medicine ID: " + medId + ", Quantity: " + qty);
                                     }
                                 }
-                            } catch (Exception e) {
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
                             }
                         }
+                    } else {
+                        System.err.println("Error: Mismatched or null medicineIds and quantities arrays.");
                     }
 
-                    // Update appointment status
-                    new AppointmentDAO().updateStatus(appointmentId, "Completed");
+                    response.sendRedirect("doctor");
+                    return;
                 }
             }
         } catch (Exception e) {

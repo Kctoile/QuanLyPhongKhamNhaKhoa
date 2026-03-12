@@ -1,101 +1,102 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<link rel="stylesheet" href="css/appointments.css"/>
-<!DOCTYPE html>
-<html>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+            <link rel="stylesheet" href="css/appointments.css" />
+            <!DOCTYPE html>
+            <html>
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Lịch Khám Của Tôi</title>
+            <head>
+                <meta charset="UTF-8">
+                <title>Lịch Khám Của Tôi</title>
 
-        <link rel="stylesheet" href="css/style.css">
+                <link rel="stylesheet" href="css/style.css">
 
-    </head>
+            </head>
 
-    <body>
+            <body>
 
-        <div class="page-wrapper">
+                <div class="page-wrapper">
 
-            <div class="card">
+                    <div class="card">
 
-                <div class="header">
+                        <div class="header">
 
-                    <h2>Lịch Khám Của Xin chào, ${sessionScope.user.fullName}</h2>
+                            <h2>Lịch Khám Của Bạn</h2>
 
-                    <div class="nav">
-                        <a href="${pageContext.request.contextPath}/">Trang chủ</a>
-                        <a href="booking">Đặt Lịch Khám</a>
-                        <a href="logout">Đăng xuất</a>
+                            <div class="nav">
+                                <a href="${pageContext.request.contextPath}/">Trang chủ</a>
+                                <a href="booking">Đặt Lịch Khám</a>
+                                <a href="logout">Đăng xuất</a>
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <c:choose>
+
+                            <c:when test="${not empty list}">
+
+                                <div class="table-wrapper">
+
+                                    <table class="appointment-table">
+
+                                        <tr>
+                                            <th>Mã Lịch</th>
+                                            <th>Bác sĩ</th>
+                                            <th>Ngày khám</th>
+                                            <th>Giờ khám</th>
+                                            <th>Dịch vụ</th>
+                                            <th>Phòng</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+
+                                        <c:forEach var="app" items="${list}">
+                                            <tr>
+
+                                                <td>${app.appointmentId}</td>
+
+                                                <td>${app.doctor != null ? app.doctor.fullName : 'Chưa phân công'}</td>
+
+                                                <td>
+                                                    <fmt:formatDate value="${app.appointmentDate}" pattern="dd/MM/yyyy" />
+                                                </td>
+
+                                                <td>${app.appointmentTime}</td>
+
+                                                <td>
+                                                    <c:forEach var="s" items="${app.services}">
+                                                        ${s.serviceName}<br/>
+                                                    </c:forEach>
+                                                </td>
+
+                                                <td>${app.room}</td>
+
+                                                <td>
+                                                    <span class="status ${app.status}">
+                                                ${app.status}
+                                            </span>
+                                                </td>
+
+                                            </tr>
+                                        </c:forEach>
+
+                                    </table>
+
+                                </div>
+
+                            </c:when>
+
+                            <c:otherwise>
+                                <p class="no-data">Bạn chưa có lịch hẹn nào.</p>
+                            </c:otherwise>
+
+                        </c:choose>
+
                     </div>
 
                 </div>
 
-                <hr>
+            </body>
 
-                <c:choose>
-
-                    <c:when test="${not empty list}">
-
-                        <div class="table-wrapper">
-
-                            <table class="appointment-table">
-
-                                <tr>
-                                    <th>Mã Lịch</th>
-                                    <th>Bác sĩ</th>
-                                    <th>Ngày khám</th>
-                                    <th>Giờ khám</th>
-                                    <th>Dịch vụ</th>
-                                    <th>Phòng</th>
-                                    <th>Trạng thái</th>
-                                </tr>
-
-                                <c:forEach var="app" items="${list}">
-                                    <tr>
-
-                                        <td>${app.appointmentId}</td>
-
-                                        <td>${app.doctor != null ? app.doctor.fullName : 'Chưa phân công'}</td>
-
-                                        <td>
-                                            <fmt:formatDate value="${app.appointmentDate}" pattern="dd/MM/yyyy" />
-                                        </td>
-
-                                        <td>${app.appointmentTime}</td>
-
-                                        <td>
-                                            <c:forEach var="s" items="${app.services}">
-                                                ${s.serviceName}<br/>
-                                            </c:forEach>
-                                        </td>
-
-                                        <td>${app.room}</td>
-
-                                        <td>
-                                            <span class="status ${app.status}">
-                                                ${app.status}
-                                            </span>
-                                        </td>
-
-                                    </tr>
-                                </c:forEach>
-
-                            </table>
-
-                        </div>
-
-                    </c:when>
-
-                    <c:otherwise>
-                        <p class="no-data">Bạn chưa có lịch hẹn nào.</p>
-                    </c:otherwise>
-
-                </c:choose>
-
-            </div>
-
-        </div>
-
-    </body>
-</html>
+            </html>

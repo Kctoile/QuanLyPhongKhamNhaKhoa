@@ -119,4 +119,19 @@ public class MedicineDAO {
         }
         return 0;
     }
+
+    public boolean exists(int medicineId) {
+        String sql = "SELECT COUNT(*) FROM medicines WHERE medicine_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, medicineId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

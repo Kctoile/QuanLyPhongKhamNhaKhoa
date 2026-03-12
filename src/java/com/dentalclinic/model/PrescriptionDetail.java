@@ -43,6 +43,10 @@ public class PrescriptionDetail {
         this.prescribedQuantity = prescribedQuantity;
     }
 
+    public void setQuantity(int quantity) {
+        this.prescribedQuantity = quantity;
+    }
+
     public int getPurchasedQuantity() {
         return purchasedQuantity;
     }

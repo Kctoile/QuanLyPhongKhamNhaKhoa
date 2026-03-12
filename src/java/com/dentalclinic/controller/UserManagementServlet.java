@@ -122,6 +122,10 @@ public class UserManagementServlet extends HttpServlet {
         }
         user.setAddress(address);
 
+        if (roleId != null) {
+            user.setRoleId(roleId);
+        }
+
         if ("update".equals(action)) {
             int id = Integer.parseInt(request.getParameter("userId"));
             user.setUserId(id);

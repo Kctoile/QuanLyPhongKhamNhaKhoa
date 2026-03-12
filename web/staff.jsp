@@ -112,48 +112,45 @@
                         <c:remove var="error" scope="session" />
                     </c:if>
 
+                    <div style="margin-bottom: 20px;">
+                        <label for="search">Tìm kiếm lịch hẹn:</label>
+                        <input type="text" id="search" placeholder="Nhập tên khách hàng hoặc mã lịch hẹn..." onkeyup="filterAppointments()" style="width: 250px; padding: 5px; margin-bottom: 10px;">
+                    </div>
+
+                    <script>
+                        function filterAppointments() {
+                            const input = document.getElementById('search').value.toLowerCase();
+                            const rows = document.querySelectorAll('table tr');
+                            rows.forEach((row, index) => {
+                                if (index === 0) return; // Skip header row
+                                const cells = row.getElementsByTagName('td');
+                                const customerName = cells[1] ? .textContent.toLowerCase() || '';
+                                const appointmentId = cells[0] ? .textContent.toLowerCase() || '';
+                                row.style.display = customerName.includes(input) || appointmentId.includes(input) || input === '' ? '' : 'none';
+                            });
+                        }
+                    </script>
+
                     <h3>Danh sách lịch hẹn</h3>
                     <table border="1" cellpadding="8">
                         <tr>
                             <th>Mã</th>
                             <th>Khách hàng</th>
                             <th>Bác sĩ</th>
-                            <th>Dịch vụ</th>
+                            <th>Ngày</th>
+                            <th>Giờ</th>
                             <th>Phòng</th>
-                            <th>Ngày - Giờ</th>
                             <th>Trạng thái</th>
-                            <th>Hành động</th>
                         </tr>
-                        <c:forEach var="l" items="${appointments}">
+                        <c:forEach var="appt" items="${appointments}">
                             <tr>
-                                <td>${l.appointmentId}</td>
-                                <td>${l.patient != null ? l.patient.fullName : 'Khách vãng lai'}</td>
-                                <td>${l.doctor != null ? l.doctor.fullName : 'Chưa phân công'}</td>
-                                <td>${l.room != null ? l.room : 'Chưa xếp'}</td>
-                                <td>
-                                    <fmt:formatDate value="${l.appointmentDate}" pattern="dd/MM/yyyy" /> ${l.appointmentTime}
-                                </td>
-                                <td>${l.status}</td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${l.status == 'Pending'}">
-                                            <form action="staff" method="post" style="display:inline;">
-                                                <input type="hidden" name="action" value="update_status">
-                                                <input type="hidden" name="appointmentId" value="${l.appointmentId}">
-                                                <input type="hidden" name="status" value="CONFIRMED"> Phòng: <input type="text" name="room" size="5" value="${l.room}" required>
-                                                <button type="submit" onclick="return confirm('Xác nhận lịch đặt trước này?');">Xác nhận</button>
-                                            </form>
-                                        </c:when>
-                                        <c:when test="${l.status == 'CONFIRMED'}">
-                                            <form action="staff" method="post" style="display:inline;">
-                                                <input type="hidden" name="action" value="update_status">
-                                                <input type="hidden" name="appointmentId" value="${l.appointmentId}">
-                                                <input type="hidden" name="status" value="Checked In"> Phòng: <input type="text" name="room" size="5" value="${l.room}" required>
-                                                <button type="submit" onclick="return confirm('Xác nhận khách đã tới (Checked In)?');">Check In</button>
-                                            </form>
-                                        </c:when>
-                                    </c:choose>
-                                </td>
+                                <td>${appt.appointmentId}</td>
+                                <td>${appt.patient.fullName}</td>
+                                <td>${appt.doctor.fullName}</td>
+                                <td>${appt.appointmentDate}</td>
+                                <td>${appt.appointmentTime}</td>
+                                <td>${appt.room}</td>
+                                <td>${appt.status}</td>
                             </tr>
                         </c:forEach>
                     </table>

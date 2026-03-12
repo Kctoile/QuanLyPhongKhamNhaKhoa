@@ -1,56 +1,56 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<link rel="stylesheet" href="css/booking.css"/>
-<!DOCTYPE html>
-<html>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <link rel="stylesheet" href="css/booking.css" />
+        <!DOCTYPE html>
+        <html>
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Đặt lịch khám</title>
+        <head>
+            <meta charset="UTF-8">
+            <title>Đặt lịch khám</title>
 
-        <link rel="stylesheet" href="css/style.css">
+            <link rel="stylesheet" href="css/style.css">
 
-    </head>
+        </head>
 
-    <body>
+        <body>
 
-        <div class="page-wrapper">
+            <div class="page-wrapper">
 
-            <div class="card">
+                <div class="card">
 
-                <h2 class="title">Đặt lịch khám</h2>
+                    <h2 class="title">Đặt lịch khám</h2>
 
-                <p class="welcome">Xin chào: ${sessionScope.user.fullName}</p>
+                    <p class="welcome">Xin chào: ${sessionScope.user.fullName}</p>
 
-                <div class="nav">
-                    <a href="${pageContext.request.contextPath}/">Trang chủ</a>
-                    <a href="logout">Đăng xuất</a>
-                </div>
+                    <div class="nav">
+                        <a href="${pageContext.request.contextPath}/">Trang chủ</a>
+                        <a href="logout">Đăng xuất</a>
+                    </div>
 
-                <hr>
+                    <hr>
 
-                <p class="error">${error}</p>
-                <p class="success">${sessionScope.successMessage}</p>
+                    <p class="error">${error}</p>
+                    <p class="success">${sessionScope.successMessage}</p>
 
-                <c:if test="${not empty sessionScope.successMessage}">
-                    <c:remove var="successMessage" scope="session" />
-                </c:if>
+                    <c:if test="${not empty sessionScope.successMessage}">
+                        <c:remove var="successMessage" scope="session" />
+                    </c:if>
 
-                <form action="booking" method="post" class="booking-form">
+                    <form action="booking" method="post" class="booking-form">
 
-                    <label>Chọn bác sĩ:</label>
-                    <select name="doctorId" required>
+                        <label>Chọn bác sĩ:</label>
+                        <select name="doctorId" required>
                         <option value="">-- Chọn bác sĩ --</option>
                         <c:forEach var="bs" items="${doctors}">
                             <option value="${bs.userId}">${bs.fullName}</option>
                         </c:forEach>
                     </select>
 
-                    <label>Ngày khám:</label>
-                    <input type="date" name="appointmentDate" required>
+                        <label>Ngày khám:</label>
+                        <input type="date" name="appointmentDate" required>
 
-                    <label>Giờ khám:</label>
-                    <select name="appointmentTime" required>
+                        <label>Giờ khám:</label>
+                        <select name="appointmentTime" required>
                         <option value="">-- Chọn giờ --</option>
                         <option value="08:00">08:00</option>
                         <option value="08:30">08:30</option>
@@ -77,9 +77,9 @@
                         <option value="20:00">20:00</option>
                     </select>
 
-                    <label>Dịch vụ (Có thể chọn nhiều):</label>
+                        <label>Dịch vụ (Có thể chọn nhiều):</label>
 
-                    <select name="serviceIds" multiple required class="service-select">
+                        <select name="serviceIds" multiple required class="service-select">
                         <c:forEach var="dv" items="${services}">
                             <option value="${dv.serviceId}">
                                 <c:choose>
@@ -94,18 +94,19 @@
                         </c:forEach>
                     </select>
 
-                    <p class="note">(Nhấn Ctrl để chọn nhiều dịch vụ)</p>
+                        <p class="note">(Nhấn Ctrl để chọn nhiều dịch vụ)</p>
 
-                    <label>Ghi chú:</label>
+                        <label>Ghi chú:</label>
 
-                    <textarea name="notes" rows="3"></textarea>
+                        <textarea name="notes" rows="3"></textarea>
 
-                    <button type="submit" class="btn-submit">Đặt lịch</button>
+                        <button type="submit" class="btn-submit">Đặt lịch</button>
 
-                </form>
+                    </form>
 
+                </div>
             </div>
-        </div>
 
-    </body>
-</html>
+        </body>
+
+        </html>
