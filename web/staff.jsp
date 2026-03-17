@@ -124,8 +124,8 @@
                             rows.forEach((row, index) => {
                                 if (index === 0) return; // Skip header row
                                 const cells = row.getElementsByTagName('td');
-                                const customerName = cells[1] ? .textContent.toLowerCase() || '';
-                                const appointmentId = cells[0] ? .textContent.toLowerCase() || '';
+                                const customerName = cells[1]?.textContent.toLowerCase() || '';
+                                const appointmentId = cells[0]?.textContent.toLowerCase() || '';
                                 row.style.display = customerName.includes(input) || appointmentId.includes(input) || input === '' ? '' : 'none';
                             });
                         }
@@ -151,6 +151,14 @@
                                 <td>${appt.appointmentTime}</td>
                                 <td>${appt.room}</td>
                                 <td>${appt.status}</td>
+                                <td>
+                                    <form method="post" action="staff">
+                                        <input type="hidden" name="appointmentId" value="${appt.appointmentId}" />
+                                        <button type="submit" name="action" value="checkin">Check In</button>
+                                        <button type="submit" name="action" value="checkout">Check Out</button>
+                                        <button type="submit" name="action" value="complete">Complete</button>
+                                    </form>
+                                </td>
                             </tr>
                         </c:forEach>
                     </table>
