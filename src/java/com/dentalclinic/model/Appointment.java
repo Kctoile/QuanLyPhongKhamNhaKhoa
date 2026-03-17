@@ -15,6 +15,11 @@ public class Appointment {
     private String status;
     private String notes;
     private String room;
+    private boolean isCheckedIn;
+    private boolean isCheckedOut;
+    private boolean isCompleted;
+    private boolean isInRoom;
+    private boolean isSuccessful;
 
     // For display/convenience when an appointment has multiple services
     private List<Service> services;
@@ -100,6 +105,46 @@ public class Appointment {
 
     public void setRoom(String room) {
         this.room = room;
+    }
+
+    public boolean isCheckedIn() {
+        return isCheckedIn;
+    }
+
+    public void setCheckedIn(boolean checkedIn) {
+        isCheckedIn = checkedIn;
+    }
+
+    public boolean isCheckedOut() {
+        return isCheckedOut;
+    }
+
+    public void setCheckedOut(boolean checkedOut) {
+        isCheckedOut = checkedOut;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
+    }
+
+    public boolean isInRoom() {
+        return isInRoom;
+    }
+
+    public void setInRoom(boolean inRoom) {
+        isInRoom = inRoom;
+    }
+
+    public boolean isSuccessful() {
+        return isSuccessful;
+    }
+
+    public void setSuccessful(boolean successful) {
+        isSuccessful = successful;
     }
 
     public List<Service> getServices() {

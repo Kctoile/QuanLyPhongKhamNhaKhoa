@@ -1,9 +1,11 @@
 package com.dentalclinic.model;
 
+import java.math.BigDecimal;
+
 public class Medicine {
     private int medicineId;
     private String medicineName;
-    private double price;
+    private BigDecimal price;
     private int stockQuantity;
 
     public Medicine() {
@@ -25,11 +27,11 @@ public class Medicine {
         this.medicineName = medicineName;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

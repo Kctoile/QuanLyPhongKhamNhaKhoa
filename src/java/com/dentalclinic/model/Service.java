@@ -1,10 +1,12 @@
 package com.dentalclinic.model;
 
+import java.math.BigDecimal;
+
 public class Service {
     private int serviceId;
     private String serviceName;
     private String description;
-    private double price;
+    private BigDecimal price;
     private Integer durationMinutes;
 
     public Service() {
@@ -34,11 +36,11 @@ public class Service {
         this.description = description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
