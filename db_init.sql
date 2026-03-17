@@ -53,6 +53,11 @@ CREATE TABLE appointments (
     status NVARCHAR(50) DEFAULT 'Pending', 
     notes NVARCHAR(MAX),
     room NVARCHAR(50), 
+    is_checked_in BIT DEFAULT 0,
+    is_checked_out BIT DEFAULT 0,
+    is_completed BIT DEFAULT 0,
+    is_in_room BIT DEFAULT 0,
+    is_successful BIT DEFAULT 0,
     FOREIGN KEY (patient_id) REFERENCES users(user_id),
     FOREIGN KEY (doctor_id) REFERENCES users(user_id)
 );
