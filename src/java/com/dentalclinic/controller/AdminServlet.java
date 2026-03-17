@@ -36,10 +36,15 @@ public class AdminServlet extends HttpServlet {
         AppointmentDAO apptDAO = new AppointmentDAO();
         MedicineDAO medicineDAO = new MedicineDAO();
 
-        request.setAttribute("totalUsers", userDAO.countUsers());
-        request.setAttribute("totalDoctors", userDAO.countDoctors());
-        request.setAttribute("totalAppointmentsToday", apptDAO.countAppointmentsToday());
-        request.setAttribute("totalThuoc", medicineDAO.countMedicines());
+        try {
+            request.setAttribute("totalUsers", userDAO.countUsers());
+            request.setAttribute("totalDoctors", userDAO.countDoctors());
+            request.setAttribute("totalAppointmentsToday", apptDAO.countAppointmentsToday());
+            request.setAttribute("totalThuoc", medicineDAO.countMedicines());
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error loading dashboard data: " + e.getMessage());
+        }
 
         request.getRequestDispatcher("admin_dashboard.jsp").forward(request, response);
     }

@@ -24,4 +24,28 @@ public class AppointmentAdminServlet extends HttpServlet {
 
         request.getRequestDispatcher("appointments_admin.jsp").forward(request, response);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || !"ADMIN".equals(session.getAttribute("role"))) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        String action = request.getParameter("action");
+        int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
+        AppointmentDAO dao = new AppointmentDAO();
+
+        if ("checkin".equals(action)) {
+            dao.updateStatus(appointmentId, "Checked In");
+        } else if ("checkout".equals(action)) {
+            dao.updateStatus(appointmentId, "Checked Out");
+        } else if ("complete".equals(action)) {
+            dao.updateStatus(appointmentId, "Completed");
+        }
+
+        response.sendRedirect("appointment_admin");
+    }
 }

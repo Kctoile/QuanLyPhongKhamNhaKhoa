@@ -142,8 +142,12 @@ public class StaffServlet extends HttpServlet {
                 appt.setRoom(room);
 
                 int newId = apptDAO.addAppointmentReturnId(appt);
-                if (newId > 0 && serviceIds != null) {
-                    apptServiceDAO.addServicesForAppointment(newId, serviceIds);
+                if (newId > 0) {
+                    if (serviceIds != null && serviceIds.length > 0) {
+                        apptServiceDAO.addServicesForAppointment(newId, serviceIds);
+                    } else {
+                        System.err.println("No services selected for appointment ID: " + newId);
+                    }
                 }
             }
         } catch (Exception e) {

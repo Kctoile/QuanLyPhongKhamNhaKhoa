@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 @WebServlet("/medicines")
@@ -64,7 +65,7 @@ public class MedicineManagementServlet extends HttpServlet {
 
         try {
             String medicineName = request.getParameter("medicineName");
-            double price = Double.parseDouble(request.getParameter("price"));
+            BigDecimal price = new BigDecimal(request.getParameter("price"));
             int stockQuantity = Integer.parseInt(request.getParameter("stockQuantity"));
 
             Medicine medicine = new Medicine();

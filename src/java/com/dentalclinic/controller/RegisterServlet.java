@@ -53,7 +53,7 @@ public class RegisterServlet extends HttpServlet {
             try {
                 user.setDob(java.sql.Date.valueOf(dobStr));
             } catch (IllegalArgumentException e) {
-                // Ignore parsing errors for now, or log them
+                System.err.println("Invalid date of birth: " + dobStr);
             }
         }
 

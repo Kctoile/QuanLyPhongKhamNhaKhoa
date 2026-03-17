@@ -102,13 +102,14 @@ public class UserManagementServlet extends HttpServlet {
         if (roleIdStr != null && !roleIdStr.trim().isEmpty()) {
             try {
                 roleId = Integer.parseInt(roleIdStr);
+                System.out.println("Received roleId: " + roleId); // Log the received roleId
             } catch (NumberFormatException e) {
-                // Handle error if roleId is not a valid number, e.g., log it or send an error
-                // response
                 System.err.println("Invalid roleId format: " + roleIdStr);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid role ID format.");
                 return;
             }
+        } else {
+            System.err.println("roleId is missing or empty.");
         }
 
         User user = new User();

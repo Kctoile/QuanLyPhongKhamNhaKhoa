@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 @WebServlet("/services")
@@ -65,7 +66,7 @@ public class ServiceManagementServlet extends HttpServlet {
         try {
             String serviceName = request.getParameter("serviceName");
             String description = request.getParameter("description");
-            double price = Double.parseDouble(request.getParameter("price"));
+            BigDecimal price = new BigDecimal(request.getParameter("price"));
             String durationStr = request.getParameter("durationMinutes");
             Integer durationMinutes = (durationStr != null && !durationStr.isEmpty()) ? Integer.parseInt(durationStr)
                     : null;
