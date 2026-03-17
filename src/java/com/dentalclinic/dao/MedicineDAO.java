@@ -2,7 +2,6 @@ package com.dentalclinic.dao;
 
 import com.dentalclinic.model.Medicine;
 import com.dentalclinic.utils.DBConnection;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +14,7 @@ public class MedicineDAO {
         Medicine medicine = new Medicine();
         medicine.setMedicineId(rs.getInt("medicine_id"));
         medicine.setMedicineName(rs.getString("medicine_name"));
-        medicine.setPrice(rs.getDouble("price"));
+        medicine.setPrice(rs.getBigDecimal("price"));
         medicine.setStockQuantity(rs.getInt("stock_quantity"));
         return medicine;
     }
@@ -55,7 +54,7 @@ public class MedicineDAO {
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, medicine.getMedicineName());
-            ps.setDouble(2, medicine.getPrice());
+            ps.setBigDecimal(2, medicine.getPrice());
             ps.setInt(3, medicine.getStockQuantity());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -69,7 +68,7 @@ public class MedicineDAO {
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, medicine.getMedicineName());
-            ps.setDouble(2, medicine.getPrice());
+            ps.setBigDecimal(2, medicine.getPrice());
             ps.setInt(3, medicine.getStockQuantity());
             ps.setInt(4, medicine.getMedicineId());
             return ps.executeUpdate() > 0;

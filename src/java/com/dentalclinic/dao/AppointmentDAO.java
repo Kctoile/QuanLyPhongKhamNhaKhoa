@@ -3,11 +3,10 @@ package com.dentalclinic.dao;
 import com.dentalclinic.model.Appointment;
 import com.dentalclinic.model.User;
 import com.dentalclinic.utils.DBConnection;
-
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,14 +32,30 @@ public class AppointmentDAO {
 
     private Appointment mapResultSetToAppointment(ResultSet rs) throws Exception {
         Appointment appt = new Appointment();
-        appt.setAppointmentId(rs.getInt("appointment_id"));
-        appt.setPatientId(rs.getObject("patient_id") != null ? rs.getInt("patient_id") : null);
-        appt.setDoctorId(rs.getObject("doctor_id") != null ? rs.getInt("doctor_id") : null);
-        appt.setAppointmentDate(rs.getDate("appointment_date"));
-        appt.setAppointmentTime(rs.getTime("appointment_time"));
-        appt.setStatus(rs.getString("status"));
-        appt.setNotes(rs.getString("notes"));
-        appt.setRoom(rs.getString("room"));
+        if (hasColumn(rs, "appointment_id")) {
+            appt.setAppointmentId(rs.getInt("appointment_id"));
+        }
+        if (hasColumn(rs, "patient_id")) {
+            appt.setPatientId(rs.getObject("patient_id") != null ? rs.getInt("patient_id") : null);
+        }
+        if (hasColumn(rs, "doctor_id")) {
+            appt.setDoctorId(rs.getObject("doctor_id") != null ? rs.getInt("doctor_id") : null);
+        }
+        if (hasColumn(rs, "appointment_date")) {
+            appt.setAppointmentDate(rs.getDate("appointment_date"));
+        }
+        if (hasColumn(rs, "appointment_time")) {
+            appt.setAppointmentTime(rs.getTime("appointment_time"));
+        }
+        if (hasColumn(rs, "status")) {
+            appt.setStatus(rs.getString("status"));
+        }
+        if (hasColumn(rs, "notes")) {
+            appt.setNotes(rs.getString("notes"));
+        }
+        if (hasColumn(rs, "room")) {
+            appt.setRoom(rs.getString("room"));
+        }
 
         // Map Patient object if joined
         if (hasColumn(rs, "patient_name")) {
@@ -183,6 +198,45 @@ public class AppointmentDAO {
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, room);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateCheckInStatus(int appointmentId, boolean isCheckedIn) {
+        String sql = "UPDATE appointments SET is_checked_in = ? WHERE appointment_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBoolean(1, isCheckedIn);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateCheckOutStatus(int appointmentId, boolean isCheckedOut) {
+        String sql = "UPDATE appointments SET is_checked_out = ? WHERE appointment_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBoolean(1, isCheckedOut);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateCompletionStatus(int appointmentId, boolean isCompleted) {
+        String sql = "UPDATE appointments SET is_completed = ? WHERE appointment_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBoolean(1, isCompleted);
             ps.setInt(2, appointmentId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {

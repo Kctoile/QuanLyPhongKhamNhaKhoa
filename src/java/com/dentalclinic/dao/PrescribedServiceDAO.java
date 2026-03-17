@@ -67,7 +67,7 @@ public class PrescribedServiceDAO {
                 s.setServiceId(rs.getInt("service_id"));
                 s.setServiceName(rs.getString("service_name"));
                 s.setDescription(rs.getString("description"));
-                s.setPrice(rs.getDouble("price"));
+                s.setPrice(rs.getBigDecimal("price"));
                 s.setDurationMinutes(rs.getObject("duration_minutes") != null ? rs.getInt("duration_minutes") : null);
                 services.add(s);
             }

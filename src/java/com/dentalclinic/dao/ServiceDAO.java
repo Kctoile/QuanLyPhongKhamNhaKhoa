@@ -2,7 +2,6 @@ package com.dentalclinic.dao;
 
 import com.dentalclinic.model.Service;
 import com.dentalclinic.utils.DBConnection;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +15,7 @@ public class ServiceDAO {
         service.setServiceId(rs.getInt("service_id"));
         service.setServiceName(rs.getString("service_name"));
         service.setDescription(rs.getString("description"));
-        service.setPrice(rs.getDouble("price"));
+        service.setPrice(rs.getBigDecimal("price"));
         service.setDurationMinutes(rs.getObject("duration_minutes") != null ? rs.getInt("duration_minutes") : null);
         return service;
     }
@@ -57,7 +56,7 @@ public class ServiceDAO {
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, service.getServiceName());
             ps.setString(2, service.getDescription());
-            ps.setDouble(3, service.getPrice());
+            ps.setBigDecimal(3, service.getPrice());
             if (service.getDurationMinutes() == null)
                 ps.setNull(4, java.sql.Types.INTEGER);
             else
@@ -75,7 +74,7 @@ public class ServiceDAO {
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, service.getServiceName());
             ps.setString(2, service.getDescription());
-            ps.setDouble(3, service.getPrice());
+            ps.setBigDecimal(3, service.getPrice());
             if (service.getDurationMinutes() == null)
                 ps.setNull(4, java.sql.Types.INTEGER);
             else

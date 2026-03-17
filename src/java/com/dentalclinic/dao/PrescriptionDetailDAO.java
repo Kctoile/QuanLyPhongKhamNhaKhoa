@@ -85,7 +85,7 @@ public class PrescriptionDetailDAO {
                 Medicine m = new Medicine();
                 m.setMedicineId(rs.getInt("medicine_id"));
                 m.setMedicineName(rs.getString("medicine_name"));
-                m.setPrice(rs.getDouble("price"));
+                m.setPrice(rs.getBigDecimal("price"));
                 m.setStockQuantity(rs.getInt("stock_quantity"));
                 pd.setMedicine(m);
 
