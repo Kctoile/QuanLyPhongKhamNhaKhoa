@@ -28,13 +28,13 @@
                             <form action="staff" method="post">
                                 <input type="hidden" name="action" value="book">
                                 <div style="margin-bottom:12px;">
-                                    <label for="patientId">Khách hàng:</label><br>
-                                    <select name="patientId" id="patientId" style="width:100%; padding:6px;" required>
-                    <option value="">-- Chọn khách hàng --</option>
-                    <c:forEach var="c" items="${customers}">
-                        <option value="${c.userId}">${c.fullName}</option>
-                    </c:forEach>
-                </select>
+                                    <label for="patientName">Khách hàng:</label><br>
+                                    <input type="text" name="patientName" id="patientName" list="customerList" style="width:100%; padding:6px;" placeholder="Nhập tên khách hàng (hoặc chọn từ danh sách)..." required>
+                                    <datalist id="customerList">
+                                        <c:forEach var="c" items="${customers}">
+                                            <option value="${c.fullName}"></option>
+                                        </c:forEach>
+                                    </datalist>
                                 </div>
                                 <div style="margin-bottom:12px;">
                                     <label for="doctorId">Bác sĩ:</label><br>

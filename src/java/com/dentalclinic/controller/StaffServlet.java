@@ -115,12 +115,34 @@ public class StaffServlet extends HttpServlet {
             } else if ("book".equals(action)) {
                 UserDAO userDAO = new UserDAO();
                 ServiceDAO serviceDAO = new ServiceDAO();
-                int patientId = Integer.parseInt(request.getParameter("patientId"));
+                String patientName = request.getParameter("patientName");
                 int doctorId = Integer.parseInt(request.getParameter("doctorId"));
                 Date apptDate = Date.valueOf(request.getParameter("appointmentDate"));
                 Time apptTime = Time.valueOf(request.getParameter("appointmentTime") + ":00");
                 String room = request.getParameter("room");
                 String[] serviceIds = request.getParameterValues("serviceIds");
+
+                int patientId = -1;
+                User existingCustomer = userDAO.getCustomerByName(patientName);
+                if (existingCustomer != null) {
+                    patientId = existingCustomer.getUserId();
+                } else {
+                    User newCustomer = new User();
+                    newCustomer.setFullName(patientName);
+                    newCustomer.setEmail("walkin_" + System.currentTimeMillis() + "@clinic.local");
+                    newCustomer.setPassword("123456");
+                    newCustomer.setPhone("");
+                    patientId = userDAO.addUserReturnId(newCustomer, 4);
+                }
+
+                if (patientId == -1) {
+                    request.setAttribute("error", "Lỗi tạo thông tin khách hàng mới. Vui lòng thử lại.");
+                    request.setAttribute("customers", userDAO.getCustomers());
+                    request.setAttribute("doctors", userDAO.getDoctors());
+                    request.setAttribute("services", serviceDAO.getAll());
+                    request.getRequestDispatcher("staff.jsp").forward(request, response);
+                    return;
+                }
 
                 // Kiểm tra lịch trống của bác sĩ
                 boolean slotTaken = apptDAO.isDoctorSlotTaken(doctorId, apptDate, apptTime);

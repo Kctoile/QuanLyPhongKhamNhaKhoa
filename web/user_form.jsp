@@ -49,7 +49,7 @@
                             </option>
                             <option value="2" ${user.role !=null && user.role.roleId==2 ? 'selected' : '' }>DOCTOR
                             </option>
-                            <option value="3" ${user.role !=null && user.role.roleId==3 ? 'selected' : '' }>STAFF
+                            <option value="4" ${user.role !=null && user.role.roleId==4 ? 'selected' : '' }>STAFF
                             </option>
                             <option value="5" ${user.role !=null && user.role.roleId==5 ? 'selected' : '' }>CUSTOMER
                             </option>

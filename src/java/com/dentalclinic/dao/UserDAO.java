@@ -194,7 +194,7 @@ public class UserDAO {
 
     public boolean addUser(User user, Integer roleId) {
         String sql = "INSERT INTO users (full_name, email, password, phone, role_id, gender, dob, address, display_order) "
-                + "SELECT ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(MAX(display_order), 0) + 1 FROM users";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(display_order), 0) + 1 FROM users))";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getFullName());
@@ -213,6 +213,35 @@ public class UserDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public int addUserReturnId(User user, Integer roleId) {
+        String sql = "INSERT INTO users (full_name, email, password, phone, role_id, gender, dob, address, display_order) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(display_order), 0) + 1 FROM users))";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
+            ps.setString(4, user.getPhone());
+            if (roleId == null)
+                ps.setNull(5, java.sql.Types.INTEGER);
+            else
+                ps.setInt(5, roleId);
+            ps.setString(6, user.getGender());
+            ps.setDate(7, user.getDob());
+            ps.setString(8, user.getAddress());
+            if (ps.executeUpdate() > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public boolean updateUser(User user, Integer roleId) {
