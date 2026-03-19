@@ -54,7 +54,7 @@
 
         <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
             <tr style="background-color: #f2f2f2;">
-                <th>ID</th>
+                <th>STT</th>
                 <th>Họ tên</th>
                 <th>Email</th>
                 <th>Phone</th>
@@ -65,7 +65,7 @@
             <!-- Hiển thị toàn bộ user -->
             <c:forEach var="u" items="${users}" varStatus="status">
                 <tr>
-                    <td>${u.userId}</td>
+                    <td style="text-align:center;">${u.displayOrder}</td>
                     <td>${u.fullName}</td>
                     <td>${u.email}</td>
                     <td>${u.phone}</td>

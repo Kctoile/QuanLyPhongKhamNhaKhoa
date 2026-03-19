@@ -3,6 +3,7 @@ package com.dentalclinic.model;
 import java.sql.Timestamp;
 
 public class ExaminationResult {
+
     private int resultId;
     private Integer appointmentId;
     private Appointment appointment; // Navigation property

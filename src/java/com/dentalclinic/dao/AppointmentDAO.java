@@ -91,7 +91,7 @@ public class AppointmentDAO {
                 + "FROM appointments a "
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
                 + "LEFT JOIN users d ON a.doctor_id = d.user_id "
-                + "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+                + "ORDER BY a.appointment_date DESC, a.appointment_time DESC, a.appointment_id ASC";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()) {
@@ -249,7 +249,7 @@ public class AppointmentDAO {
         List<Appointment> list = new ArrayList<>();
         String sql = "SELECT a.*, d.full_name as doctor_name FROM appointments a "
                 + "LEFT JOIN users d ON a.doctor_id = d.user_id "
-                + "WHERE a.patient_id = ? ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+                + "WHERE a.patient_id = ? ORDER BY a.appointment_date DESC, a.appointment_time DESC, a.appointment_id ASC";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, patientId);
@@ -267,7 +267,7 @@ public class AppointmentDAO {
         List<Appointment> list = new ArrayList<>();
         String sql = "SELECT a.*, p.full_name as patient_name FROM appointments a "
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
-                + "WHERE a.doctor_id = ? ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+                + "WHERE a.doctor_id = ? ORDER BY a.appointment_date DESC, a.appointment_time DESC, a.appointment_id ASC";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, doctorId);
@@ -294,6 +294,60 @@ public class AppointmentDAO {
         return 0;
     }
 
+    public boolean deleteAppointment(int appointmentId) {
+        String sql1 = "DELETE FROM prescription_details WHERE prescription_id IN "
+                    + "(SELECT prescription_id FROM prescriptions WHERE result_id IN "
+                    + "(SELECT result_id FROM examination_results WHERE appointment_id = ?))";
+        String sql2 = "DELETE FROM prescriptions WHERE result_id IN "
+                    + "(SELECT result_id FROM examination_results WHERE appointment_id = ?)";
+        String sql3 = "DELETE FROM prescribed_services WHERE result_id IN "
+                    + "(SELECT result_id FROM examination_results WHERE appointment_id = ?)";
+        String sql4 = "DELETE FROM examination_results WHERE appointment_id = ?";
+        String sql5 = "DELETE FROM appointment_services WHERE appointment_id = ?";
+        String sql6 = "DELETE FROM appointments WHERE appointment_id = ?";
+
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+            
+            try (PreparedStatement ps1 = conn.prepareStatement(sql1);
+                 PreparedStatement ps2 = conn.prepareStatement(sql2);
+                 PreparedStatement ps3 = conn.prepareStatement(sql3);
+                 PreparedStatement ps4 = conn.prepareStatement(sql4);
+                 PreparedStatement ps5 = conn.prepareStatement(sql5);
+                 PreparedStatement ps6 = conn.prepareStatement(sql6)) {
+                 
+                ps1.setInt(1, appointmentId); ps1.executeUpdate();
+                ps2.setInt(1, appointmentId); ps2.executeUpdate();
+                ps3.setInt(1, appointmentId); ps3.executeUpdate();
+                ps4.setInt(1, appointmentId); ps4.executeUpdate();
+                ps5.setInt(1, appointmentId); ps5.executeUpdate();
+                
+                ps6.setInt(1, appointmentId);
+                boolean result = ps6.executeUpdate() > 0;
+                
+                conn.commit();
+                return result;
+            } catch (Exception e) {
+                conn.rollback();
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
+
     public List<Appointment> searchAppointments(String query) {
         List<Appointment> list = new ArrayList<>();
         String sql = "SELECT a.*, p.full_name as patient_name, d.full_name as doctor_name "
@@ -301,7 +355,7 @@ public class AppointmentDAO {
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
                 + "LEFT JOIN users d ON a.doctor_id = d.user_id "
                 + "WHERE p.full_name LIKE ? OR CAST(a.appointment_id AS VARCHAR) LIKE ? "
-                + "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+                + "ORDER BY a.appointment_date DESC, a.appointment_time DESC, a.appointment_id ASC";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + query + "%");

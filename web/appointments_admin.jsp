@@ -12,20 +12,20 @@
             <div style="padding:20px;">
                 <h2>QUẢN LÝ LỊCH HẸN (TỔNG HỢP)</h2>
                 <p><em>Chỉ xem toàn bộ lịch sử lịch hẹn trong hệ thống. Lễ tân sẽ thao tác đổi trạng thái.</em></p>
-                 <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
                     <tr style="background-color: #f2f2f2;">
-                        <th>ID</th>
-                        <th>Bệnh nhân</th>
-                        <th>Bác sĩ</th>
-                        <th>Ngày hẹn</th>
-                        <th>Giờ hẹn</th>
-                        <th>Trạng thái</th>
+                        <th>STT</th>
+                        <th onclick="sortTable(1)" style="cursor:pointer;" title="Click để sắp xếp">Bệnh nhân &#x21D5;</th>
+                        <th onclick="sortTable(2)" style="cursor:pointer;" title="Click để sắp xếp">Bác sĩ &#x21D5;</th>
+                        <th onclick="sortTable(3)" style="cursor:pointer;" title="Click để sắp xếp">Ngày hẹn &#x21D5;</th>
+                        <th onclick="sortTable(4)" style="cursor:pointer;" title="Click để sắp xếp">Giờ hẹn &#x21D5;</th>
+                        <th onclick="sortTable(5)" style="cursor:pointer;" title="Click để sắp xếp">Trạng thái &#x21D5;</th>
                         <th>Phòng ghi chú</th>
+                        <th style="width: 100px;">Hành động</th>
                     </tr>
 
-                    <c:forEach var="h" items="${list}">
+                    <c:forEach var="h" items="${list}" varStatus="status">
                         <tr>
-                            <td>${h.appointmentId}</td>
+                            <td style="text-align:center;">${status.count}</td>
                             <td>${h.patient != null ? h.patient.fullName : 'Khách vãng lai'}</td>
                             <td>${h.doctor != null ? h.doctor.fullName : 'Chưa phân công'}</td>
                             <td>
@@ -39,6 +39,14 @@
                                 </span>
                             </td>
                             <td>${h.room}</td>
+                            <td style="text-align: center;">
+                                <a href="appointment_admin?action=edit&id=${h.appointmentId}" style="color:#007bff; text-decoration:none; margin-right:8px; display:inline-block;" title="Sửa">Sửa</a>
+                                <form method="post" action="appointment_admin" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lịch hẹn này không?');">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="appointmentId" value="${h.appointmentId}">
+                                    <button type="submit" style="color:#dc3545; background:none; border:none; padding:0; cursor:pointer; font-size:16px;" title="Xóa">Xóa</button>
+                                </form>
+                            </td>
                         </tr>
                     </c:forEach>
                 </table>
@@ -60,6 +68,64 @@
                         const appointmentId = cells[0]?.textContent.toLowerCase() || '';
                         row.style.display = customerName.includes(input) || appointmentId.includes(input) || input === '' ? '' : 'none';
                     });
+                }
+
+                function sortTable(n) {
+                    var table = document.querySelector("table");
+                    var rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                    switching = true;
+                    // Mặc định sắp xếp tăng dần
+                    dir = "asc"; 
+                    while (switching) {
+                        switching = false;
+                        rows = table.rows;
+                        for (i = 1; i < (rows.length - 1); i++) {
+                            shouldSwitch = false;
+                            x = rows[i].getElementsByTagName("TD")[n];
+                            y = rows[i + 1].getElementsByTagName("TD")[n];
+                            
+                            let valX = x.textContent.trim().toLowerCase();
+                            let valY = y.textContent.trim().toLowerCase();
+                            
+                            // Nếu đang ráng sắp xếp ID
+                            if (n === 0) {
+                                valX = parseInt(valX) || 0;
+                                valY = parseInt(valY) || 0;
+                            } 
+                            // Nếu đang sắp xếp Ngày (định dạng dd/mm/yyyy)
+                            else if (n === 3) {
+                                let partsX = valX.split('/');
+                                let partsY = valY.split('/');
+                                if (partsX.length === 3 && partsY.length === 3) {
+                                    valX = partsX[2] + partsX[1] + partsX[0];
+                                    valY = partsY[2] + partsY[1] + partsY[0];
+                                }
+                            }
+                            
+                            if (dir == "asc") {
+                                if (valX > valY) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            } else if (dir == "desc") {
+                                if (valX < valY) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (shouldSwitch) {
+                            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                            switching = true;
+                            switchcount ++; 
+                        } else {
+                            // Nếu duyệt hết mà chưa đổi chỗ lần nào và đang là chiều asc, thì đổi thành desc và duyệt lại
+                            if (switchcount == 0 && dir == "asc") {
+                                dir = "desc";
+                                switching = true;
+                            }
+                        }
+                    }
                 }
             </script>
         </div>

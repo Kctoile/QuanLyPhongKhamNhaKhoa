@@ -1,198 +1,133 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html>
-<html>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+            <link rel="stylesheet" href="css/doctor.css">
+            <!DOCTYPE html>
+            <html>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Bác sĩ - Khám bệnh</title>
-    <link rel="stylesheet" href="css/doctor.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
+            <head>
+                <meta charset="UTF-8">
+                <title>Bác sĩ - Khám bệnh</title>
+            </head>
 
-<body>
-    <div class="doctor-layout">
-        <header class="doctor-header">
-            <div class="header-title">
-                <h2>Cổng Thông Tin Bác Sĩ</h2>
-                <p>Quản lý lịch khám & Kê đơn thuốc</p>
-            </div>
-            <div class="header-actions">
-                <span class="welcome-text">Xin chào, <span class="user-name">BS. ${sessionScope.user.fullName}</span></span>
-                <a href="${pageContext.request.contextPath}/" class="btn-link"><i class="fas fa-home"></i> Trang chủ</a>
-                <a href="logout" class="btn-link btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
-            </div>
-        </header>
+            <body>
 
-        <main class="doctor-content">
-            <c:if test="${not empty error}">
-                <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i> ${error}
-                </div>
-            </c:if>
+                <div class="doctor-container">
 
-            <section class="list-section">
-                <div class="data-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-calendar-check"></i> Danh sách lịch hẹn khám của tôi</h3>
+                    <div class="doctor-header">
+                        <h2>TRANG BÁC SĨ</h2>
+                        <p>Xin chào: ${sessionScope.user.fullName}</p>
+
+                        <div class="doctor-nav">
+                            <a href="${pageContext.request.contextPath}/">Trang chủ</a>
+                            <a href="logout">Đăng xuất</a>
+                        </div>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
+                    <hr>
+
+                    <c:if test="${not empty error}">
+                        <div class="error">${error}</div>
+                    </c:if>
+
+                    <div class="card">
+                        <h3>Danh sách lịch khám của tôi</h3>
+
+                        <table>
+                            <tr>
+                                <th>Mã lịch hẹn</th>
+                                <th>Bệnh nhân</th>
+                                <th>Dịch vụ</th>
+                                <th>Phòng</th>
+                                <th>Ngày - Giờ</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                            <c:forEach var="l" items="${appointments}">
                                 <tr>
-                                    <th class="col-id">Mã</th>
-                                    <th class="col-patient">Bệnh nhân</th>
-                                    <th>Dịch vụ</th>
-                                    <th>Phòng</th>
-                                    <th>Thời gian</th>
-                                    <th>Trạng thái</th>
-                                    <th style="text-align: center;">Hành động</th>
+                                    <td>${l.appointmentId}</td>
+                                    <td>${l.patient != null ? l.patient.fullName : 'Khách vãng lai'}</td>
+                                    <td>
+                                        <c:forEach var="s" items="${l.services}">
+                                            ${s.serviceName}<br />
+                                        </c:forEach>
+                                    </td>
+                                    <td>${l.room}</td>
+                                    <td>
+                                        <fmt:formatDate value="${l.appointmentDate}" pattern="dd/MM/yyyy" /> ${l.appointmentTime}
+                                    </td>
+                                    <td>${l.status}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${l.status == 'Checked In'}">
+                                                <a href="doctor?form=1&appointmentId=${l.appointmentId}">Khám & Kê Đơn</a>
+                                            </c:when>
+                                            <c:when test="${l.status == 'Completed'}">
+                                                <a href="doctor?form=2&appointmentId=${l.appointmentId}">Xem Kết Quả</a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                Không có hành động
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="l" items="${appointments}">
-                                    <tr>
-                                        <td class="col-id">#${l.appointmentId}</td>
-                                        <td class="col-patient">${l.patient != null ? l.patient.fullName : 'Khách vãng lai'}</td>
-                                        <td>
-                                            <div class="service-tags">
-                                                <c:forEach var="s" items="${l.services}">
-                                                    <span class="tag">${s.serviceName}</span>
-                                                </c:forEach>
-                                            </div>
-                                        </td>
-                                        <td><span class="room-badge">${l.room}</span></td>
-                                        <td>
-                                            <div class="datetime-info">
-                                                <i class="far fa-calendar-alt"></i> <fmt:formatDate value="${l.appointmentDate}" pattern="dd/MM/yyyy" />
-                                                <br>
-                                                <i class="far fa-clock"></i> ${l.appointmentTime}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="status-badge status-${fn:replace(l.status, ' ', '-')}">
-                                                ${l.status}
-                                            </span>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <c:choose>
-                                                <c:when test="${l.status == 'Checked In'}">
-                                                    <a href="doctor?form=1&appointmentId=${l.appointmentId}" class="btn-action primary" title="Khám & Kê Đơn">
-                                                        <i class="fas fa-stethoscope"></i> Khám Bệnh
-                                                    </a>
-                                                </c:when>
-                                                <c:when test="${l.status == 'Completed'}">
-                                                    <a href="doctor?form=2&appointmentId=${l.appointmentId}" class="btn-action info" title="Xem Kết Quả">
-                                                        <i class="fas fa-clipboard-list"></i> Xem KQ
-                                                    </a>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span class="text-muted"><i class="fas fa-minus"></i></span>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                                <c:if test="${empty appointments}">
-                                    <tr>
-                                        <td colspan="7" class="empty-state">
-                                            <i class="fas fa-inbox empty-icon"></i>
-                                            <p>Chưa có lịch khám nào được phân công cho bạn.</p>
-                                        </td>
-                                    </tr>
-                                </c:if>
-                            </tbody>
+                            </c:forEach>
                         </table>
                     </div>
-                </div>
-            </section>
+                    <c:if test="${empty appointments}">
+                        <p>Chưa có lịch khám nào.</p>
+                    </c:if>
 
-            <c:if test="${param.form == '1' && not empty param.appointmentId}">
-                <section class="form-section fade-in">
-                    <div class="data-card form-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-file-medical"></i> Khám bệnh & Kê đơn thuốc</h3>
-                            <span class="badge-id">Mã lịch hẹn: #${param.appointmentId}</span>
-                        </div>
-                        
-                        <form action="doctor" method="post" class="medical-form">
-                            <input type="hidden" name="action" value="save_exam">
-                            <input type="hidden" name="appointmentId" value="${param.appointmentId}">
+                    <c:if test="${param.form == '1' && not empty param.appointmentId}">
+                        <hr>
+                        <div class="card form-section">
+                            <h3>Nhập kết quả khám & Tạo đơn thuốc - Mã lịch hẹn: ${param.appointmentId}</h3>
+                            <form action="doctor" method="post">
+                                <input type="hidden" name="action" value="save_exam">
+                                <input type="hidden" name="appointmentId" value="${param.appointmentId}">
 
-                            <div class="form-group">
-                                <label><i class="fas fa-notes-medical"></i> Kết quả chẩn đoán bệnh lý:</label>
-                                <textarea name="resultDetails" rows="4" class="form-control" required placeholder="Nhập chi tiết chẩn đoán, tình trạng sức khỏe..."></textarea>
-                            </div>
+                                <p><strong>Kết quả khám:</strong><br>
+                                    <textarea name="resultDetails" rows="4" cols="60" required placeholder="Nhập chẩn đoán, kết quả khám..."></textarea>
+                                </p>
 
-                            <div class="form-row">
-                                <div class="form-group col-half">
-                                    <label><i class="fas fa-syringe"></i> Chỉ định dịch vụ lâm sàng thêm:</label>
-                                    <select name="prescribedServiceIds" multiple class="form-control select-multiple">
+                                <p><strong>Chỉ định dịch vụ thêm (nếu có):</strong><br>
+                                    <select name="prescribedServiceIds" multiple style="width: 300px; height: 100px;">
                                         <c:forEach var="dv" items="${services}">
                                             <option value="${dv.serviceId}">${dv.serviceName}</option>
                                         </c:forEach>
-                                    </select>
-                                    <small class="help-text"><i class="fas fa-info-circle"></i> Giữ phím Ctrl/Cmd để chọn nhiều dịch vụ</small>
-                                </div>
-                                <div class="form-group col-half">
-                                    <label><i class="fas fa-book-medical"></i> Hướng dẫn liệu trình / Lời dặn chung:</label>
-                                    <textarea name="instructions" rows="4" class="form-control" placeholder="Ví dụ: Uống thuốc sau ăn 30 phút, kiêng đồ ngọt, tái khám sau 1 tháng..."></textarea>
-                                </div>
-                            </div>
+                                    </select><br><small>(Ctrl + Click để chọn nhiều)</small>
+                                </p>
 
-                            <div class="prescription-section">
-                                <h4 class="section-subtitle"><i class="fas fa-pills"></i> Kê đơn thuốc điều trị</h4>
-                                <div class="medicines-grid">
-                                    <c:forEach var="m" items="${medicines}">
-                                        <div class="medicine-item">
-                                            <input type="hidden" name="medicineIds" value="${m.medicineId}">
-                                            <div class="med-info">
-                                                <span class="med-name">${m.medicineName}</span>
-                                                <div class="med-meta">
-                                                    <span class="stock">Kho: ${m.stockQuantity}</span>
-                                                    <span class="price"><fmt:formatNumber value="${m.price}" type="number" /> đ/viên</span>
-                                                </div>
-                                            </div>
-                                            <div class="med-action">
-                                                <label>Số lượng:</label>
-                                                <input type="number" name="quantities" class="form-control qty-input" min="0" max="${m.stockQuantity}" value="0">
-                                            </div>
-                                        </div>
-                                    </c:forEach>
-                                </div>
-                                <c:if test="${empty medicines}">
-                                    <div class="alert alert-warning">
-                                        <i class="fas fa-exclamation-triangle"></i> Kho thuốc hiện đang trống. Cần liên hệ quản trị viên cập nhật danh mục thuốc.
+                                <p><strong>Kê Đơn Thuốc - Hướng dẫn chung:</strong><br>
+                                    <input type="text" name="instructions" size="70" placeholder="VD: Uống sau bữa ăn, ngày 3 lần...">
+                                </p>
+
+                                <p><strong>Kê thuốc:</strong></p>
+                                <c:forEach var="m" items="${medicines}">
+                                    <div class="thuoc-row">
+                                        <input type="hidden" name="medicineIds" value="${m.medicineId}"> ${m.medicineName} (Tồn kho: ${m.stockQuantity}) -
+                                        <fmt:formatNumber value="${m.price}" type="number" /> đ/đơn vị:
+                                        <input type="number" name="quantities" min="0" value="0" style="width:60px">
                                     </div>
+                                </c:forEach>
+                                <c:if test="${empty medicines}">
+                                    <p><em>Chưa có thuốc trong danh mục. Admin cần thêm thuốc trước.</em></p>
                                 </c:if>
-                            </div>
-
-                            <div class="form-actions">
-                                <button type="submit" class="btn-submit"><i class="fas fa-check-circle"></i> Hoàn Thành & Lưu Hồ Sơ Medical</button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-            </c:if>
-
-            <c:if test="${param.form == '2' && not empty param.appointmentId}">
-                <section class="result-section fade-in">
-                    <div class="data-card result-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-clipboard-check"></i> Chi tiết hồ sơ bệnh án</h3>
-                            <span class="badge-id">Mã lịch hẹn: #${param.appointmentId}</span>
+                                <p><button type="submit">Hoàn thành khám & Lưu đơn thuốc</button></p>
+                            </form>
                         </div>
-                        <div class="result-content">
-                            ${appointmentResult}
-                        </div>
-                    </div>
-                </section>
-            </c:if>
-        </main>
-    </div>
-</body>
+                    </c:if>
 
-</html>
+                    <c:if test="${param.form == '2' && not empty param.appointmentId}">
+                        <hr>
+                        <div class="card form-section">
+                            <h3>Kết quả khám - Mã lịch hẹn: ${param.appointmentId}</h3>
+                            <p>${appointmentResult}</p>
+                        </div>
+                    </c:if>
+
+
+                </div>
+            </body>
+
+            </html>

@@ -2,6 +2,35 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/AdminServlet.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/PrescriptionDetail.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/index.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/StaffServlet.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/META-INF/context.xml</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/utils/DBConnection.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/LoginServlet.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/LogoutServlet.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/dao/ExaminationResultDAO.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/RecomputeDisplayOrderServlet.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/dao/UserDAO.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/dao/PrescriptionDetailDAO.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/ExaminationResult.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/register.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/login.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/coming_soon.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/controller/RegisterServlet.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/ClinicConfig.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/Role.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/Medicine.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/PrescribedService.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/admin_dashboard.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/Prescription.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/Appointment.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/User.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/AppointmentService.java</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/web/admin_menu.jsp</file>
+            <file>file:/C:/Users/Public/MyProject/QuanLyPhongKhamNhaKhoa/src/java/com/dentalclinic/model/Service.java</file>
+        </group>
     </open-files>
 </project-private>
