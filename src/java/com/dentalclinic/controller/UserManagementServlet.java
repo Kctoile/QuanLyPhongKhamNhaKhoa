@@ -54,6 +54,7 @@ public class UserManagementServlet extends HttpServlet {
         } else if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             dao.deleteUser(id);
+            dao.recomputeDisplayOrderByIdAsc();
             response.sendRedirect("users");
         } else {
             List<User> list = dao.getAllUsers();

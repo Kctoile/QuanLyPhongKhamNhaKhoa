@@ -53,6 +53,16 @@ public class StaffServlet extends HttpServlet {
             return;
         }
 
+        if ("edit".equals(action)) {
+            int apptId = Integer.parseInt(request.getParameter("id"));
+            Appointment appt = apptDAO.getAppointmentById(apptId);
+            request.setAttribute("appointment", appt);
+            request.setAttribute("customers", userDAO.getCustomers());
+            request.setAttribute("doctors", userDAO.getDoctors());
+            request.getRequestDispatcher("edit_appointment_staff.jsp").forward(request, response);
+            return;
+        }
+
         if ("search_appointments".equals(action)) {
             String searchQuery = request.getParameter("query");
             List<Appointment> appointments;
@@ -112,7 +122,36 @@ public class StaffServlet extends HttpServlet {
                     if (room != null && !room.isEmpty()) {
                         apptDAO.updateRoom(id, room);
                     }
-            } else if ("book".equals(action)) {
+                } else if ("checkin".equals(action)) {
+                    int id = Integer.parseInt(request.getParameter("appointmentId"));
+                    apptDAO.updateStatus(id, "Checked In");
+                } else if ("checkout".equals(action)) {
+                    int id = Integer.parseInt(request.getParameter("appointmentId"));
+                    apptDAO.updateStatus(id, "Checked Out");
+                } else if ("complete".equals(action)) {
+                    int id = Integer.parseInt(request.getParameter("appointmentId"));
+                    apptDAO.updateStatus(id, "Completed");
+                } else if ("delete".equals(action)) {
+                    int id = Integer.parseInt(request.getParameter("appointmentId"));
+                    apptDAO.deleteAppointment(id);
+                } else if ("update".equals(action)) {
+                    int id = Integer.parseInt(request.getParameter("appointmentId"));
+                    Appointment appt = apptDAO.getAppointmentById(id);
+                    if(appt != null) {
+                        appt.setPatientId(Integer.parseInt(request.getParameter("patientId")));
+                        appt.setDoctorId(Integer.parseInt(request.getParameter("doctorId")));
+                        appt.setAppointmentDate(java.sql.Date.valueOf(request.getParameter("appointmentDate")));
+                        
+                        String timeStr = request.getParameter("appointmentTime");
+                        if (timeStr.length() == 5) timeStr += ":00"; // hh:mm -> hh:mm:ss
+                        appt.setAppointmentTime(java.sql.Time.valueOf(timeStr));
+                        
+                        appt.setStatus(request.getParameter("status"));
+                        appt.setRoom(request.getParameter("room"));
+                        appt.setNotes(request.getParameter("notes"));
+                        apptDAO.updateAppointment(appt);
+                    }
+                } else if ("book".equals(action)) {
                 UserDAO userDAO = new UserDAO();
                 ServiceDAO serviceDAO = new ServiceDAO();
                 String patientName = request.getParameter("patientName");

@@ -134,17 +134,18 @@
                     <h3>Danh sách lịch hẹn</h3>
                     <table border="1" cellpadding="8">
                         <tr>
-                            <th>Mã</th>
+                            <th>STT</th>
                             <th>Khách hàng</th>
                             <th>Bác sĩ</th>
                             <th>Ngày</th>
                             <th>Giờ</th>
                             <th>Phòng</th>
                             <th>Trạng thái</th>
+                            <th>Hành động</th>
                         </tr>
-                        <c:forEach var="appt" items="${appointments}">
+                        <c:forEach var="appt" items="${appointments}" varStatus="status">
                             <tr>
-                                <td>${appt.appointmentId}</td>
+                                <td style="text-align:center;">${status.count}</td>
                                 <td>${appt.patient.fullName}</td>
                                 <td>${appt.doctor.fullName}</td>
                                 <td>${appt.appointmentDate}</td>
@@ -152,11 +153,17 @@
                                 <td>${appt.room}</td>
                                 <td>${appt.status}</td>
                                 <td>
-                                    <form method="post" action="staff">
+                                    <form method="post" action="staff" style="margin-bottom: 5px;">
                                         <input type="hidden" name="appointmentId" value="${appt.appointmentId}" />
                                         <button type="submit" name="action" value="checkin">Check In</button>
                                         <button type="submit" name="action" value="checkout">Check Out</button>
                                         <button type="submit" name="action" value="complete">Complete</button>
+                                    </form>
+                                    <a href="staff?action=edit&id=${appt.appointmentId}" style="color:#007bff; text-decoration:none; margin-right:8px;" title="Sửa">Sửa</a>
+                                    <form method="post" action="staff" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lịch hẹn này không?');">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="appointmentId" value="${appt.appointmentId}">
+                                        <button type="submit" style="color:#dc3545; background:none; border:none; padding:0; cursor:pointer;" title="Xóa">Xóa</button>
                                     </form>
                                 </td>
                             </tr>

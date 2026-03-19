@@ -48,7 +48,7 @@
                                             <td>${s.serviceName}</td>
                                             <td>${s.description}</td>
                                             <td>
-                                                <fmt:formatNumber value="${s.price}" type="currency" currencySymbol="VND" />
+                                                <fmt:formatNumber value="${s.price}" type="currency" currencySymbol="₫" />
                                             </td>
                                             <td>${s.durationMinutes != null ? s.durationMinutes : 'N/A'}</td>
                                             <td class="action-buttons">

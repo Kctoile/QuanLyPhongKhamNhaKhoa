@@ -33,10 +33,10 @@
                     <div class="card">
                         <h3>Danh sách lịch khám của tôi</h3>
 
-                        <table class="doctor-table">
+                        <table>
                             <tr>
-                                <th>Mã</th>
-                                <th>Khách hàng</th>
+                                <th>Mã lịch hẹn</th>
+                                <th>Bệnh nhân</th>
                                 <th>Dịch vụ</th>
                                 <th>Phòng</th>
                                 <th>Ngày - Giờ</th>
@@ -58,9 +58,17 @@
                                     </td>
                                     <td>${l.status}</td>
                                     <td>
-                                        <c:if test="${l.status == 'Checked In'}">
-                                            <a href="doctor?form=1&appointmentId=${l.appointmentId}">Khám & Kê Đơn</a>
-                                        </c:if>
+                                        <c:choose>
+                                            <c:when test="${l.status == 'Checked In'}">
+                                                <a href="doctor?form=1&appointmentId=${l.appointmentId}">Khám & Kê Đơn</a>
+                                            </c:when>
+                                            <c:when test="${l.status == 'Completed'}">
+                                                <a href="doctor?form=2&appointmentId=${l.appointmentId}">Xem Kết Quả</a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                Không có hành động
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -84,10 +92,10 @@
 
                                 <p><strong>Chỉ định dịch vụ thêm (nếu có):</strong><br>
                                     <select name="prescribedServiceIds" multiple style="width: 300px; height: 100px;">
-                                <c:forEach var="dv" items="${services}">
-                                    <option value="${dv.serviceId}">${dv.serviceName}</option>
-                                </c:forEach>
-                            </select><br><small>(Ctrl + Click để chọn nhiều)</small>
+                                        <c:forEach var="dv" items="${services}">
+                                            <option value="${dv.serviceId}">${dv.serviceName}</option>
+                                        </c:forEach>
+                                    </select><br><small>(Ctrl + Click để chọn nhiều)</small>
                                 </p>
 
                                 <p><strong>Kê Đơn Thuốc - Hướng dẫn chung:</strong><br>
@@ -107,6 +115,14 @@
                                 </c:if>
                                 <p><button type="submit">Hoàn thành khám & Lưu đơn thuốc</button></p>
                             </form>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${param.form == '2' && not empty param.appointmentId}">
+                        <hr>
+                        <div class="card form-section">
+                            <h3>Kết quả khám - Mã lịch hẹn: ${param.appointmentId}</h3>
+                            <p>${appointmentResult}</p>
                         </div>
                     </c:if>
 

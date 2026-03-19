@@ -93,6 +93,37 @@
 
                         </c:choose>
 
+                        <div class="booking-history">
+                            <h3>Lịch sử đặt lịch</h3>
+                            <table>
+                                <tr>
+                                    <th>Mã lịch hẹn</th>
+                                    <th>Ngày - Giờ</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                                <c:forEach var="app" items="${bookingHistory}">
+                                    <tr>
+                                        <td>${app.appointmentId}</td>
+                                        <td>
+                                            <fmt:formatDate value="${app.appointmentDate}" pattern="dd/MM/yyyy" /> ${app.appointmentTime}
+                                        </td>
+                                        <td>
+                                            <c:forEach var="service" items="${app.services}">
+                                                ${service.serviceName}<br />
+                                            </c:forEach>
+                                        </td>
+                                        <td>
+                                            <span class="status ${app.status}">${app.status}</span>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                            <c:if test="${empty bookingHistory}">
+                                <p>Chưa có lịch sử đặt lịch.</p>
+                            </c:if>
+                        </div>
+
                     </div>
 
                 </div>
