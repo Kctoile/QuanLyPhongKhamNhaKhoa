@@ -43,6 +43,25 @@
                     </c:forEach>
                 </table>
             </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="search">Tìm kiếm lịch hẹn:</label>
+                <input type="text" id="search" placeholder="Nhập tên khách hàng hoặc mã lịch hẹn..." onkeyup="filterAppointments()" style="width: 250px; padding: 5px; margin-bottom: 10px;">
+            </div>
+
+            <script>
+                function filterAppointments() {
+                    const input = document.getElementById('search').value.toLowerCase();
+                    const rows = document.querySelectorAll('table tr');
+                    rows.forEach((row, index) => {
+                        if (index === 0) return; // Skip header row
+                        const cells = row.getElementsByTagName('td');
+                        const customerName = cells[1]?.textContent.toLowerCase() || '';
+                        const appointmentId = cells[0]?.textContent.toLowerCase() || '';
+                        row.style.display = customerName.includes(input) || appointmentId.includes(input) || input === '' ? '' : 'none';
+                    });
+                }
+            </script>
         </div>
     </div>
 </div>
