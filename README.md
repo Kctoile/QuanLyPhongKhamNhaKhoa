@@ -84,8 +84,8 @@ ant run
 
 | Vai trò   | Email              | Mật khẩu |
 |-----------|--------------------|----------|
-| Admin     | admin@gmail.com    | admin    |
-| Bác sĩ    | doctor1@gmail.com  | 123      |
+| Admin     | admin@dental.com   | admin    |
+| Bác sĩ    | doctor1@dental.com | 123      |
 | Nhân viên | domixue@gmail.com  | 123      |
 | Khách hàng| hung@gmail.com     | 123      |
 
