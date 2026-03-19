@@ -6,6 +6,8 @@ import com.dentalclinic.utils.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExaminationResultDAO {
 
@@ -21,6 +23,8 @@ public class ExaminationResultDAO {
                 er.setAppointmentId(rs.getInt("appointment_id"));
                 er.setResultDetails(rs.getString("result_details"));
                 er.setExaminationDate(rs.getTimestamp("examination_date"));
+                er.setPrescription(rs.getString("prescription"));
+                er.setDoctorNotes(rs.getString("doctor_notes"));
                 return er;
             }
         } catch (Exception e) {
@@ -63,5 +67,31 @@ public class ExaminationResultDAO {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public List<ExaminationResult> getResultsByPatientId(int patientId) {
+        String sql = "SELECT er.result_id, er.appointment_id, er.result_details, er.examination_date, er.prescription, er.doctor_notes " +
+                 "FROM examination_results er " +
+                 "JOIN appointments a ON er.appointment_id = a.appointment_id " +
+                 "WHERE a.patient_id = ?";
+        List<ExaminationResult> results = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, patientId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ExaminationResult er = new ExaminationResult();
+                er.setResultId(rs.getInt("result_id"));
+                er.setAppointmentId(rs.getInt("appointment_id"));
+                er.setResultDetails(rs.getString("result_details"));
+                er.setExaminationDate(rs.getTimestamp("examination_date"));
+                er.setPrescription(rs.getString("prescription"));
+                er.setDoctorNotes(rs.getString("doctor_notes"));
+                results.add(er);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return results;
     }
 }

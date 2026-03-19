@@ -2,7 +2,9 @@ package com.dentalclinic.controller;
 
 import com.dentalclinic.dao.AppointmentDAO;
 import com.dentalclinic.dao.AppointmentServiceDAO;
+import com.dentalclinic.dao.ExaminationResultDAO;
 import com.dentalclinic.model.Appointment;
+import com.dentalclinic.model.ExaminationResult;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
@@ -34,6 +36,26 @@ public class AppointmentServlet extends HttpServlet {
 
         AppointmentDAO dao = new AppointmentDAO();
         AppointmentServiceDAO apptServiceDAO = new AppointmentServiceDAO();
+        ExaminationResultDAO examDAO = new ExaminationResultDAO();
+
+        String action = request.getParameter("action");
+        if ("view_result".equals(action)) {
+            String apptIdStr = request.getParameter("appointmentId");
+            if (apptIdStr != null) {
+                int appointmentId = Integer.parseInt(apptIdStr);
+                Appointment appt = dao.getAppointmentById(appointmentId);
+                // Security check to ensure the appointment belongs to the logged in user
+                if (appt != null && appt.getPatient() != null && appt.getPatient().getUserId() == userId) {
+                    ExaminationResult result = examDAO.getResultByAppointmentId(appointmentId);
+                    request.setAttribute("result", result);
+                    request.setAttribute("appt", appt);
+                    request.getRequestDispatcher("customer_result.jsp").forward(request, response);
+                    return;
+                }
+            }
+            response.sendRedirect("appointments");
+            return;
+        }
 
         List<Appointment> list = dao.getAppointmentsByPatient(userId);
 

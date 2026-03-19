@@ -8,167 +8,197 @@
                 <head>
                     <meta charset="UTF-8">
                     <title>Lễ tân - Quản lý lịch hẹn</title>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    <link rel="stylesheet" href="css/staff.css">
                 </head>
 
                 <body>
+                    <div class="staff-layout">
+                        <header class="staff-header">
+                            <div class="header-title">
+                                <h2>TRANG LỄ TÂN</h2>
+                                <p>Quản lý lịch hẹn & Đón tiếp khách hàng</p>
+                            </div>
+                            <div class="header-actions">
+                                <span class="welcome-text">Xin chào, <span class="user-name">${sessionScope.user.fullName}</span></span>
+                                <a href="${pageContext.request.contextPath}/" class="btn-link"><i class="fas fa-home"></i> Trang chủ</a>
+                                <a href="logout" class="btn-link btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                            </div>
+                        </header>
 
-                    <h2>TRANG LỄ TÂN</h2>
-                    <p>Xin chào: ${sessionScope.user.fullName}</p>
-                    <a href="${pageContext.request.contextPath}/">Trang chủ</a> |
-                    <a href="logout">Đăng xuất</a>
-                    <hr>
-
-                    <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-                        <div style="border: 1px solid #ccc; border-radius: 8px; padding: 24px; width: 420px; background: #f9f9f9; box-shadow: 0 2px 8px #eee;">
-                            <h3 style="text-align:center; margin-bottom: 18px; color:#007bff;">Đặt lịch khám tại chỗ cho khách</h3>
+                        <main class="staff-content">
                             <c:if test="${not empty sessionScope.error}">
-                                <div style="color:red; margin-bottom:10px;">${sessionScope.error}</div>
+                                <div class="alert alert-error">
+                                    <i class="fas fa-exclamation-circle"></i> ${sessionScope.error}
+                                </div>
                                 <c:remove var="error" scope="session" />
                             </c:if>
-                            <form action="staff" method="post">
-                                <input type="hidden" name="action" value="book">
-                                <div style="margin-bottom:12px;">
-                                    <label for="patientName">Khách hàng:</label><br>
-                                    <input type="text" name="patientName" id="patientName" list="customerList" style="width:100%; padding:6px;" placeholder="Nhập tên khách hàng (hoặc chọn từ danh sách)..." required>
-                                    <datalist id="customerList">
-                                        <c:forEach var="c" items="${customers}">
-                                            <option value="${c.fullName}"></option>
-                                        </c:forEach>
-                                    </datalist>
+
+                            <c:if test="${not empty sessionScope.success}">
+                                <script>
+                                    alert("${sessionScope.success}");
+                                </script>
+                                <c:remove var="success" scope="session" />
+                            </c:if>
+
+                            <div class="booking-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-calendar-plus"></i> Đặt lịch khám tại chỗ cho khách</h3>
                                 </div>
-                                <div style="margin-bottom:12px;">
-                                    <label for="doctorId">Bác sĩ:</label><br>
-                                    <select name="doctorId" id="doctorId" style="width:100%; padding:6px;" required>
-                    <option value="">-- Chọn bác sĩ --</option>
-                    <c:forEach var="bs" items="${doctors}">
-                        <option value="${bs.userId}">${bs.fullName}</option>
-                    </c:forEach>
-                </select>
+
+                                <form action="staff" method="post">
+                                    <input type="hidden" name="action" value="book">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="patientName">Khách hàng:</label>
+                                            <input type="text" name="patientName" id="patientName" class="form-control" list="customerList" placeholder="Nhập tên khách hàng..." required>
+                                            <datalist id="customerList">
+                                <c:forEach var="c" items="${customers}">
+                                    <option value="${c.fullName}"></option>
+                                </c:forEach>
+                            </datalist>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="doctorId">Bác sĩ:</label>
+                                            <select name="doctorId" id="doctorId" class="form-control" required>
+                                <option value="">-- Chọn bác sĩ --</option>
+                                <c:forEach var="bs" items="${doctors}">
+                                    <option value="${bs.userId}">${bs.fullName}</option>
+                                </c:forEach>
+                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="appointmentDate">Ngày khám:</label>
+                                            <input type="date" name="appointmentDate" id="appointmentDate" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="appointmentTime">Giờ khám:</label>
+                                            <select name="appointmentTime" id="appointmentTime" class="form-control" required>
+                                <option value="">-- Chọn giờ --</option>
+                                <option value="08:00">08:00</option>
+                                <option value="08:30">08:30</option>
+                                <option value="09:00">09:00</option>
+                                <option value="09:30">09:30</option>
+                                <option value="10:00">10:00</option>
+                                <option value="10:30">10:30</option>
+                                <option value="11:00">11:00</option>
+                                <option value="11:30">11:30</option>
+                                <option value="13:00">13:00</option>
+                                <option value="13:30">13:30</option>
+                                <option value="14:00">14:00</option>
+                                <option value="14:30">14:30</option>
+                                <option value="15:00">15:00</option>
+                                <option value="15:30">15:30</option>
+                                <option value="16:00">16:00</option>
+                                <option value="16:30">16:30</option>
+                                <option value="17:00">17:00</option>
+                                <option value="17:30">17:30</option>
+                                <option value="18:00">18:00</option>
+                                <option value="18:30">18:30</option>
+                                <option value="19:00">19:00</option>
+                                <option value="19:30">19:30</option>
+                                <option value="20:00">20:00</option>
+                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="serviceIds">Dịch vụ:</label>
+                                            <select name="serviceIds" id="serviceIds" multiple class="form-control" required style="height: 120px;">
+                                <c:forEach var="dv" items="${services}">
+                                    <option value="${dv.serviceId}">${dv.serviceName} - <fmt:formatNumber value="${dv.price}" type="currency" currencySymbol="₫" /></option>
+                                </c:forEach>
+                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-primary"><i class="fas fa-calendar-check"></i> Đặt lịch ngay</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="list-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-list-alt"></i> Danh sách lịch hẹn</h3>
                                 </div>
-                                <div style="margin-bottom:12px;">
-                                    <label for="appointmentDate">Ngày khám:</label><br>
-                                    <input type="date" name="appointmentDate" id="appointmentDate" style="width:100%; padding:6px;" required>
+
+                                <div style="margin-bottom: 25px; display: flex; align-items: center;">
+                                    <label for="search" style="font-weight: 600; font-size: 15px;">Tìm kiếm lịch hẹn:</label>
+                                    <input type="text" id="search" class="form-control" placeholder="Nhập tên khách hàng hoặc mã lịch hẹn..." onkeyup="filterAppointments()" style="width: 320px; display: inline-block; margin-left: 15px;">
                                 </div>
-                                <div style="margin-bottom:12px;">
-                                    <label for="appointmentTime">Giờ khám:</label><br>
-                                    <select name="appointmentTime" id="appointmentTime" style="width:100%; padding:6px;" required>
-                    <option value="">-- Chọn giờ --</option>
-                    <option value="08:00">08:00</option>
-                    <option value="08:30">08:30</option>
-                    <option value="09:00">09:00</option>
-                    <option value="09:30">09:30</option>
-                    <option value="10:00">10:00</option>
-                    <option value="10:30">10:30</option>
-                    <option value="11:00">11:00</option>
-                    <option value="11:30">11:30</option>
-                    <option value="13:00">13:00</option>
-                    <option value="13:30">13:30</option>
-                    <option value="14:00">14:00</option>
-                    <option value="14:30">14:30</option>
-                    <option value="15:00">15:00</option>
-                    <option value="15:30">15:30</option>
-                    <option value="16:00">16:00</option>
-                    <option value="16:30">16:30</option>
-                    <option value="17:00">17:00</option>
-                    <option value="17:30">17:30</option>
-                    <option value="18:00">18:00</option>
-                    <option value="18:30">18:30</option>
-                    <option value="19:00">19:00</option>
-                    <option value="19:30">19:30</option>
-                    <option value="20:00">20:00</option>
-                </select>
+
+                                <script>
+                                    function filterAppointments() {
+                                        const input = document.getElementById('search').value.toLowerCase();
+                                        const rows = document.querySelectorAll('.data-table tbody tr');
+                                        rows.forEach((row, index) => {
+                                            const cells = row.getElementsByTagName('td');
+                                            const customerName = cells[1] ? .textContent.toLowerCase() || '';
+                                            const appointmentId = cells[0] ? .textContent.toLowerCase() || '';
+                                            row.style.display = customerName.includes(input) || appointmentId.includes(input) || input === '' ? '' : 'none';
+                                        });
+                                    }
+                                </script>
+
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Khách hàng</th>
+                                                <th>Bác sĩ</th>
+                                                <th>Ngày</th>
+                                                <th>Giờ</th>
+                                                <th>Phòng</th>
+                                                <th style="text-align:center;">Trạng thái</th>
+                                                <th style="text-align:center;">Hành động</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach var="appt" items="${appointments}" varStatus="status">
+                                                <tr>
+                                                    <td style="text-align:center;">${status.count}</td>
+                                                    <td style="font-weight: 500;">${appt.patient.fullName}</td>
+                                                    <td>BS. ${appt.doctor.fullName}</td>
+                                                    <td>
+                                                        <fmt:formatDate value="${appt.appointmentDate}" pattern="dd/MM/yyyy" />
+                                                    </td>
+                                                    <td>${appt.appointmentTime}</td>
+                                                    <td>${appt.room}</td>
+                                                    <td style="text-align:center;">
+                                                        <span class="status-badge status-${fn:replace(appt.status, ' ', '-')}">${appt.status}</span>
+                                                    </td>
+                                                    <td style="text-align:center; min-width: 250px;">
+                                                        <form method="post" action="staff" style="margin-bottom: 8px; display:flex; gap:5px; justify-content:center;">
+                                                            <input type="hidden" name="appointmentId" value="${appt.appointmentId}" />
+                                                            <button type="submit" name="action" value="checkin" style="background:#0ea5e9; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:600; cursor:pointer;" title="Đã đến phòng khám">Check In</button>
+                                                            <button type="submit" name="action" value="checkout" style="background:#6366f1; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:600; cursor:pointer;" title="Đã khám xong">Check Out</button>
+                                                            <button type="submit" name="action" value="complete" style="background:#10b981; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:600; cursor:pointer;" title="Hoàn tất hồ sơ">Complete</button>
+                                                        </form>
+                                                        <div>
+                                                            <a href="staff?action=edit&id=${appt.appointmentId}" style="color:#0ea5e9; text-decoration:none; margin-right:15px; font-weight:600;" title="Sửa lịch"><i class="fas fa-edit"></i> Sửa</a>
+                                                            <form method="post" action="staff" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lịch hẹn này không?');">
+                                                                <input type="hidden" name="action" value="delete">
+                                                                <input type="hidden" name="appointmentId" value="${appt.appointmentId}">
+                                                                <button type="submit" style="color:#ef4444; background:none; border:none; padding:0; cursor:pointer; font-weight:600;" title="Xóa lịch"><i class="fas fa-trash-alt"></i> Xóa</button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                            <c:if test="${empty appointments}">
+                                                <tr>
+                                                    <td colspan="8" style="text-align:center; padding: 30px; color:#64748b;">Chưa có lịch hẹn nào được đăng ký.</td>
+                                                </tr>
+                                            </c:if>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div style="margin-bottom:12px;">
-                                    <label for="serviceIds">Dịch vụ (có thể chọn nhiều):</label><br>
-                                    <select name="serviceIds" id="serviceIds" multiple required style="width:100%; height:100px; padding:6px;">
-                    <c:forEach var="dv" items="${services}">
-                        <option value="${dv.serviceId}">
-                            <c:choose>
-                                <c:when test="${dv.serviceName eq 'Trồng răng Implant'}">
-                                    ${dv.serviceName} - 15000000 VNĐ
-                                </c:when>
-                                <c:otherwise>
-                                    ${dv.serviceName} - ${dv.price} VNĐ
-                                </c:otherwise>
-                            </c:choose>
-                        </option>
-                    </c:forEach>
-                </select>
-                                    <small>(Nhấn Ctrl để chọn nhiều dịch vụ)</small>
-                                </div>
-                                <div style="margin-bottom:12px;">
-                                    <label for="room">Phòng:</label><br>
-                                    <input type="text" name="room" id="room" style="width:100%; padding:6px;" required>
-                                </div>
-                                <div style="text-align:center;">
-                                    <button type="submit" style="padding:8px 24px; background:#007bff; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Đặt lịch</button>
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                        </main>
                     </div>
-
-                    <c:if test="${not empty sessionScope.error}">
-                        <p style="color:red">${sessionScope.error}</p>
-                        <c:remove var="error" scope="session" />
-                    </c:if>
-
-                    <div style="margin-bottom: 20px;">
-                        <label for="search">Tìm kiếm lịch hẹn:</label>
-                        <input type="text" id="search" placeholder="Nhập tên khách hàng hoặc mã lịch hẹn..." onkeyup="filterAppointments()" style="width: 250px; padding: 5px; margin-bottom: 10px;">
-                    </div>
-
-                    <script>
-                        function filterAppointments() {
-                            const input = document.getElementById('search').value.toLowerCase();
-                            const rows = document.querySelectorAll('table tr');
-                            rows.forEach((row, index) => {
-                                if (index === 0) return; // Skip header row
-                                const cells = row.getElementsByTagName('td');
-                                const customerName = cells[1]?.textContent.toLowerCase() || '';
-                                const appointmentId = cells[0]?.textContent.toLowerCase() || '';
-                                row.style.display = customerName.includes(input) || appointmentId.includes(input) || input === '' ? '' : 'none';
-                            });
-                        }
-                    </script>
-
-                    <h3>Danh sách lịch hẹn</h3>
-                    <table border="1" cellpadding="8">
-                        <tr>
-                            <th>STT</th>
-                            <th>Khách hàng</th>
-                            <th>Bác sĩ</th>
-                            <th>Ngày</th>
-                            <th>Giờ</th>
-                            <th>Phòng</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                        <c:forEach var="appt" items="${appointments}" varStatus="status">
-                            <tr>
-                                <td style="text-align:center;">${status.count}</td>
-                                <td>${appt.patient.fullName}</td>
-                                <td>${appt.doctor.fullName}</td>
-                                <td>${appt.appointmentDate}</td>
-                                <td>${appt.appointmentTime}</td>
-                                <td>${appt.room}</td>
-                                <td>${appt.status}</td>
-                                <td>
-                                    <form method="post" action="staff" style="margin-bottom: 5px;">
-                                        <input type="hidden" name="appointmentId" value="${appt.appointmentId}" />
-                                        <button type="submit" name="action" value="checkin">Check In</button>
-                                        <button type="submit" name="action" value="checkout">Check Out</button>
-                                        <button type="submit" name="action" value="complete">Complete</button>
-                                    </form>
-                                    <a href="staff?action=edit&id=${appt.appointmentId}" style="color:#007bff; text-decoration:none; margin-right:8px;" title="Sửa">Sửa</a>
-                                    <form method="post" action="staff" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lịch hẹn này không?');">
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="appointmentId" value="${appt.appointmentId}">
-                                        <button type="submit" style="color:#dc3545; background:none; border:none; padding:0; cursor:pointer;" title="Xóa">Xóa</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </table>
                 </body>
 
                 </html>

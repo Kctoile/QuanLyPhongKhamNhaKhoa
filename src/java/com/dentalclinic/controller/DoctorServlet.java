@@ -37,6 +37,15 @@ public class DoctorServlet extends HttpServlet {
         AppointmentServiceDAO apptServiceDAO = new AppointmentServiceDAO();
         ServiceDAO serviceDAO = new ServiceDAO();
         MedicineDAO medicineDAO = new MedicineDAO();
+        ExaminationResultDAO examDAO = new ExaminationResultDAO(); // Added for view_history
+
+        if ("view_history".equals(request.getParameter("action"))) {
+            int patientId = Integer.parseInt(request.getParameter("patientId"));
+            List<ExaminationResult> history = examDAO.getResultsByPatientId(patientId);
+            request.setAttribute("history", history);
+            request.getRequestDispatcher("patient_history.jsp").forward(request, response);
+            return;
+        }
 
         List<Appointment> list = apptDAO.getAppointmentsByDoctor(doctorId);
         for (Appointment a : list) {
@@ -81,6 +90,9 @@ public class DoctorServlet extends HttpServlet {
                 int resultId = examDAO.saveResultReturnId(er);
 
                 if (resultId > 0) {
+                    // Cập nhật trạng thái lịch hẹn thành Completed để biến mất khỏi hàng chờ và xuất hiện trong lịch sử
+                    new AppointmentDAO().updateStatus(appointmentId, "Completed");
+
                     // Prescribe Services
                     if (serviceIds != null) {
                         prescribedServiceDAO.addPrescribedServices(resultId, serviceIds);

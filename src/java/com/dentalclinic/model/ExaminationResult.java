@@ -9,6 +9,8 @@ public class ExaminationResult {
     private Appointment appointment; // Navigation property
     private String resultDetails;
     private Timestamp examinationDate;
+    private String prescription;
+    private String doctorNotes;
 
     public ExaminationResult() {
     }
@@ -51,5 +53,21 @@ public class ExaminationResult {
 
     public void setExaminationDate(Timestamp examinationDate) {
         this.examinationDate = examinationDate;
+    }
+
+    public String getPrescription() {
+        return prescription;
+    }
+
+    public void setPrescription(String prescription) {
+        this.prescription = prescription;
+    }
+
+    public String getDoctorNotes() {
+        return doctorNotes;
+    }
+
+    public void setDoctorNotes(String doctorNotes) {
+        this.doctorNotes = doctorNotes;
     }
 }

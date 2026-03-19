@@ -72,10 +72,16 @@
 
                                                 <td>${app.room}</td>
 
-                                                <td>
+                                                <td style="text-align:center;">
                                                     <span class="status ${app.status}">
-                                                ${app.status}
-                                            </span>
+                                                        ${app.status}
+                                                    </span>
+                                                    <c:if test="${app.status == 'Completed'}">
+                                                        <br>
+                                                        <a href="appointments?action=view_result&appointmentId=${app.appointmentId}" style="display:inline-block; margin-top:8px; font-size:13px; color:#0ea5e9; font-weight:bold; text-decoration:none;">
+                                                            📝 Xem Bệnh Án
+                                                        </a>
+                                                    </c:if>
                                                 </td>
 
                                             </tr>
@@ -113,8 +119,14 @@
                                                 ${service.serviceName}<br />
                                             </c:forEach>
                                         </td>
-                                        <td>
+                                        <td style="text-align:center;">
                                             <span class="status ${app.status}">${app.status}</span>
+                                            <c:if test="${app.status == 'Completed'}">
+                                                <br>
+                                                <a href="appointments?action=view_result&appointmentId=${app.appointmentId}" style="display:inline-block; margin-top:8px; font-size:13px; color:#0ea5e9; font-weight:bold; text-decoration:none;">
+                                                    📝 Xem Bệnh Án
+                                                </a>
+                                            </c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>

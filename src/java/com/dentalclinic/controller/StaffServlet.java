@@ -209,6 +209,7 @@ public class StaffServlet extends HttpServlet {
                     } else {
                         System.err.println("No services selected for appointment ID: " + newId);
                     }
+                    request.getSession().setAttribute("success", "Đã đặt lịch khám (ID: " + newId + ") thành công cho khách hàng " + patientName);
                 }
             }
         } catch (Exception e) {
