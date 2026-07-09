@@ -22,9 +22,7 @@ public class MedicineDAO {
     public List<Medicine> getAll() {
         List<Medicine> list = new ArrayList<>();
         String sql = "SELECT * FROM medicines";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(mapResultSetToMedicine(rs));
             }
@@ -36,8 +34,7 @@ public class MedicineDAO {
 
     public Medicine getMedicineById(int id) {
         String sql = "SELECT * FROM medicines WHERE medicine_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -51,8 +48,7 @@ public class MedicineDAO {
 
     public boolean addMedicine(Medicine medicine) {
         String sql = "INSERT INTO medicines (medicine_name, price, stock_quantity) VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, medicine.getMedicineName());
             ps.setBigDecimal(2, medicine.getPrice());
             ps.setInt(3, medicine.getStockQuantity());
@@ -65,8 +61,7 @@ public class MedicineDAO {
 
     public boolean updateMedicine(Medicine medicine) {
         String sql = "UPDATE medicines SET medicine_name = ?, price = ?, stock_quantity = ? WHERE medicine_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, medicine.getMedicineName());
             ps.setBigDecimal(2, medicine.getPrice());
             ps.setInt(3, medicine.getStockQuantity());
@@ -80,8 +75,7 @@ public class MedicineDAO {
 
     public boolean deleteMedicine(int id) {
         String sql = "DELETE FROM medicines WHERE medicine_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -93,8 +87,7 @@ public class MedicineDAO {
     public List<Medicine> searchMedicines(String keyword) {
         List<Medicine> list = new ArrayList<>();
         String sql = "SELECT * FROM medicines WHERE medicine_name LIKE ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -108,11 +101,10 @@ public class MedicineDAO {
 
     public int countMedicines() {
         String sql = "SELECT COUNT(*) FROM medicines";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
-            if (rs.next())
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
                 return rs.getInt(1);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -121,8 +113,7 @@ public class MedicineDAO {
 
     public boolean exists(int medicineId) {
         String sql = "SELECT COUNT(*) FROM medicines WHERE medicine_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, medicineId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -133,4 +124,20 @@ public class MedicineDAO {
         }
         return false;
     }
+
+    public int getStock(int medicineId) {
+        String sql = "SELECT stock_quantity FROM medicines WHERE medicine_id = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, medicineId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("stock_quantity");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }
