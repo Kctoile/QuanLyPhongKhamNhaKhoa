@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet("/ConfirmAppointmentServlet")
@@ -13,21 +14,32 @@ public class ConfirmAppointmentServlet extends HttpServlet {
 
     private final AppointmentDAO appointmentDAO = new AppointmentDAO();
 
+    private boolean checkRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("role") == null
+                || (!"STAFF".equalsIgnoreCase((String) session.getAttribute("role"))
+                && !"ADMIN".equalsIgnoreCase((String) session.getAttribute("role")))) {
+            response.sendRedirect("login.jsp");
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        request.setCharacterEncoding("UTF-8");
-
-        String appointmentIdStr = request.getParameter("appointmentId");
-        if (appointmentIdStr == null || appointmentIdStr.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/staff.jsp");
+        if (!checkRole(request, response)) {
             return;
         }
 
+        request.setCharacterEncoding("UTF-8");
+        String appointmentIdStr = request.getParameter("appointmentId");
+        if (appointmentIdStr == null || appointmentIdStr.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/staff");
+            return;
+        }
         int appointmentId = Integer.parseInt(appointmentIdStr);
-        boolean success = appointmentDAO.updateStatus(appointmentId, "CONFIRMED");
-
-        response.sendRedirect(request.getContextPath() + "/staff.jsp");
+        appointmentDAO.updateStatus(appointmentId, "CONFIRMED");
+        response.sendRedirect(request.getContextPath() + "/staff");
     }
 }

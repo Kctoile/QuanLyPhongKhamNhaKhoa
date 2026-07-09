@@ -68,7 +68,10 @@
 
             <div style="margin-bottom: 20px;">
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Ghi chú: </label>
-                <textarea name="notes" rows="4" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">${appointment.notes}</textarea>
+                <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+                ...
+                <textarea name="notes" rows="4" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">${fn:escapeXml(appointment.notes)}</textarea>
+
             </div>
 
             <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Lưu Thay Đổi</button>

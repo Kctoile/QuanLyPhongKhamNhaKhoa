@@ -136,7 +136,10 @@
                 <input type="hidden" name="appointmentId" value="${appointment.appointmentId}" />
                 <!-- FIX: fallback patientId = 0 khi null -->
                 <input type="hidden" name="patientId" value="${appointment.patientId != null ? appointment.patientId : '0'}" />
-                <input type="hidden" name="notes" value="${appointment.notes}" />
+                <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+                ...
+                <input type="hidden" name="notes" value="${fn:escapeXml(appointment.notes)}" />
+
 
                 <div class="form-group">
                     <label>Bệnh nhân</label>
