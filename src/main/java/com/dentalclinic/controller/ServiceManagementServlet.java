@@ -27,8 +27,9 @@ public class ServiceManagementServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!checkAdmin(request, response))
+        if (!checkAdmin(request, response)) {
             return;
+        }
 
         ServiceDAO dao = new ServiceDAO();
         String action = request.getParameter("action");
@@ -56,10 +57,11 @@ public class ServiceManagementServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!checkAdmin(request, response))
+        if (!checkAdmin(request, response)) {
             return;
-        request.setCharacterEncoding("UTF-8");
+        }
 
+        request.setCharacterEncoding("UTF-8");
         ServiceDAO dao = new ServiceDAO();
         String action = request.getParameter("action");
 
@@ -67,9 +69,16 @@ public class ServiceManagementServlet extends HttpServlet {
             String serviceName = request.getParameter("serviceName");
             String description = request.getParameter("description");
             BigDecimal price = new BigDecimal(request.getParameter("price"));
+
+            // === VALIDATION: Giá không được âm ===
+            if (price.compareTo(BigDecimal.ZERO) < 0) {
+                request.setAttribute("error", "Giá dịch vụ không được âm.");
+                request.getRequestDispatcher("/services").forward(request, response);
+                return;
+            }
+
             String durationStr = request.getParameter("durationMinutes");
-            Integer durationMinutes = (durationStr != null && !durationStr.isEmpty()) ? Integer.parseInt(durationStr)
-                    : null;
+            Integer durationMinutes = (durationStr != null && !durationStr.isEmpty()) ? Integer.parseInt(durationStr) : null;
 
             Service service = new Service();
             service.setServiceName(serviceName);
@@ -86,7 +95,11 @@ public class ServiceManagementServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            request.setAttribute("error", "Lỗi: " + e.getMessage());
+            request.getRequestDispatcher("/services").forward(request, response);
+            return;
         }
         response.sendRedirect("services");
     }
+
 }

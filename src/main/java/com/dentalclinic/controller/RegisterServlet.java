@@ -57,11 +57,10 @@ public class RegisterServlet extends HttpServlet {
             }
         }
 
-        // Assign null role directly, admin will assign it later,
-        // per user request.
-        Integer unassignedRoleId = null;
+        // Tự động gán role CUSTOMER (role_id = 4)
+        Integer customerRoleId = 4;
 
-        boolean isSuccess = userDAO.addUser(user, unassignedRoleId);
+        boolean isSuccess = userDAO.addUser(user, customerRoleId);
 
         if (isSuccess) {
             request.setAttribute("message", "Đăng ký thành công! Bạn có thể đăng nhập.");

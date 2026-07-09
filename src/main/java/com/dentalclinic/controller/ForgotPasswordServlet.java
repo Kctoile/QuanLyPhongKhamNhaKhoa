@@ -19,6 +19,9 @@ import jakarta.mail.internet.*;
 @WebServlet("/forgot-password")
 public class ForgotPasswordServlet extends HttpServlet {
 
+    // Chỉ hiển thị link trực tiếp khi là môi trường development
+    private static final boolean DEV_MODE = false;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -45,7 +48,7 @@ public class ForgotPasswordServlet extends HttpServlet {
                     .replace("/forgot-password", "/reset-password")
                     + "?token=" + token;
 
-            // Thử gửi email, nếu không được thì hiện link trực tiếp
+            // Thử gửi email
             boolean emailSent = false;
             try {
                 sendResetEmail(user.getEmail(), resetLink);
@@ -57,8 +60,13 @@ public class ForgotPasswordServlet extends HttpServlet {
             if (emailSent) {
                 request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
             } else {
-                request.setAttribute("resetLink", resetLink);
-                request.setAttribute("message", "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
+                // Chỉ hiển thị link khi là môi trường development
+                if (DEV_MODE) {
+                    request.setAttribute("resetLink", resetLink);
+                    request.setAttribute("message", "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
+                } else {
+                    request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
+                }
             }
         } else {
             request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");

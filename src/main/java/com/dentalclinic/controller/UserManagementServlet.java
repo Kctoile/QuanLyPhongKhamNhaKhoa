@@ -9,8 +9,8 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @WebServlet("/users")
 public class UserManagementServlet extends HttpServlet {
@@ -53,24 +53,50 @@ public class UserManagementServlet extends HttpServlet {
             request.getRequestDispatcher("user_form.jsp").forward(request, response);
         } else if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
-            dao.deleteUser(id);
-            response.sendRedirect("users");
+            try {
+                dao.deleteUser(id);
+                response.sendRedirect("users");
+            } catch (Exception e) {
+                request.setAttribute("error", "Không thể xóa user vì đang có lịch hẹn hoặc dữ liệu liên quan.");
+                List<User> list = dao.getAllUsers();
+                String roleFilter = request.getParameter("role");
+                if (roleFilter != null && !roleFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(roleFilter)) {
+                    List<User> filteredList = new ArrayList<>();
+                    for (User u : list) {
+                        if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
+                            if (u.getRole() == null) {
+                                filteredList.add(u);
+                            }
+                        } else {
+                            if (u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole().getRoleName())) {
+                                filteredList.add(u);
+                            }
+                        }
+                    }
+                    list = filteredList;
+                }
+                request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");
+                request.setAttribute("users", list);
+                request.getRequestDispatcher("users.jsp").forward(request, response);
+            }
         } else {
             List<User> list = dao.getAllUsers();
-
             String roleFilter = request.getParameter("role");
             if (roleFilter != null && !roleFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(roleFilter)) {
-                if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
-                    list = list.stream()
-                            .filter(u -> u.getRole() == null)
-                            .collect(Collectors.toList());
-                } else {
-                    list = list.stream()
-                            .filter(u -> u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole().getRoleName()))
-                            .collect(Collectors.toList());
+                List<User> filteredList = new ArrayList<>();
+                for (User u : list) {
+                    if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
+                        if (u.getRole() == null) {
+                            filteredList.add(u);
+                        }
+                    } else {
+                        if (u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole().getRoleName())) {
+                            filteredList.add(u);
+                        }
+                    }
                 }
+                list = filteredList;
             }
-
             request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");
             request.setAttribute("users", list);
             request.getRequestDispatcher("users.jsp").forward(request, response);
@@ -80,13 +106,11 @@ public class UserManagementServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         if (!checkAdmin(request, response)) {
             return;
         }
 
         request.setCharacterEncoding("UTF-8");
-
         String action = request.getParameter("action");
         UserDAO dao = new UserDAO();
 
@@ -98,18 +122,16 @@ public class UserManagementServlet extends HttpServlet {
         String dobStr = request.getParameter("dob");
         String address = request.getParameter("address");
         String roleIdStr = request.getParameter("roleId");
+
         Integer roleId = null;
         if (roleIdStr != null && !roleIdStr.trim().isEmpty()) {
             try {
                 roleId = Integer.parseInt(roleIdStr);
-                System.out.println("Received roleId: " + roleId); // Log the received roleId
             } catch (NumberFormatException e) {
                 System.err.println("Invalid roleId format: " + roleIdStr);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid role ID format.");
                 return;
             }
-        } else {
-            System.err.println("roleId is missing or empty.");
         }
 
         User user = new User();
@@ -122,7 +144,6 @@ public class UserManagementServlet extends HttpServlet {
             user.setDob(Date.valueOf(dobStr));
         }
         user.setAddress(address);
-
         if (roleId != null) {
             user.setRoleId(roleId);
         }
