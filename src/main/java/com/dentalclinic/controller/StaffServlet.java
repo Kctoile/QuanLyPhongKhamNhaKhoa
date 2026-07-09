@@ -1,0 +1,222 @@
+package com.dentalclinic.controller;
+
+import com.dentalclinic.dao.AppointmentDAO;
+import com.dentalclinic.dao.AppointmentServiceDAO;
+import com.dentalclinic.dao.UserDAO;
+import com.dentalclinic.dao.ServiceDAO;
+import com.dentalclinic.dao.PaymentDAO;
+import com.dentalclinic.model.Appointment;
+import com.dentalclinic.model.User;
+import com.dentalclinic.model.Service;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.List;
+import java.util.Comparator;
+
+@WebServlet("/staff")
+public class StaffServlet extends HttpServlet {
+
+    private boolean checkRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || !"STAFF".equalsIgnoreCase((String) session.getAttribute("role"))) {
+            response.sendRedirect("login.jsp");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (!checkRole(request, response)) {
+            return;
+        }
+
+        UserDAO userDAO = new UserDAO();
+        ServiceDAO serviceDAO = new ServiceDAO();
+        AppointmentDAO apptDAO = new AppointmentDAO();
+        AppointmentServiceDAO apptServiceDAO = new AppointmentServiceDAO();
+        PaymentDAO paymentDAO = new PaymentDAO();
+
+        String action = request.getParameter("action");
+
+        if ("view_walkin".equals(action)) {
+            request.setAttribute("customers", userDAO.getCustomers());
+            request.setAttribute("doctors", userDAO.getDoctors());
+            request.setAttribute("services", serviceDAO.getAll());
+            request.getRequestDispatcher("walkin_booking.jsp").forward(request, response);
+            return;
+        }
+
+        if ("edit".equals(action)) {
+            int apptId = Integer.parseInt(request.getParameter("id"));
+            Appointment appt = apptDAO.getAppointmentById(apptId);
+            request.setAttribute("appointment", appt);
+            request.setAttribute("customers", userDAO.getCustomers());
+            request.setAttribute("doctors", userDAO.getDoctors());
+            request.getRequestDispatcher("edit_appointment_staff.jsp").forward(request, response);
+            return;
+        }
+
+        if ("search_appointments".equals(action)) {
+            String searchQuery = request.getParameter("query");
+            List<Appointment> appointments;
+            if (searchQuery == null || searchQuery.trim().isEmpty()) {
+                appointments = apptDAO.getAll();
+            } else {
+                appointments = apptDAO.searchAppointments(searchQuery);
+            }
+            for (Appointment a : appointments) {
+                a.setServices(apptServiceDAO.getServicesByAppointmentId(a.getAppointmentId()));
+                a.setPayment(paymentDAO.getByAppointmentId(a.getAppointmentId()));
+            }
+            request.setAttribute("appointments", appointments);
+            request.getRequestDispatcher("staff.jsp").forward(request, response);
+            return;
+        }
+
+        List<Appointment> list = apptDAO.getAll();
+        for (Appointment a : list) {
+            a.setServices(apptServiceDAO.getServicesByAppointmentId(a.getAppointmentId()));
+            a.setPayment(paymentDAO.getByAppointmentId(a.getAppointmentId()));
+        }
+        list.sort(Comparator.comparingInt(Appointment::getAppointmentId));
+
+        request.setAttribute("appointments", list);
+        request.setAttribute("customers", userDAO.getCustomers());
+        request.setAttribute("doctors", userDAO.getDoctors());
+        request.setAttribute("services", serviceDAO.getAll());
+        request.getRequestDispatcher("staff.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (!checkRole(request, response)) {
+            return;
+        }
+
+        request.setCharacterEncoding("UTF-8");
+        AppointmentDAO apptDAO = new AppointmentDAO();
+        AppointmentServiceDAO apptServiceDAO = new AppointmentServiceDAO();
+
+        String action = request.getParameter("action");
+
+        try {
+            if ("update_status".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("appointmentId"));
+                String status = request.getParameter("status");
+                String room = request.getParameter("room");
+
+                Appointment appt = apptDAO.getAppointmentById(id);
+                if (appt != null && "Pending".equalsIgnoreCase(appt.getStatus())) {
+                    apptDAO.updateStatus(id, "CONFIRMED");
+                } else {
+                    apptDAO.updateStatus(id, status);
+                }
+                if (room != null && !room.isEmpty()) {
+                    apptDAO.updateRoom(id, room);
+                }
+            } else if ("checkin".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("appointmentId"));
+                apptDAO.updateStatus(id, "Checked In");
+            } else if ("checkout".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("appointmentId"));
+                apptDAO.updateStatus(id, "Checked Out");
+            } else if ("complete".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("appointmentId"));
+                apptDAO.updateStatus(id, "Completed");
+            } else if ("delete".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("appointmentId"));
+                apptDAO.deleteAppointment(id);
+            } else if ("update".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("appointmentId"));
+                Appointment appt = apptDAO.getAppointmentById(id);
+                if (appt != null) {
+                    appt.setDoctorId(Integer.parseInt(request.getParameter("doctorId")));
+                    appt.setAppointmentDate(java.sql.Date.valueOf(request.getParameter("appointmentDate")));
+                    String timeStr = request.getParameter("appointmentTime");
+                    if (timeStr.length() == 5) {
+                        timeStr += ":00";
+                    }
+                    appt.setAppointmentTime(java.sql.Time.valueOf(timeStr));
+                    appt.setStatus(request.getParameter("status"));
+                    appt.setRoom(request.getParameter("room"));
+                    appt.setNotes(request.getParameter("notes"));
+                    boolean updated = apptDAO.updateAppointment(appt);
+                    System.out.println("Update appointment #" + id + ": " + (updated ? "OK" : "FAILED"));
+                }
+            } else if ("book".equals(action)) {
+                UserDAO userDAO = new UserDAO();
+                ServiceDAO serviceDAO = new ServiceDAO();
+
+                String patientName = request.getParameter("patientName");
+                int doctorId = Integer.parseInt(request.getParameter("doctorId"));
+                Date apptDate = Date.valueOf(request.getParameter("appointmentDate"));
+                Time apptTime = Time.valueOf(request.getParameter("appointmentTime") + ":00");
+                String room = request.getParameter("room");
+                String[] serviceIds = request.getParameterValues("serviceIds");
+
+                int patientId = -1;
+                User existingCustomer = userDAO.getCustomerByName(patientName);
+                if (existingCustomer != null) {
+                    patientId = existingCustomer.getUserId();
+                } else {
+                    User newCustomer = new User();
+                    newCustomer.setFullName(patientName);
+                    newCustomer.setEmail("walkin_" + System.currentTimeMillis() + "@clinic.local");
+                    newCustomer.setPassword("123456");
+                    newCustomer.setPhone("");
+                    patientId = userDAO.addUserReturnId(newCustomer, 4);
+                }
+
+                if (patientId == -1) {
+                    request.setAttribute("error", "Lỗi tạo thông tin khách hàng mới. Vui lòng thử lại.");
+                    request.setAttribute("customers", userDAO.getCustomers());
+                    request.setAttribute("doctors", userDAO.getDoctors());
+                    request.setAttribute("services", serviceDAO.getAll());
+                    request.getRequestDispatcher("staff.jsp").forward(request, response);
+                    return;
+                }
+
+                boolean slotTaken = apptDAO.isDoctorSlotTaken(doctorId, apptDate, apptTime);
+                if (slotTaken) {
+                    request.setAttribute("error", "Bác sĩ đã có lịch vào thời gian này. Vui lòng chọn thời gian khác.");
+                    request.setAttribute("customers", userDAO.getCustomers());
+                    request.setAttribute("doctors", userDAO.getDoctors());
+                    request.setAttribute("services", serviceDAO.getAll());
+                    request.getRequestDispatcher("walkin_booking.jsp").forward(request, response);
+                    return;
+                }
+
+                Appointment appt = new Appointment();
+                appt.setPatientId(patientId);
+                appt.setDoctorId(doctorId);
+                appt.setAppointmentDate(apptDate);
+                appt.setAppointmentTime(apptTime);
+                appt.setStatus("Checked In");
+                appt.setRoom(room);
+
+                int newId = apptDAO.addAppointmentReturnId(appt);
+                if (newId > 0) {
+                    if (serviceIds != null && serviceIds.length > 0) {
+                        apptServiceDAO.addServicesForAppointment(newId, serviceIds);
+                    } else {
+                        System.err.println("No services selected for appointment ID: " + newId);
+                    }
+                    request.getSession().setAttribute("success", "Đã đặt lịch khám (ID: " + newId + ") thành công cho khách hàng " + patientName);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        response.sendRedirect("staff");
+    }
+}

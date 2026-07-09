@@ -1,0 +1,77 @@
+/* nền trang */
+body{
+    margin:0;
+    padding:0;
+}
+.login-page{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:rgb(31, 41, 55);
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* khung login */
+.login-box{
+    background:white;
+    padding:40px;
+    width:350px;
+    border-radius:12px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.2);
+}
+
+/* tiêu đề */
+.login-title{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+/* input */
+.login-form input{
+    width:100%;
+    padding:10px;
+    margin:8px 0 16px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+/* button */
+.login-form button{
+    width:100%;
+    padding:10px;
+    border:none;
+    background:#4facfe;
+    color:white;
+    font-size:16px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.login-form button:hover{
+    background:#3b8eea;
+}
+
+/* link */
+.login-register,
+.login-home{
+    text-align:center;
+    margin-top:10px;
+}
+
+.login-register a,
+.login-home a{
+    color:#4facfe;
+    text-decoration:none;
+}
+
+.login-register a:hover{
+    text-decoration:underline;
+}
+
+/* error */
+.login-error{
+    color:red;
+    text-align:center;
+    margin-top:10px;
+}

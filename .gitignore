@@ -1,0 +1,6 @@
+/dist/
+/build/
+/target/
+src/main/webapp/test.py
+src/main/webapp/test.js
+src/main/webapp/test2.js
