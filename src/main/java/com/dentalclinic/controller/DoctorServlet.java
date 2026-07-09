@@ -44,6 +44,12 @@ public class DoctorServlet extends HttpServlet {
 
         if ("view_history".equals(request.getParameter("action"))) {
             int patientId = Integer.parseInt(request.getParameter("patientId"));
+            // === IDOR CHECK: Kiểm tra bệnh nhân có thuộc bác sĩ này không ===
+            boolean hasAppointment = apptDAO.hasAppointmentWithDoctor(patientId, doctorId);
+            if (!hasAppointment) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền xem hồ sơ này.");
+                return;
+            }
             List history = examDAO.getResultsByPatientId(patientId);
             request.setAttribute("history", history);
             request.getRequestDispatcher("patient_history.jsp").forward(request, response);

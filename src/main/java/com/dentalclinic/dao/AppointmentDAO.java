@@ -468,4 +468,20 @@ public class AppointmentDAO {
         return list;
     }
 
+    public boolean hasAppointmentWithDoctor(int patientId, int doctorId) {
+        String sql = "SELECT COUNT(*) FROM appointments WHERE patient_id = ? AND doctor_id = ? AND status <> 'Cancelled'";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, patientId);
+            ps.setInt(2, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
