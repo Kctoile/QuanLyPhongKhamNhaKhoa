@@ -184,7 +184,7 @@ docker run -p 8080:8080 \
 
 ## 📄 License
 
-Dự án nhóm - Sử dụng cho mục đích học tập.
+Dự án cá nhân - Sử dụng cho mục đích học tập.
 
 ---
 
