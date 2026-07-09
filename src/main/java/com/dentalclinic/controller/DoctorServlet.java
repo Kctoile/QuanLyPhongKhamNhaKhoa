@@ -81,7 +81,6 @@ public class DoctorServlet extends HttpServlet {
         for (Object obj : list) {
             Appointment a = (Appointment) obj;
             a.setServices(apptServiceDAO.getServicesByAppointmentId(a.getAppointmentId()));
-
             boolean canExam = false;
             if ("Checked In".equals(a.getStatus()) && a.getAppointmentDate() != null && a.getAppointmentTime() != null) {
                 LocalDateTime apptDateTime = LocalDateTime.of(
@@ -142,8 +141,8 @@ public class DoctorServlet extends HttpServlet {
                 ExaminationResult er = new ExaminationResult();
                 er.setAppointmentId(appointmentId);
                 er.setResultDetails(resultDetails);
-                int resultId = examDAO.saveResultReturnId(er);
 
+                int resultId = examDAO.saveResultReturnId(er);
                 if (resultId > 0) {
                     new AppointmentDAO().updateStatus(appointmentId, "Completed");
                     if (serviceIds != null) {
@@ -166,6 +165,13 @@ public class DoctorServlet extends HttpServlet {
                                     PrescriptionDetail detail = new PrescriptionDetail();
                                     detail.setPrescriptionId(prescriptionId);
                                     if (medId > 0 && qty > 0 && medicineDAO.exists(medId)) {
+                                        // === KIỂM TRA TỒN KHO ===
+                                        int stock = medicineDAO.getStock(medId);
+                                        if (qty > stock) {
+                                            session.setAttribute("errorMsg", "Thuốc không đủ tồn kho. Yêu cầu: " + qty + ", tồn kho: " + stock);
+                                            response.sendRedirect("doctor");
+                                            return;
+                                        }
                                         detail.setMedicineId(medId);
                                         detail.setQuantity(qty);
                                         detailDAO.addPrescriptionDetail(detail);

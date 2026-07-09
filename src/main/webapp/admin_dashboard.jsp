@@ -90,7 +90,6 @@
         </style>
     </head>
     <body>
-
         <div class="header">
             <h1>ADMIN DASHBOARD</h1>
             <div>
@@ -126,6 +125,5 @@
                 <div class="label">Tổng số thuốc</div>
             </div>
         </div>
-
     </body>
 </html>

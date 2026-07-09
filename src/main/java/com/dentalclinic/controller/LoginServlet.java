@@ -13,6 +13,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
@@ -33,6 +34,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("fullName", user.getFullName());
+
             String role = user.getRole().getRoleName().toUpperCase().trim();
             session.setAttribute("role", role);
 
@@ -49,8 +51,10 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/doctor");
                     break;
                 case "STAFF":
-                    // === SỬA: gọi StaffServlet thay vì staff.jsp trực tiếp ===
                     response.sendRedirect(request.getContextPath() + "/staff");
+                    break;
+                case "CUSTOMER":
+                    response.sendRedirect(request.getContextPath() + "/appointments");
                     break;
                 default:
                     response.sendRedirect(request.getContextPath() + "/index.jsp");
