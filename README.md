@@ -2,6 +2,10 @@
 
 Hệ thống quản lý phòng khám nha khoa hiện đại - Ứng dụng web được xây dựng bằng Java JSP/Servlet.
 
+> 🔗 **Live Demo:** [https://dencli.onrender.com/phongkhamnhakhoa/](https://dencli.onrender.com/phongkhamnhakhoa/)
+
+Hệ thống có 4 role: Admin, Bác sĩ (Doctor), Nhân viên lễ tân (Staff), Khách hàng (Customer).
+
 ---
 
 ## 🛠️ Công Nghệ Sử Dụng
@@ -48,91 +52,57 @@ DenCli/
 
 ---
 
-## 🚀 Cài Đặt và Chạy
+## 🚀 Cài Đặt Local (Developer)
 
-### 1️⃣ Clone Project
+### Yêu Cầu
+- JDK 17+, Maven 3.8+, PostgreSQL, Tomcat 10.1
+
+### Các Bước
 
 ```bash
 git clone -b postgresql https://github.com/Kctoile/DenCli.git
 cd DenCli
-```
-
-### 2️⃣ Cấu Hình Database PostgreSQL
-
-**Bước 1:** Cài đặt PostgreSQL và tạo database
-
-**Bước 2:** Chạy script khởi tạo database:
-
-```bash
-psql -U <username> -d <database_name> -f db_init_postgresql.sql
-```
-
-**Bước 3:** Cấu hình biến môi trường:
-
-| Biến Môi Trường | Mô Tả | Ví Dụ |
-|---|---|---|
-| `DB_URL` | Chuỗi kết nối JDBC PostgreSQL | `jdbc:postgresql://localhost:5432/phongkhamnhakhoa` |
-| `DB_USER` | Tên đăng nhập PostgreSQL | `postgres` |
-| `DB_PASS` | Mật khẩu PostgreSQL | `your_password` |
-
-### 3️⃣ Build Project Bằng Maven
-
-```bash
+psql -U postgres -d phongkhamnhakhoa -f db_init_postgresql.sql
 mvn clean package -Dmaven.test.skip=true
-```
-
-**Output:** `target/QuanLyPhongKhamNhaKhoa.war`
-
-### 4️⃣ Deploy Trên Tomcat (Local)
-
-```bash
-# Copy WAR vào thư mục webapps của Tomcat
 cp target/QuanLyPhongKhamNhaKhoa.war $TOMCAT_HOME/webapps/
-
-# Khởi động Tomcat
-$TOMCAT_HOME/bin/startup.sh
 ```
 
-**Truy cập ứng dụng:** http://localhost:8080/QuanLyPhongKhamNhaKhoa/
+Set biến môi trường `DB_URL`, `DB_USER`, `DB_PASS` trước khi chạy Tomcat.
 
----
-
-## 🐳 Build và Deploy Bằng Docker
-
-### Multi-stage Build
-
-- **Build Stage:** Sử dụng Maven image để biên dịch project
-- **Runtime Stage:** Sử dụng Tomcat image để chạy WAR
-
-### Build Docker Image
+### Docker
 
 ```bash
 docker build -t dencli .
-```
-
-### Chạy Docker Container
-
-```bash
 docker run -p 8080:8080 \
-  -e DB_URL=jdbc:postgresql://<host>:5432/<database> \
-  -e DB_USER=<username> \
-  -e DB_PASS=<password> \
+  -e DB_URL=jdbc:postgresql://host.docker.internal:5432/phongkhamnhakhoa \
+  -e DB_USER=postgres \
+  -e DB_PASS=your_password \
   dencli
 ```
 
-**Truy cập ứng dụng:** http://localhost:8080/phongkhamnhakhoa/
+### Deploy (Render)
+
+Push lên GitHub → Render tự động build Dockerfile và deploy.
 
 ---
 
-## ☁️ Triển Khai Trên Render Cloud
+## 🔒 Security Improvements
 
-**URL Production:** https://dencli.onrender.com/phongkhamnhakhoa/
+Project đã được phân tích và fix **18 security bugs** từ static analysis report:
 
-**Các bước cấu hình:**
+| Priority | Loại | Số lượng |
+|----------|------|---------|
+| **P1 - Critical** | Auth bypass, XSS Stored | 4 |
+| **P2 - High** | Missing role check, IDOR, XSS | 8 |
+| **P3 - Medium** | Silent fail, reset link leak, v.v. | 6 |
 
-1. Đặt biến môi trường `DB_URL`, `DB_USER`, `DB_PASS` trong phần **Environment** trên Render
-2. Render tự động build lại Docker image từ Dockerfile khi có thay đổi trên branch triển khai
-3. Service sẽ tự động redeploy sau khi build hoàn tất
+### Kỹ Thuật Đã Áp Dụng
+
+- **Session & role validation** ở tất cả JSP/Servlet
+- **fn:escapeXml()** chống XSS
+- **IDOR protection** (kiểm tra quyền sở hữu dữ liệu)
+- **PreparedStatement** chống SQL injection
+- **Transaction SERIALIZABLE** chống race condition
 
 ---
 
