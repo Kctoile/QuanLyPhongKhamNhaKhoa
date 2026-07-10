@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -69,7 +70,7 @@ public class AppointmentDAO {
             }
 
             int appointmentId;
-            try (PreparedStatement ps = conn.prepareStatement(insertAppointmentSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = conn.prepareStatement(insertAppointmentSql, Statement.RETURN_GENERATED_KEYS)) {
                 if (appt.getPatientId() == null) {
                     ps.setNull(1, java.sql.Types.INTEGER);
                 } else {
@@ -241,7 +242,7 @@ public class AppointmentDAO {
     public int addAppointmentReturnId(Appointment appt) {
         String sql = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status, notes, room) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             if (appt.getPatientId() == null) {
                 ps.setNull(1, java.sql.Types.INTEGER);
             } else {
