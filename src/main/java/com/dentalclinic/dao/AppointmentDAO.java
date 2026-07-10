@@ -245,7 +245,7 @@ public class AppointmentDAO {
     public int addAppointmentReturnId(Appointment appt) {
         String sql = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status, notes, room) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             if (appt.getPatientId() == null) {
                 ps.setNull(1, java.sql.Types.INTEGER);
             } else {

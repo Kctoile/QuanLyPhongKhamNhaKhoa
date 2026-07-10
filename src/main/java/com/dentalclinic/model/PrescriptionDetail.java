@@ -1,13 +1,26 @@
 package com.dentalclinic.model;
 
 public class PrescriptionDetail {
+
+    private int detailId;
     private int prescriptionId;
     private int medicineId;
-    private Medicine medicine; // Navigation property
+    private String medicineName;
+    private int quantity;
     private int prescribedQuantity;
     private double unitPrice;
+    private Medicine medicine;
 
     public PrescriptionDetail() {
+        // Default constructor
+    }
+
+    public int getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(int detailId) {
+        this.detailId = detailId;
     }
 
     public int getPrescriptionId() {
@@ -26,12 +39,20 @@ public class PrescriptionDetail {
         this.medicineId = medicineId;
     }
 
-    public Medicine getMedicine() {
-        return medicine;
+    public String getMedicineName() {
+        return medicineName;
     }
 
-    public void setMedicine(Medicine medicine) {
-        this.medicine = medicine;
+    public void setMedicineName(String medicineName) {
+        this.medicineName = medicineName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public int getPrescribedQuantity() {
@@ -42,15 +63,19 @@ public class PrescriptionDetail {
         this.prescribedQuantity = prescribedQuantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.prescribedQuantity = quantity;
-    }
-
     public double getUnitPrice() {
         return unitPrice;
     }
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public Medicine getMedicine() {
+        return medicine;
+    }
+
+    public void setMedicine(Medicine medicine) {
+        this.medicine = medicine;
     }
 }

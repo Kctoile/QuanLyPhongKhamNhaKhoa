@@ -2,26 +2,22 @@ package com.dentalclinic.controller;
 
 import com.dentalclinic.dao.UserDAO;
 import com.dentalclinic.model.User;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final transient UserDAO userDAO = new UserDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.setCharacterEncoding("UTF-8");
-
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
@@ -30,7 +26,6 @@ public class RegisterServlet extends HttpServlet {
         String dobStr = request.getParameter("dob");
         String address = request.getParameter("address");
 
-        // Validate basic
         if (fullName == null || email == null || password == null || phone == null
                 || fullName.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()
                 || phone.trim().isEmpty()) {
@@ -44,11 +39,9 @@ public class RegisterServlet extends HttpServlet {
         user.setEmail(email);
         String hashedPassword = com.dentalclinic.utils.PasswordUtils.hashPassword(password);
         user.setPassword(hashedPassword);
-
         user.setPhone(phone);
         user.setGender(gender);
         user.setAddress(address);
-
         if (dobStr != null && !dobStr.trim().isEmpty()) {
             try {
                 user.setDob(java.sql.Date.valueOf(dobStr));
@@ -56,12 +49,8 @@ public class RegisterServlet extends HttpServlet {
                 System.err.println("Invalid date of birth: " + dobStr);
             }
         }
-
-        // Tự động gán role CUSTOMER (role_id = 4)
-        Integer customerRoleId = 4;
-
-        boolean isSuccess = userDAO.addUser(user, customerRoleId);
-
+        Integer unassignedRoleId = null;
+        boolean isSuccess = userDAO.addUser(user, unassignedRoleId);
         if (isSuccess) {
             request.setAttribute("message", "Đăng ký thành công! Bạn có thể đăng nhập.");
             request.getRequestDispatcher("login.jsp").forward(request, response);

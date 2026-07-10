@@ -3,10 +3,11 @@ package com.dentalclinic.model;
 public class Prescription {
     private int prescriptionId;
     private Integer resultId;
-    private ExaminationResult examinationResult; // Navigation property
+    private ExaminationResult examinationResult;
     private String instructions;
 
     public Prescription() {
+        // Default constructor
     }
 
     public int getPrescriptionId() {

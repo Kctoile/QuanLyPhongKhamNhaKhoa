@@ -29,8 +29,8 @@ public class PaymentServlet extends HttpServlet {
     private static final String STATUS_PAID = "PAID";
     private static final String STATUS_FAILED = "FAILED";
 
-    private final AppointmentDAO appointmentDAO = new AppointmentDAO();
-    private final PaymentDAO paymentDAO = new PaymentDAO();
+    private final transient AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private final transient PaymentDAO paymentDAO = new PaymentDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

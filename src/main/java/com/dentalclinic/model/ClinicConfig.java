@@ -3,12 +3,14 @@ package com.dentalclinic.model;
 import java.sql.Time;
 
 public class ClinicConfig {
+
     private int configId;
     private Time openingTime;
     private Time closingTime;
     private String clinicInfo;
 
     public ClinicConfig() {
+        // Default constructor
     }
 
     public int getConfigId() {

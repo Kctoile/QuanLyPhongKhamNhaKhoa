@@ -3,6 +3,7 @@ package com.dentalclinic.model;
 import java.math.BigDecimal;
 
 public class Service {
+
     private int serviceId;
     private String serviceName;
     private String description;
@@ -10,6 +11,7 @@ public class Service {
     private Integer durationMinutes;
 
     public Service() {
+        // Default constructor
     }
 
     public int getServiceId() {

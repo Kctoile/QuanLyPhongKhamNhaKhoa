@@ -10,13 +10,14 @@ public class User {
     private String password;
     private String phone;
     private Integer roleId;
-    private Role role; // Navigation property
+    private Role role;
     private String gender;
     private Date dob;
     private String address;
     private Timestamp createdAt;
 
     public User() {
+        // Default constructor
     }
 
     public int getUserId() {

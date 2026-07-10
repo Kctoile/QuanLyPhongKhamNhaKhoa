@@ -6,13 +6,14 @@ public class ExaminationResult {
 
     private int resultId;
     private Integer appointmentId;
-    private Appointment appointment; // Navigation property
+    private Appointment appointment;
     private String resultDetails;
     private Timestamp examinationDate;
     private String prescription;
     private String doctorNotes;
 
     public ExaminationResult() {
+        // Default constructor
     }
 
     public int getResultId() {

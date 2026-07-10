@@ -2,6 +2,7 @@ package com.dentalclinic.dao;
 
 import com.dentalclinic.model.ExaminationResult;
 import com.dentalclinic.utils.DBConnection;
+import java.sql.Statement;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +14,7 @@ public class ExaminationResultDAO {
 
     public ExaminationResult getResultByAppointmentId(int appointmentId) {
         String sql = "SELECT * FROM examination_results WHERE appointment_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, appointmentId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -35,8 +35,7 @@ public class ExaminationResultDAO {
 
     public int saveResultReturnId(ExaminationResult result) {
         String checkSql = "SELECT result_id FROM examination_results WHERE appointment_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
             checkPs.setInt(1, result.getAppointmentId());
             ResultSet rs = checkPs.executeQuery();
             if (rs.next()) {
@@ -52,14 +51,14 @@ public class ExaminationResultDAO {
             } else {
                 // Insert
                 String insertSql = "INSERT INTO examination_results (appointment_id, result_details) VALUES (?, ?)";
-                try (PreparedStatement insertPs = conn.prepareStatement(insertSql,
-                        PreparedStatement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement insertPs = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                     insertPs.setInt(1, result.getAppointmentId());
                     insertPs.setString(2, result.getResultDetails());
                     insertPs.executeUpdate();
                     try (ResultSet keys = insertPs.getGeneratedKeys()) {
-                        if (keys.next())
+                        if (keys.next()) {
                             return keys.getInt(1);
+                        }
                     }
                 }
             }
@@ -70,13 +69,12 @@ public class ExaminationResultDAO {
     }
 
     public List<ExaminationResult> getResultsByPatientId(int patientId) {
-        String sql = "SELECT er.result_id, er.appointment_id, er.result_details, er.examination_date, er.prescription, er.doctor_notes " +
-                 "FROM examination_results er " +
-                 "JOIN appointments a ON er.appointment_id = a.appointment_id " +
-                 "WHERE a.patient_id = ?";
+        String sql = "SELECT er.result_id, er.appointment_id, er.result_details, er.examination_date, er.prescription, er.doctor_notes "
+                + "FROM examination_results er "
+                + "JOIN appointments a ON er.appointment_id = a.appointment_id "
+                + "WHERE a.patient_id = ?";
         List<ExaminationResult> results = new ArrayList<>();
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, patientId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

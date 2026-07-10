@@ -1,12 +1,22 @@
 package com.dentalclinic.model;
 
 public class PrescribedService {
+    private int prescribedServiceId;
     private int resultId;
     private int serviceId;
-    private String status;
-    private String notes;
+    private String serviceName;
+    private int quantity;
 
     public PrescribedService() {
+        // Default constructor
+    }
+
+    public int getPrescribedServiceId() {
+        return prescribedServiceId;
+    }
+
+    public void setPrescribedServiceId(int prescribedServiceId) {
+        this.prescribedServiceId = prescribedServiceId;
     }
 
     public int getResultId() {
@@ -25,19 +35,19 @@ public class PrescribedService {
         this.serviceId = serviceId;
     }
 
-    public String getStatus() {
-        return status;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
-    public String getNotes() {
-        return notes;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

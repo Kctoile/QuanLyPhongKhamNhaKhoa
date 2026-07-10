@@ -7,11 +7,12 @@ public class PasswordResetToken {
     private int tokenId;
     private int userId;
     private String token;
-    private Timestamp expiry;
-    private boolean isUsed;
+    private Timestamp expiryDate;
+    private boolean used;
     private Timestamp createdAt;
 
     public PasswordResetToken() {
+        // Default constructor
     }
 
     public int getTokenId() {
@@ -38,20 +39,24 @@ public class PasswordResetToken {
         this.token = token;
     }
 
-    public Timestamp getExpiry() {
-        return expiry;
+    public Timestamp getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(Timestamp expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
     public void setExpiry(Timestamp expiry) {
-        this.expiry = expiry;
+        this.expiryDate = expiry;
     }
 
     public boolean isUsed() {
-        return isUsed;
+        return used;
     }
 
     public void setUsed(boolean used) {
-        isUsed = used;
+        this.used = used;
     }
 
     public Timestamp getCreatedAt() {

@@ -3,12 +3,14 @@ package com.dentalclinic.model;
 import java.math.BigDecimal;
 
 public class Medicine {
+
     private int medicineId;
     private String medicineName;
     private BigDecimal price;
     private int stockQuantity;
 
     public Medicine() {
+        // Default constructor
     }
 
     public int getMedicineId() {

@@ -18,9 +18,10 @@ public class Appointment {
     private String room;
     private List services;
     private Payment payment;
-    private boolean canExamine; // <-- THÊM DÒNG NÀY
+    private boolean canExamine;
 
     public Appointment() {
+        // Default constructor
     }
 
     public int getAppointmentId() {
@@ -119,7 +120,6 @@ public class Appointment {
         this.payment = payment;
     }
 
-    // <-- THÊM GETTER & SETTER CHO canExamine
     public boolean isCanExamine() {
         return canExamine;
     }

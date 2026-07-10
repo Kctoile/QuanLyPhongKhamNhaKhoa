@@ -3,6 +3,7 @@ package com.dentalclinic.dao;
 import com.dentalclinic.model.PrescriptionDetail;
 import com.dentalclinic.model.Medicine;
 import com.dentalclinic.utils.DBConnection;
+import java.sql.Statement;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,8 +15,7 @@ public class PrescriptionDetailDAO {
 
     public void addOrUpdateDetail(int prescriptionId, int medicineId, int quantity, double unitPrice) {
         String checkSql = "SELECT prescribed_quantity FROM prescription_details WHERE prescription_id = ? AND medicine_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
 
             checkPs.setInt(1, prescriptionId);
             checkPs.setInt(2, medicineId);
@@ -51,8 +51,7 @@ public class PrescriptionDetailDAO {
 
     public boolean addPrescriptionDetail(PrescriptionDetail detail) {
         String sql = "INSERT INTO prescription_details (prescription_id, medicine_id, prescribed_quantity, unit_price) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, detail.getPrescriptionId());
             ps.setInt(2, detail.getMedicineId());
             ps.setInt(3, detail.getPrescribedQuantity());
@@ -70,8 +69,7 @@ public class PrescriptionDetailDAO {
                 + "FROM prescription_details pd "
                 + "JOIN medicines m ON pd.medicine_id = m.medicine_id "
                 + "WHERE pd.prescription_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, prescriptionId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

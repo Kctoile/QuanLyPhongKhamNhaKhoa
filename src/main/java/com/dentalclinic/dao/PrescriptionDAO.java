@@ -2,6 +2,7 @@ package com.dentalclinic.dao;
 
 import com.dentalclinic.model.Prescription;
 import com.dentalclinic.utils.DBConnection;
+import java.sql.Statement;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,8 +12,7 @@ public class PrescriptionDAO {
 
     public Prescription getPrescriptionByResultId(int resultId) {
         String sql = "SELECT * FROM prescriptions WHERE result_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, resultId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -30,8 +30,7 @@ public class PrescriptionDAO {
 
     public int savePrescriptionReturnId(Prescription p) {
         String checkSql = "SELECT prescription_id FROM prescriptions WHERE result_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
             checkPs.setInt(1, p.getResultId());
             ResultSet rs = checkPs.executeQuery();
             if (rs.next()) {
@@ -46,13 +45,14 @@ public class PrescriptionDAO {
             } else {
                 String insertSql = "INSERT INTO prescriptions (result_id, instructions) VALUES (?, ?)";
                 try (PreparedStatement insertPs = conn.prepareStatement(insertSql,
-                        PreparedStatement.RETURN_GENERATED_KEYS)) {
+                        Statement.RETURN_GENERATED_KEYS)) {
                     insertPs.setInt(1, p.getResultId());
                     insertPs.setString(2, p.getInstructions());
                     insertPs.executeUpdate();
                     try (ResultSet keys = insertPs.getGeneratedKeys()) {
-                        if (keys.next())
+                        if (keys.next()) {
                             return keys.getInt(1);
+                        }
                     }
                 }
             }
