@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class PrescriptionDAO {
 
@@ -43,8 +44,7 @@ public class PrescriptionDAO {
                 return pId;
             } else {
                 String insertSql = "INSERT INTO prescriptions (result_id, instructions) VALUES (?, ?)";
-                try (PreparedStatement insertPs = conn.prepareStatement(insertSql,
-                        PreparedStatement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement insertPs = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                     insertPs.setInt(1, p.getResultId());
                     insertPs.setString(2, p.getInstructions());
                     insertPs.executeUpdate();

@@ -22,6 +22,8 @@ import jakarta.mail.internet.*;
 public class ForgotPasswordServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ForgotPasswordServlet.class.getName());
+    private static final String ATTR_MESSAGE = "message";
+    private static final String ATTR_RESET_LINK = "resetLink";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -52,13 +54,13 @@ public class ForgotPasswordServlet extends HttpServlet {
                 LOGGER.log(Level.SEVERE, "Failed to send reset email", e);
             }
             if (emailSent) {
-                request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
+                request.setAttribute(ATTR_MESSAGE, "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
             } else {
-                request.setAttribute("resetLink", resetLink);
-                request.setAttribute("message", "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
+                request.setAttribute(ATTR_RESET_LINK, resetLink);
+                request.setAttribute(ATTR_MESSAGE, "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
             }
         } else {
-            request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
+            request.setAttribute(ATTR_MESSAGE, "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
         }
         request.getRequestDispatcher("forgot_password.jsp").forward(request, response);
     }

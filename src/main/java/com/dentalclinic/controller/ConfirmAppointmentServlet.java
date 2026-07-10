@@ -11,7 +11,8 @@ import java.io.IOException;
 @WebServlet("/ConfirmAppointmentServlet")
 public class ConfirmAppointmentServlet extends HttpServlet {
 
-    private final AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private static final long serialVersionUID = 1L;
+    private transient final AppointmentDAO appointmentDAO = new AppointmentDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

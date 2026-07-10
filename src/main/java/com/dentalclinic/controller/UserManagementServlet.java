@@ -14,10 +14,11 @@ import java.util.logging.Logger;
 @WebServlet("/users")
 public class UserManagementServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(UserManagementServlet.class.getName());
+    private static final String REDIRECT_USERS = "users";
 
-    private boolean checkAdmin(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    private boolean checkAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("role") == null) {
             response.sendRedirect("login.jsp");
@@ -32,8 +33,7 @@ public class UserManagementServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!checkAdmin(request, response)) {
             return;
         }
@@ -52,19 +52,15 @@ public class UserManagementServlet extends HttpServlet {
         } else if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             dao.deleteUser(id);
-            response.sendRedirect("users");
+            response.sendRedirect(REDIRECT_USERS);
         } else {
             List<User> list = dao.getAllUsers();
             String roleFilter = request.getParameter("role");
             if (roleFilter != null && !roleFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(roleFilter)) {
                 if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
-                    list = list.stream()
-                            .filter(u -> u.getRole() == null)
-                            .toList();
+                    list = list.stream().filter(u -> u.getRole() == null).toList();
                 } else {
-                    list = list.stream()
-                            .filter(u -> u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole().getRoleName()))
-                            .toList();
+                    list = list.stream().filter(u -> u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole().getRoleName())).toList();
                 }
             }
             request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");
@@ -74,8 +70,7 @@ public class UserManagementServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!checkAdmin(request, response)) {
             return;
         }
@@ -122,6 +117,6 @@ public class UserManagementServlet extends HttpServlet {
         } else if ("add".equals(action)) {
             dao.addUser(user, roleId);
         }
-        response.sendRedirect("users");
+        response.sendRedirect(REDIRECT_USERS);
     }
 }
