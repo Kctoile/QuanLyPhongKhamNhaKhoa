@@ -34,9 +34,7 @@ public class UserManagementServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (!checkAdmin(request, response)) {
-            return;
-        }
+        if (!checkAdmin(request, response)) return;
         String action = request.getParameter("action");
         UserDAO dao = new UserDAO();
         if ("edit".equals(action)) {
@@ -52,7 +50,7 @@ public class UserManagementServlet extends HttpServlet {
         } else if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             dao.deleteUser(id);
-            response.sendRedirect(REDIRECT_USERS);  // <-- dùng constant
+            response.sendRedirect(REDIRECT_USERS);
         } else {
             List<User> list = dao.getAllUsers();
             String roleFilter = request.getParameter("role");
@@ -71,9 +69,7 @@ public class UserManagementServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (!checkAdmin(request, response)) {
-            return;
-        }
+        if (!checkAdmin(request, response)) return;
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         UserDAO dao = new UserDAO();
@@ -103,13 +99,9 @@ public class UserManagementServlet extends HttpServlet {
         user.setPassword(password);
         user.setPhone(phone);
         user.setGender(gender);
-        if (dobStr != null && !dobStr.isEmpty()) {
-            user.setDob(Date.valueOf(dobStr));
-        }
+        if (dobStr != null && !dobStr.isEmpty()) user.setDob(Date.valueOf(dobStr));
         user.setAddress(address);
-        if (roleId != null) {
-            user.setRoleId(roleId);
-        }
+        if (roleId != null) user.setRoleId(roleId);
         if ("update".equals(action)) {
             int id = Integer.parseInt(request.getParameter("userId"));
             user.setUserId(id);
@@ -117,6 +109,6 @@ public class UserManagementServlet extends HttpServlet {
         } else if ("add".equals(action)) {
             dao.addUser(user, roleId);
         }
-        response.sendRedirect(REDIRECT_USERS);  // <-- dùng constant
+        response.sendRedirect(REDIRECT_USERS);
     }
 }
