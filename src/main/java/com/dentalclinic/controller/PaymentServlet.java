@@ -27,9 +27,13 @@ public class PaymentServlet extends HttpServlet {
     private static final String STATUS_PENDING = "PENDING";
     private static final String STATUS_PAID = "PAID";
     private static final String STATUS_FAILED = "FAILED";
+    private static final String ATTR_ERROR = "error";
+    private static final String ATTR_SUCCESS = "success";
+    private static final String REDIRECT_PAYMENT = "payment?appointmentId=";
+    private static final String REDIRECT_APPOINTMENTS = "appointments";
 
-    private final AppointmentDAO appointmentDAO = new AppointmentDAO();
-    private final PaymentDAO paymentDAO = new PaymentDAO();
+    private final transient AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private final transient PaymentDAO paymentDAO = new PaymentDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -51,62 +55,77 @@ public class PaymentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect("login.jsp");
+        HttpSession session = validateSession(request, response);
+        if (session == null) {
             return;
         }
+
         Appointment appointment = getAllowedAppointment(request, response, session);
         if (appointment == null) {
             return;
         }
+
         String role = getRole(session);
         boolean canManagePayments = canManagePayments(role);
         String action = request.getParameter(PARAM_ACTION);
         Payment currentPayment = paymentDAO.getByAppointmentId(appointment.getAppointmentId());
 
+        if (handlePaymentAction(request, response, session, appointment, action, canManagePayments, currentPayment)) {
+            return;
+        }
+        if (currentPayment != null && currentPayment.isPaid()) {
+            session.setAttribute(ATTR_SUCCESS, "Lịch hẹn này đã thanh toán.");
+            response.sendRedirect(REDIRECT_PAYMENT + appointment.getAppointmentId());
+            return;
+        }
+        processNewPayment(request, response, session, appointment, canManagePayments);
+    }
+
+    private boolean handlePaymentAction(HttpServletRequest request, HttpServletResponse response,
+            HttpSession session, Appointment appointment,
+            String action, boolean canManagePayments, Payment currentPayment)
+            throws IOException {
         if ("confirm_bank_transfer".equals(action)) {
             if (!canManagePayments) {
-                session.setAttribute("error", "Bạn không có quyền xác nhận thanh toán.");
-                response.sendRedirect("payment?appointmentId=" + appointment.getAppointmentId());
-                return;
+                session.setAttribute(ATTR_ERROR, "Bạn không có quyền xác nhận thanh toán.");
+                response.sendRedirect(REDIRECT_PAYMENT + appointment.getAppointmentId());
+                return true;
             }
             paymentDAO.markStatus(appointment.getAppointmentId(), STATUS_PAID, "Đã nhận chuyển khoản");
-            session.setAttribute("success", "Đã xác nhận thanh toán chuyển khoản.");
-            response.sendRedirect("payment?appointmentId=" + appointment.getAppointmentId());
-            return;
+            session.setAttribute(ATTR_SUCCESS, "Đã xác nhận thanh toán chuyển khoản.");
+            response.sendRedirect(REDIRECT_PAYMENT + appointment.getAppointmentId());
+            return true;
         }
         if ("mark_failed".equals(action)) {
             if (!canManagePayments) {
-                session.setAttribute("error", "Bạn không có quyền cập nhật thanh toán.");
-                response.sendRedirect("payment?appointmentId=" + appointment.getAppointmentId());
-                return;
+                session.setAttribute(ATTR_ERROR, "Bạn không có quyền cập nhật thanh toán.");
+                response.sendRedirect(REDIRECT_PAYMENT + appointment.getAppointmentId());
+                return true;
             }
             if (currentPayment != null && currentPayment.isPaid()) {
-                session.setAttribute("error", "Giao dịch đã thanh toán không thể chuyển sang thất bại.");
-                response.sendRedirect("payment?appointmentId=" + appointment.getAppointmentId());
-                return;
+                session.setAttribute(ATTR_ERROR, "Giao dịch đã thanh toán không thể chuyển sang thất bại.");
+                response.sendRedirect(REDIRECT_PAYMENT + appointment.getAppointmentId());
+                return true;
             }
             paymentDAO.markStatus(appointment.getAppointmentId(), STATUS_FAILED, "Giao dịch không thành công");
-            session.setAttribute("success", "Đã cập nhật giao dịch thất bại.");
-            response.sendRedirect("payment?appointmentId=" + appointment.getAppointmentId());
-            return;
+            session.setAttribute(ATTR_SUCCESS, "Đã cập nhật giao dịch thất bại.");
+            response.sendRedirect(REDIRECT_PAYMENT + appointment.getAppointmentId());
+            return true;
         }
+        return false;
+    }
 
-        if (currentPayment != null && currentPayment.isPaid()) {
-            session.setAttribute("success", "Lịch hẹn này đã thanh toán.");
-            response.sendRedirect("payment?appointmentId=" + appointment.getAppointmentId());
-            return;
-        }
-
+    private void processNewPayment(HttpServletRequest request, HttpServletResponse response,
+            HttpSession session, Appointment appointment,
+            boolean canManagePayments) throws ServletException, IOException {
         String method = normalizeMethod(request.getParameter("method"));
         if (method == null) {
-            request.setAttribute("error", "Vui lòng chọn phương thức thanh toán hợp lệ.");
+            request.setAttribute(ATTR_ERROR, "Vui lòng chọn phương thức thanh toán hợp lệ.");
             forwardPaymentPage(request, response, session, appointment);
             return;
         }
         if (!canManagePayments && !METHOD_BANK_TRANSFER.equals(method)) {
-            request.setAttribute("error", "Vui lòng liên hệ lễ tân để thanh toán tiền mặt hoặc thẻ.");
+            request.setAttribute(ATTR_ERROR, "Vui lòng liên hệ lễ tân để thanh toán tiền mặt hoặc thẻ.");
             forwardPaymentPage(request, response, session, appointment);
             return;
         }
@@ -117,16 +136,25 @@ public class PaymentServlet extends HttpServlet {
         }
         Payment savedPayment = paymentDAO.saveOrUpdate(payment);
         if (savedPayment == null) {
-            request.setAttribute("error", "Không thể tạo giao dịch thanh toán. Vui lòng thử lại.");
+            request.setAttribute(ATTR_ERROR, "Không thể tạo giao dịch thanh toán. Vui lòng thử lại.");
             forwardPaymentPage(request, response, session, appointment);
             return;
         }
         if (METHOD_BANK_TRANSFER.equals(method)) {
-            session.setAttribute("success", "Đã tạo yêu cầu chuyển khoản. Vui lòng quét QR và chờ xác nhận.");
+            session.setAttribute(ATTR_SUCCESS, "Đã tạo yêu cầu chuyển khoản. Vui lòng quét QR và chờ xác nhận.");
         } else {
-            session.setAttribute("success", "Đã ghi nhận thanh toán thành công.");
+            session.setAttribute(ATTR_SUCCESS, "Đã ghi nhận thanh toán thành công.");
         }
-        response.sendRedirect("payment?appointmentId=" + appointment.getAppointmentId());
+        response.sendRedirect(REDIRECT_PAYMENT + appointment.getAppointmentId());
+    }
+
+    private HttpSession validateSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("login.jsp");
+            return null;
+        }
+        return session;
     }
 
     private Appointment getAllowedAppointment(HttpServletRequest request, HttpServletResponse response, HttpSession session)
@@ -135,19 +163,19 @@ public class PaymentServlet extends HttpServlet {
         try {
             appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
         } catch (Exception e) {
-            response.sendRedirect("appointments");
+            response.sendRedirect(REDIRECT_APPOINTMENTS);
             return null;
         }
         Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
         if (appointment == null) {
-            response.sendRedirect("appointments");
+            response.sendRedirect(REDIRECT_APPOINTMENTS);
             return null;
         }
         String role = getRole(session);
         Integer userId = (Integer) session.getAttribute("userId");
         boolean owner = appointment.getPatientId() != null && appointment.getPatientId().equals(userId);
         if (!canManagePayments(role) && !owner) {
-            response.sendRedirect("appointments");
+            response.sendRedirect(REDIRECT_APPOINTMENTS);
             return null;
         }
         return appointment;
@@ -203,7 +231,7 @@ public class PaymentServlet extends HttpServlet {
             String cardLast4 = request.getParameter("cardLast4");
             if (!canManagePayments || cardBrand == null || cardBrand.isBlank()
                     || cardLast4 == null || !cardLast4.matches("\\d{4}")) {
-                request.setAttribute("error", "Vui lòng nhập hãng thẻ và 4 số cuối hợp lệ.");
+                request.setAttribute(ATTR_ERROR, "Vui lòng nhập hãng thẻ và 4 số cuối hợp lệ.");
                 return null;
             }
             payment.setStatus(STATUS_PAID);
