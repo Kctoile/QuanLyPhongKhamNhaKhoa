@@ -66,7 +66,7 @@ public class AppointmentDAO {
                 }
             }
             int appointmentId;
-            try (PreparedStatement ps = conn.prepareStatement(insertAppointmentSql, Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = conn.prepareStatement(insertAppointmentSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 if (appt.getPatientId() == null) {
                     ps.setNull(1, java.sql.Types.INTEGER);
                 } else {
