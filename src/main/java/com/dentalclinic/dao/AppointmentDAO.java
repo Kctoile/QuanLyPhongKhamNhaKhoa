@@ -8,13 +8,15 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 public class AppointmentDAO {
+
+    private static final String COLUMN_PATIENT_ID = "patient_id";
+    private static final String COLUMN_DOCTOR_ID = "doctor_id";
 
     public static final int BOOKING_SLOT_TAKEN = -2;
     public static final int BOOKING_FAILED = -1;
@@ -156,11 +158,11 @@ public class AppointmentDAO {
         if (hasColumn(rs, "appointment_id")) {
             appt.setAppointmentId(rs.getInt("appointment_id"));
         }
-        if (hasColumn(rs, "patient_id")) {
-            appt.setPatientId(rs.getObject("patient_id") != null ? rs.getInt("patient_id") : null);
+        if (hasColumn(rs, COLUMN_PATIENT_ID)) {
+            appt.setPatientId(rs.getObject(COLUMN_PATIENT_ID) != null ? rs.getInt(COLUMN_PATIENT_ID) : null);
         }
-        if (hasColumn(rs, "doctor_id")) {
-            appt.setDoctorId(rs.getObject("doctor_id") != null ? rs.getInt("doctor_id") : null);
+        if (hasColumn(rs, COLUMN_DOCTOR_ID)) {
+            appt.setDoctorId(rs.getObject(COLUMN_DOCTOR_ID) != null ? rs.getInt(COLUMN_DOCTOR_ID) : null);
         }
         if (hasColumn(rs, "appointment_date")) {
             appt.setAppointmentDate(rs.getDate("appointment_date"));
