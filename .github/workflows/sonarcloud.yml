@@ -33,5 +33,4 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Kctoile_DenCli -Dsonar.organization=kctoile -Dfile.encoding=UTF-8
-
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Kctoile_DenCli -Dsonar.organization=kctoile -Dfile.encoding=UTF-8 -Dsonar.sourceEncoding=UTF-8
