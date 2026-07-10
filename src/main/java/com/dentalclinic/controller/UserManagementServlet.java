@@ -11,12 +11,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet("/users")
+@WebServlet("/" + UserManagementServlet.REDIRECT_USERS)
 public class UserManagementServlet extends HttpServlet {
-
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(UserManagementServlet.class.getName());
-    private static final String REDIRECT_USERS = "users";
+    public static final String REDIRECT_USERS = "users";
 
     private boolean checkAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
@@ -39,6 +38,7 @@ public class UserManagementServlet extends HttpServlet {
         }
         String action = request.getParameter("action");
         UserDAO dao = new UserDAO();
+        
         if ("edit".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             User user = dao.getUserById(id);
@@ -56,6 +56,7 @@ public class UserManagementServlet extends HttpServlet {
         } else {
             List<User> list = dao.getAllUsers();
             String roleFilter = request.getParameter("role");
+            
             if (roleFilter != null && !roleFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(roleFilter)) {
                 if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
                     list = list.stream().filter(u -> u.getRole() == null).toList();
@@ -64,8 +65,8 @@ public class UserManagementServlet extends HttpServlet {
                 }
             }
             request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");
-            request.setAttribute("users", list);
-            request.getRequestDispatcher("users.jsp").forward(request, response);
+            request.setAttribute(REDIRECT_USERS, list);
+            request.getRequestDispatcher(REDIRECT_USERS + ".jsp").forward(request, response);
         }
     }
 
@@ -74,49 +75,57 @@ public class UserManagementServlet extends HttpServlet {
         if (!checkAdmin(request, response)) {
             return;
         }
-        request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
-        UserDAO dao = new UserDAO();
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
-        String password = request.getParameter("password");
         String phone = request.getParameter("phone");
-        String gender = request.getParameter("gender");
-        String dobStr = request.getParameter("dob");
         String address = request.getParameter("address");
-        String roleIdStr = request.getParameter("roleId");
-        Integer roleId = null;
-        if (roleIdStr != null && !roleIdStr.trim().isEmpty()) {
-            try {
-                roleId = Integer.parseInt(roleIdStr);
-            } catch (NumberFormatException e) {
-                LOGGER.log(Level.WARNING, "Invalid roleId format: {0}", roleIdStr);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid role ID format.");
-                return;
+        String dateOfBirthStr = request.getParameter("dateOfBirth");
+        Date dateOfBirth = (dateOfBirthStr != null && !dateOfBirthStr.trim().isEmpty()) ? Date.valueOf(dateOfBirthStr) : null;
+        String gender = request.getParameter("gender");
+        String username = request.getParameter("username");
+        String statusStr = request.getParameter("status");
+        boolean status = "true".equalsIgnoreCase(statusStr);
+        UserDAO dao = new UserDAO();
+
+        String roleStr = request.getParameter("role");
+        Integer roleId = (roleStr != null && !roleStr.isEmpty()) ? Integer.valueOf(roleStr) : null;
+
+        if ("add".equals(action)) {
+            String password = request.getParameter("password");
+            User user = new User();
+            user.setFullName(fullName);
+            user.setEmail(email);
+            user.setPhone(phone);
+            user.setAddress(address);
+            user.setDateOfBirth(dateOfBirth);
+            user.setGender(gender);
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setStatus(status);
+            dao.registerUser(user, roleId);
+            response.sendRedirect(REDIRECT_USERS);
+        } else if ("update".equals(action)) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            User user = dao.getUserById(id);
+            if (user != null) {
+                user.setFullName(fullName);
+                user.setEmail(email);
+                user.setPhone(phone);
+                user.setAddress(address);
+                user.setDateOfBirth(dateOfBirth);
+                user.setGender(gender);
+                user.setUsername(username);
+                user.setStatus(status);
+                String password = request.getParameter("password");
+                if (password != null && !password.trim().isEmpty()) {
+                    user.setPassword(password);
+                }
+                dao.updateUserAndRole(user, roleId);
             }
+            response.sendRedirect(REDIRECT_USERS);
         } else {
-            LOGGER.log(Level.WARNING, "roleId is missing or empty.");
+            response.sendRedirect(REDIRECT_USERS);
         }
-        User user = new User();
-        user.setFullName(fullName);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setPhone(phone);
-        user.setGender(gender);
-        if (dobStr != null && !dobStr.isEmpty()) {
-            user.setDob(Date.valueOf(dobStr));
-        }
-        user.setAddress(address);
-        if (roleId != null) {
-            user.setRoleId(roleId);
-        }
-        if ("update".equals(action)) {
-            int id = Integer.parseInt(request.getParameter("userId"));
-            user.setUserId(id);
-            dao.updateUser(user, roleId);
-        } else if ("add".equals(action)) {
-            dao.addUser(user, roleId);
-        }
-        response.sendRedirect(REDIRECT_USERS);
     }
 }
