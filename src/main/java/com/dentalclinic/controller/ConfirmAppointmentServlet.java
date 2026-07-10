@@ -11,7 +11,7 @@ import java.io.IOException;
 @WebServlet("/ConfirmAppointmentServlet")
 public class ConfirmAppointmentServlet extends HttpServlet {
 
-    private final transient AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private final AppointmentDAO appointmentDAO = new AppointmentDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -23,7 +23,7 @@ public class ConfirmAppointmentServlet extends HttpServlet {
             return;
         }
         int appointmentId = Integer.parseInt(appointmentIdStr);
-        boolean success = appointmentDAO.updateStatus(appointmentId, "CONFIRMED");
+        appointmentDAO.updateStatus(appointmentId, "CONFIRMED");
         response.sendRedirect(request.getContextPath() + "/staff.jsp");
     }
 }

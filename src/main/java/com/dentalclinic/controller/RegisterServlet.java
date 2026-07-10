@@ -8,11 +8,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 
-    private final transient UserDAO userDAO = new UserDAO();
+    private static final Logger LOGGER = Logger.getLogger(RegisterServlet.class.getName());
+    private final UserDAO userDAO = new UserDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -42,13 +45,15 @@ public class RegisterServlet extends HttpServlet {
         user.setPhone(phone);
         user.setGender(gender);
         user.setAddress(address);
+
         if (dobStr != null && !dobStr.trim().isEmpty()) {
             try {
                 user.setDob(java.sql.Date.valueOf(dobStr));
             } catch (IllegalArgumentException e) {
-                System.err.println("Invalid date of birth: " + dobStr);
+                LOGGER.log(Level.WARNING, "Invalid date of birth: {0}", dobStr);
             }
         }
+
         Integer unassignedRoleId = null;
         boolean isSuccess = userDAO.addUser(user, unassignedRoleId);
         if (isSuccess) {

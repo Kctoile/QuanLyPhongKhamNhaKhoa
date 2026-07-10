@@ -5,12 +5,13 @@ import com.dentalclinic.utils.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceDAO {
 
-    private Service mapResultSetToService(ResultSet rs) throws Exception {
+    private Service mapResultSetToService(ResultSet rs) throws SQLException {
         Service service = new Service();
         service.setServiceId(rs.getInt("service_id"));
         service.setServiceName(rs.getString("service_name"));
@@ -22,29 +23,26 @@ public class ServiceDAO {
 
     public List<Service> getAll() {
         List<Service> list = new ArrayList<>();
-        String sql = "SELECT * FROM services";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT service_id, service_name, description, price, duration_minutes FROM services";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(mapResultSetToService(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
 
     public Service getServiceById(int id) {
-        String sql = "SELECT * FROM services WHERE service_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT service_id, service_name, description, price, duration_minutes FROM services WHERE service_id = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return mapResultSetToService(rs);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -52,17 +50,17 @@ public class ServiceDAO {
 
     public boolean addService(Service service) {
         String sql = "INSERT INTO services (service_name, description, price, duration_minutes) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, service.getServiceName());
             ps.setString(2, service.getDescription());
             ps.setBigDecimal(3, service.getPrice());
-            if (service.getDurationMinutes() == null)
+            if (service.getDurationMinutes() == null) {
                 ps.setNull(4, java.sql.Types.INTEGER);
-            else
+            } else {
                 ps.setInt(4, service.getDurationMinutes());
+            }
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -70,18 +68,18 @@ public class ServiceDAO {
 
     public boolean updateService(Service service) {
         String sql = "UPDATE services SET service_name = ?, description = ?, price = ?, duration_minutes = ? WHERE service_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, service.getServiceName());
             ps.setString(2, service.getDescription());
             ps.setBigDecimal(3, service.getPrice());
-            if (service.getDurationMinutes() == null)
+            if (service.getDurationMinutes() == null) {
                 ps.setNull(4, java.sql.Types.INTEGER);
-            else
+            } else {
                 ps.setInt(4, service.getDurationMinutes());
+            }
             ps.setInt(5, service.getServiceId());
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -89,11 +87,10 @@ public class ServiceDAO {
 
     public boolean deleteService(int id) {
         String sql = "DELETE FROM services WHERE service_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -101,15 +98,14 @@ public class ServiceDAO {
 
     public List<Service> searchServices(String keyword) {
         List<Service> list = new ArrayList<>();
-        String sql = "SELECT * FROM services WHERE service_name LIKE ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT service_id, service_name, description, price, duration_minutes FROM services WHERE service_name LIKE ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(mapResultSetToService(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;

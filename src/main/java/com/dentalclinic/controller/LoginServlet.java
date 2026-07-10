@@ -13,36 +13,28 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-
         UserDAO dao = new UserDAO();
         User user = dao.login(email, password);
-
         if (user != null) {
             if (user.getRole() == null) {
                 request.setAttribute("error", "Tài khoản chưa được gán vai trò. Vui lòng chờ quản trị viên xét duyệt.");
                 request.getRequestDispatcher("/login.jsp").forward(request, response);
                 return;
             }
-
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("fullName", user.getFullName());
-
             String role = user.getRole().getRoleName().toUpperCase().trim();
             session.setAttribute("role", role);
-
             if (role == null || role.isEmpty()) {
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
                 return;
             }
-
             switch (role) {
                 case "ADMIN":
                     response.sendRedirect(request.getContextPath() + "/admin");
@@ -52,9 +44,6 @@ public class LoginServlet extends HttpServlet {
                     break;
                 case "STAFF":
                     response.sendRedirect(request.getContextPath() + "/staff");
-                    break;
-                case "CUSTOMER":
-                    response.sendRedirect(request.getContextPath() + "/appointments");
                     break;
                 default:
                     response.sendRedirect(request.getContextPath() + "/index.jsp");

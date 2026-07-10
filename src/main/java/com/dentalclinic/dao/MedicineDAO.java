@@ -5,12 +5,13 @@ import com.dentalclinic.utils.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MedicineDAO {
 
-    private Medicine mapResultSetToMedicine(ResultSet rs) throws Exception {
+    private Medicine mapResultSetToMedicine(ResultSet rs) throws SQLException {
         Medicine medicine = new Medicine();
         medicine.setMedicineId(rs.getInt("medicine_id"));
         medicine.setMedicineName(rs.getString("medicine_name"));
@@ -21,26 +22,26 @@ public class MedicineDAO {
 
     public List<Medicine> getAll() {
         List<Medicine> list = new ArrayList<>();
-        String sql = "SELECT * FROM medicines";
+        String sql = "SELECT medicine_id, medicine_name, price, stock_quantity FROM medicines";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(mapResultSetToMedicine(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
 
     public Medicine getMedicineById(int id) {
-        String sql = "SELECT * FROM medicines WHERE medicine_id = ?";
+        String sql = "SELECT medicine_id, medicine_name, price, stock_quantity FROM medicines WHERE medicine_id = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return mapResultSetToMedicine(rs);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -53,7 +54,7 @@ public class MedicineDAO {
             ps.setBigDecimal(2, medicine.getPrice());
             ps.setInt(3, medicine.getStockQuantity());
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -67,7 +68,7 @@ public class MedicineDAO {
             ps.setInt(3, medicine.getStockQuantity());
             ps.setInt(4, medicine.getMedicineId());
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -78,7 +79,7 @@ public class MedicineDAO {
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -86,14 +87,14 @@ public class MedicineDAO {
 
     public List<Medicine> searchMedicines(String keyword) {
         List<Medicine> list = new ArrayList<>();
-        String sql = "SELECT * FROM medicines WHERE medicine_name LIKE ?";
+        String sql = "SELECT medicine_id, medicine_name, price, stock_quantity FROM medicines WHERE medicine_name LIKE ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(mapResultSetToMedicine(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
@@ -105,7 +106,7 @@ public class MedicineDAO {
             if (rs.next()) {
                 return rs.getInt(1);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
@@ -119,25 +120,9 @@ public class MedicineDAO {
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
-
-    public int getStock(int medicineId) {
-        String sql = "SELECT stock_quantity FROM medicines WHERE medicine_id = ?";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, medicineId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("stock_quantity");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
 }

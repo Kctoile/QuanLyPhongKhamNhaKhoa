@@ -7,8 +7,8 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -33,7 +33,7 @@ public class AppointmentDAO {
                     return rs.getInt(1) > 0;
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -92,9 +92,9 @@ public class AppointmentDAO {
                 }
             }
 
+            // Set appointmentId once before the loop (loop-invariant)
             try (PreparedStatement ps = conn.prepareStatement(insertServiceSql)) {
                 for (Integer serviceId : normalizedServiceIds) {
-                    ps.setInt(1, appointmentId);
                     ps.setInt(2, serviceId);
                     ps.addBatch();
                 }
@@ -118,7 +118,7 @@ public class AppointmentDAO {
                 try {
                     conn.setAutoCommit(true);
                     conn.close();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -134,7 +134,8 @@ public class AppointmentDAO {
         for (String rawId : serviceIds) {
             try {
                 ids.add(Integer.parseInt(rawId.trim()));
-            } catch (Exception ignored) {
+            } catch (NumberFormatException ignored) {
+                // Ignored: skip invalid service IDs
             }
         }
         return ids;
@@ -144,7 +145,8 @@ public class AppointmentDAO {
         if (conn != null) {
             try {
                 conn.rollback();
-            } catch (Exception ignored) {
+            } catch (SQLException ignored) {
+                // Ignored: rollback failure is non-critical
             }
         }
     }
@@ -154,7 +156,7 @@ public class AppointmentDAO {
                 || (e.getMessage() != null && e.getMessage().contains("UX_appointments_doctor_slot_active"));
     }
 
-    private Appointment mapResultSetToAppointment(ResultSet rs) throws Exception {
+    private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
         Appointment appt = new Appointment();
         if (hasColumn(rs, "appointment_id")) {
             appt.setAppointmentId(rs.getInt("appointment_id"));
@@ -199,14 +201,15 @@ public class AppointmentDAO {
         try {
             rs.findColumn(columnName);
             return true;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             return false;
         }
     }
 
     public List<Appointment> getAll() {
         List<Appointment> list = new ArrayList<>();
-        String sql = "SELECT a.*, p.full_name as patient_name, d.full_name as doctor_name "
+        String sql = "SELECT a.appointment_id, a.patient_id, a.doctor_id, a.appointment_date, a.appointment_time, a.status, a.notes, a.room, "
+                + "p.full_name as patient_name, d.full_name as doctor_name "
                 + "FROM appointments a "
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
                 + "LEFT JOIN users d ON a.doctor_id = d.user_id "
@@ -215,14 +218,15 @@ public class AppointmentDAO {
             while (rs.next()) {
                 list.add(mapResultSetToAppointment(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
 
     public Appointment getAppointmentById(int id) {
-        String sql = "SELECT a.*, p.full_name as patient_name, d.full_name as doctor_name "
+        String sql = "SELECT a.appointment_id, a.patient_id, a.doctor_id, a.appointment_date, a.appointment_time, a.status, a.notes, a.room, "
+                + "p.full_name as patient_name, d.full_name as doctor_name "
                 + "FROM appointments a "
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
                 + "LEFT JOIN users d ON a.doctor_id = d.user_id "
@@ -233,7 +237,7 @@ public class AppointmentDAO {
             if (rs.next()) {
                 return mapResultSetToAppointment(rs);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -266,7 +270,7 @@ public class AppointmentDAO {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return -1;
@@ -287,7 +291,7 @@ public class AppointmentDAO {
             ps.setString(6, appt.getRoom());
             ps.setInt(7, appt.getAppointmentId());
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -299,7 +303,7 @@ public class AppointmentDAO {
             ps.setString(1, status);
             ps.setInt(2, appointmentId);
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -311,7 +315,7 @@ public class AppointmentDAO {
             ps.setString(1, room);
             ps.setInt(2, appointmentId);
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -319,7 +323,8 @@ public class AppointmentDAO {
 
     public List<Appointment> getAppointmentsByPatient(int patientId) {
         List<Appointment> list = new ArrayList<>();
-        String sql = "SELECT a.*, d.full_name as doctor_name FROM appointments a "
+        String sql = "SELECT a.appointment_id, a.patient_id, a.doctor_id, a.appointment_date, a.appointment_time, a.status, a.notes, a.room, "
+                + "d.full_name as doctor_name FROM appointments a "
                 + "LEFT JOIN users d ON a.doctor_id = d.user_id "
                 + "WHERE a.patient_id = ? ORDER BY a.appointment_date DESC, a.appointment_time DESC, a.appointment_id ASC";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -328,7 +333,7 @@ public class AppointmentDAO {
             while (rs.next()) {
                 list.add(mapResultSetToAppointment(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
@@ -336,7 +341,8 @@ public class AppointmentDAO {
 
     public List<Appointment> getAppointmentsByDoctor(int doctorId) {
         List<Appointment> list = new ArrayList<>();
-        String sql = "SELECT a.*, p.full_name as patient_name FROM appointments a "
+        String sql = "SELECT a.appointment_id, a.patient_id, a.doctor_id, a.appointment_date, a.appointment_time, a.status, a.notes, a.room, "
+                + "p.full_name as patient_name FROM appointments a "
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
                 + "WHERE a.doctor_id = ? "
                 + "ORDER BY CASE WHEN a.status = 'Checked In' THEN 0 "
@@ -350,7 +356,7 @@ public class AppointmentDAO {
             while (rs.next()) {
                 list.add(mapResultSetToAppointment(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
@@ -362,13 +368,13 @@ public class AppointmentDAO {
             if (rs.next()) {
                 return rs.getInt(1);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
 
-    public boolean deleteAppointment(int appointmentId) {
+    private boolean executeDeleteAppointment(Connection conn, int appointmentId) throws SQLException {
         String sql1 = "DELETE FROM prescription_details WHERE prescription_id IN "
                 + "(SELECT prescription_id FROM prescriptions WHERE result_id IN "
                 + "(SELECT result_id FROM examination_results WHERE appointment_id = ?))";
@@ -380,37 +386,46 @@ public class AppointmentDAO {
         String sql5 = "DELETE FROM appointment_services WHERE appointment_id = ?";
         String sql6 = "DELETE FROM appointments WHERE appointment_id = ?";
 
+        try (PreparedStatement ps1 = conn.prepareStatement(sql1); PreparedStatement ps2 = conn.prepareStatement(sql2); PreparedStatement ps3 = conn.prepareStatement(sql3); PreparedStatement ps4 = conn.prepareStatement(sql4); PreparedStatement ps5 = conn.prepareStatement(sql5); PreparedStatement ps6 = conn.prepareStatement(sql6)) {
+            ps1.setInt(1, appointmentId);
+            ps1.executeUpdate();
+            ps2.setInt(1, appointmentId);
+            ps2.executeUpdate();
+            ps3.setInt(1, appointmentId);
+            ps3.executeUpdate();
+            ps4.setInt(1, appointmentId);
+            ps4.executeUpdate();
+            ps5.setInt(1, appointmentId);
+            ps5.executeUpdate();
+            ps6.setInt(1, appointmentId);
+            boolean result = ps6.executeUpdate() > 0;
+            return result;
+        }
+    }
+
+    public boolean deleteAppointment(int appointmentId) {
         Connection conn = null;
         try {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false);
-            try (PreparedStatement ps1 = conn.prepareStatement(sql1); PreparedStatement ps2 = conn.prepareStatement(sql2); PreparedStatement ps3 = conn.prepareStatement(sql3); PreparedStatement ps4 = conn.prepareStatement(sql4); PreparedStatement ps5 = conn.prepareStatement(sql5); PreparedStatement ps6 = conn.prepareStatement(sql6)) {
-                ps1.setInt(1, appointmentId);
-                ps1.executeUpdate();
-                ps2.setInt(1, appointmentId);
-                ps2.executeUpdate();
-                ps3.setInt(1, appointmentId);
-                ps3.executeUpdate();
-                ps4.setInt(1, appointmentId);
-                ps4.executeUpdate();
-                ps5.setInt(1, appointmentId);
-                ps5.executeUpdate();
-                ps6.setInt(1, appointmentId);
-                boolean result = ps6.executeUpdate() > 0;
-                conn.commit();
-                return result;
-            } catch (Exception e) {
-                conn.rollback();
-                e.printStackTrace();
+            boolean result = executeDeleteAppointment(conn, appointmentId);
+            conn.commit();
+            return result;
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ignored) {
+                    // Ignored: rollback failure is non-critical
+                }
             }
-        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (conn != null) {
                 try {
                     conn.setAutoCommit(true);
                     conn.close();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -420,7 +435,8 @@ public class AppointmentDAO {
 
     public List<Appointment> searchAppointments(String query) {
         List<Appointment> list = new ArrayList<>();
-        String sql = "SELECT a.*, p.full_name as patient_name, d.full_name as doctor_name "
+        String sql = "SELECT a.appointment_id, a.patient_id, a.doctor_id, a.appointment_date, a.appointment_time, a.status, a.notes, a.room, "
+                + "p.full_name as patient_name, d.full_name as doctor_name "
                 + "FROM appointments a "
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
                 + "LEFT JOIN users d ON a.doctor_id = d.user_id "
@@ -434,7 +450,7 @@ public class AppointmentDAO {
                     list.add(mapResultSetToAppointment(rs));
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
@@ -442,7 +458,8 @@ public class AppointmentDAO {
 
     public List<Appointment> getAppointmentsByDate(java.sql.Date date) {
         List<Appointment> list = new ArrayList<>();
-        String sql = "SELECT a.*, p.full_name as patient_name, d.full_name as doctor_name "
+        String sql = "SELECT a.appointment_id, a.patient_id, a.doctor_id, a.appointment_date, a.appointment_time, a.status, a.notes, a.room, "
+                + "p.full_name as patient_name, d.full_name as doctor_name "
                 + "FROM appointments a "
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
                 + "LEFT JOIN users d ON a.doctor_id = d.user_id "
@@ -454,7 +471,7 @@ public class AppointmentDAO {
             while (rs.next()) {
                 list.add(mapResultSetToAppointment(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;

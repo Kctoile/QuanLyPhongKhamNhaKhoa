@@ -2,16 +2,15 @@ package com.dentalclinic.dao;
 
 import com.dentalclinic.model.Prescription;
 import com.dentalclinic.utils.DBConnection;
-import java.sql.Statement;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class PrescriptionDAO {
 
     public Prescription getPrescriptionByResultId(int resultId) {
-        String sql = "SELECT * FROM prescriptions WHERE result_id = ?";
+        String sql = "SELECT prescription_id, result_id, instructions FROM prescriptions WHERE result_id = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, resultId);
             ResultSet rs = ps.executeQuery();
@@ -22,7 +21,7 @@ public class PrescriptionDAO {
                 p.setInstructions(rs.getString("instructions"));
                 return p;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -45,7 +44,7 @@ public class PrescriptionDAO {
             } else {
                 String insertSql = "INSERT INTO prescriptions (result_id, instructions) VALUES (?, ?)";
                 try (PreparedStatement insertPs = conn.prepareStatement(insertSql,
-                        Statement.RETURN_GENERATED_KEYS)) {
+                        PreparedStatement.RETURN_GENERATED_KEYS)) {
                     insertPs.setInt(1, p.getResultId());
                     insertPs.setString(2, p.getInstructions());
                     insertPs.executeUpdate();
@@ -56,7 +55,7 @@ public class PrescriptionDAO {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return -1;

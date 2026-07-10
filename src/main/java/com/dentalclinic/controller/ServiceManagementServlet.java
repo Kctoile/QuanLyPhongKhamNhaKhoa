@@ -30,25 +30,22 @@ public class ServiceManagementServlet extends HttpServlet {
         if (!checkAdmin(request, response)) {
             return;
         }
-
         ServiceDAO dao = new ServiceDAO();
         String action = request.getParameter("action");
         String keyword = request.getParameter("keyword");
-
         if ("delete".equals(action)) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 dao.deleteService(id);
             } catch (NumberFormatException ignored) {
+                // Ignored: invalid ID parameter
             }
             response.sendRedirect("services");
             return;
         }
-
         List<Service> list = (keyword != null && !keyword.trim().isEmpty())
                 ? dao.searchServices(keyword.trim())
                 : dao.getAll();
-
         request.setAttribute("list", list);
         request.setAttribute("keyword", keyword);
         request.getRequestDispatcher("/services.jsp").forward(request, response);
@@ -60,32 +57,20 @@ public class ServiceManagementServlet extends HttpServlet {
         if (!checkAdmin(request, response)) {
             return;
         }
-
         request.setCharacterEncoding("UTF-8");
         ServiceDAO dao = new ServiceDAO();
         String action = request.getParameter("action");
-
         try {
             String serviceName = request.getParameter("serviceName");
             String description = request.getParameter("description");
             BigDecimal price = new BigDecimal(request.getParameter("price"));
-
-            // === VALIDATION: Giá không được âm ===
-            if (price.compareTo(BigDecimal.ZERO) < 0) {
-                request.setAttribute("error", "Giá dịch vụ không được âm.");
-                request.getRequestDispatcher("/services").forward(request, response);
-                return;
-            }
-
             String durationStr = request.getParameter("durationMinutes");
             Integer durationMinutes = (durationStr != null && !durationStr.isEmpty()) ? Integer.parseInt(durationStr) : null;
-
             Service service = new Service();
             service.setServiceName(serviceName);
             service.setDescription(description);
             service.setPrice(price);
             service.setDurationMinutes(durationMinutes);
-
             if ("add".equals(action)) {
                 dao.addService(service);
             } else if ("edit".equals(action)) {
@@ -95,11 +80,7 @@ public class ServiceManagementServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Lỗi: " + e.getMessage());
-            request.getRequestDispatcher("/services").forward(request, response);
-            return;
         }
         response.sendRedirect("services");
     }
-
 }

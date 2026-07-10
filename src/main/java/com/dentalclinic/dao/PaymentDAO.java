@@ -3,11 +3,11 @@ package com.dentalclinic.dao;
 import com.dentalclinic.model.Payment;
 import com.dentalclinic.model.PaymentItem;
 import com.dentalclinic.utils.DBConnection;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -16,16 +16,17 @@ import java.util.List;
 public class PaymentDAO {
 
     public Payment getByAppointmentId(int appointmentId) {
-        String sql = "SELECT * FROM payments WHERE appointment_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT payment_id, appointment_id, amount, method, status, transaction_code, "
+                + "gateway_reference, card_brand, card_last4, qr_content, notes, paid_at, created_at, updated_at "
+                + "FROM payments WHERE appointment_id = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, appointmentId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return mapPayment(rs);
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -44,8 +45,7 @@ public class PaymentDAO {
     public boolean markStatus(int appointmentId, String status, String notes) {
         String sql = "UPDATE payments SET status = ?, notes = ?, paid_at = ?, updated_at = CURRENT_TIMESTAMP "
                 + "WHERE appointment_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setString(2, notes);
             if ("PAID".equalsIgnoreCase(status)) {
@@ -55,7 +55,7 @@ public class PaymentDAO {
             }
             ps.setInt(4, appointmentId);
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -64,19 +64,17 @@ public class PaymentDAO {
     public BigDecimal calculateAppointmentAmount(int appointmentId) {
         BigDecimal serviceTotal = queryAmount(
                 "SELECT COALESCE(SUM(s.price), 0) AS total "
-                        + "FROM appointment_services aps "
-                        + "JOIN services s ON aps.service_id = s.service_id "
-                        + "WHERE aps.appointment_id = ?",
+                + "FROM appointment_services aps "
+                + "JOIN services s ON aps.service_id = s.service_id "
+                + "WHERE aps.appointment_id = ?",
                 appointmentId);
-
         BigDecimal medicineTotal = queryAmount(
                 "SELECT COALESCE(SUM(CAST(pd.prescribed_quantity AS DECIMAL(12,2)) * pd.unit_price), 0) AS total "
-                        + "FROM examination_results er "
-                        + "JOIN prescriptions p ON p.result_id = er.result_id "
-                        + "JOIN prescription_details pd ON pd.prescription_id = p.prescription_id "
-                        + "WHERE er.appointment_id = ?",
+                + "FROM examination_results er "
+                + "JOIN prescriptions p ON p.result_id = er.result_id "
+                + "JOIN prescription_details pd ON pd.prescription_id = p.prescription_id "
+                + "WHERE er.appointment_id = ?",
                 appointmentId);
-
         return serviceTotal.add(medicineTotal);
     }
 
@@ -91,8 +89,7 @@ public class PaymentDAO {
         String sql = "INSERT INTO payments (appointment_id, amount, method, status, transaction_code, "
                 + "gateway_reference, card_brand, card_last4, qr_content, notes, paid_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             bindPayment(ps, payment);
             if (ps.executeUpdate() > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -102,7 +99,7 @@ public class PaymentDAO {
                 }
                 return payment;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -112,8 +109,7 @@ public class PaymentDAO {
         String sql = "UPDATE payments SET amount = ?, method = ?, status = ?, transaction_code = ?, "
                 + "gateway_reference = ?, card_brand = ?, card_last4 = ?, qr_content = ?, notes = ?, "
                 + "paid_at = ?, updated_at = CURRENT_TIMESTAMP WHERE appointment_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setBigDecimal(1, payment.getAmount());
             ps.setString(2, payment.getMethod());
             ps.setString(3, payment.getStatus());
@@ -126,13 +122,13 @@ public class PaymentDAO {
             setNullableTimestamp(ps, 10, payment.getPaidAt());
             ps.setInt(11, payment.getAppointmentId());
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    private void bindPayment(PreparedStatement ps, Payment payment) throws Exception {
+    private void bindPayment(PreparedStatement ps, Payment payment) throws SQLException {
         ps.setInt(1, payment.getAppointmentId());
         ps.setBigDecimal(2, payment.getAmount());
         ps.setString(3, payment.getMethod());
@@ -146,7 +142,7 @@ public class PaymentDAO {
         setNullableTimestamp(ps, 11, payment.getPaidAt());
     }
 
-    private void setNullableTimestamp(PreparedStatement ps, int index, Timestamp value) throws Exception {
+    private void setNullableTimestamp(PreparedStatement ps, int index, Timestamp value) throws SQLException {
         if (value == null) {
             ps.setNull(index, java.sql.Types.TIMESTAMP);
         } else {
@@ -154,7 +150,7 @@ public class PaymentDAO {
         }
     }
 
-    private Payment mapPayment(ResultSet rs) throws Exception {
+    private Payment mapPayment(ResultSet rs) throws SQLException {
         Payment payment = new Payment();
         payment.setPaymentId(rs.getInt("payment_id"));
         payment.setAppointmentId(rs.getInt("appointment_id"));
@@ -174,8 +170,7 @@ public class PaymentDAO {
     }
 
     private BigDecimal queryAmount(String sql, int appointmentId) {
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, appointmentId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -183,7 +178,7 @@ public class PaymentDAO {
                     return value != null ? value : BigDecimal.ZERO;
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return BigDecimal.ZERO;
@@ -194,8 +189,7 @@ public class PaymentDAO {
                 + "FROM appointment_services aps "
                 + "JOIN services s ON aps.service_id = s.service_id "
                 + "WHERE aps.appointment_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, appointmentId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -208,7 +202,7 @@ public class PaymentDAO {
                     items.add(item);
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -221,8 +215,7 @@ public class PaymentDAO {
                 + "JOIN prescription_details pd ON pd.prescription_id = p.prescription_id "
                 + "JOIN medicines m ON m.medicine_id = pd.medicine_id "
                 + "WHERE er.appointment_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, appointmentId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -235,7 +228,7 @@ public class PaymentDAO {
                     items.add(item);
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

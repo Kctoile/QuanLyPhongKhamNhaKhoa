@@ -27,27 +27,25 @@ public class MedicineManagementServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!checkAdmin(request, response))
+        if (!checkAdmin(request, response)) {
             return;
-
+        }
         MedicineDAO dao = new MedicineDAO();
         String action = request.getParameter("action");
         String keyword = request.getParameter("keyword");
-
         if ("delete".equals(action)) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 dao.deleteMedicine(id);
             } catch (NumberFormatException ignored) {
+                // Ignored: invalid ID parameter
             }
             response.sendRedirect("medicines");
             return;
         }
-
         List<Medicine> list = (keyword != null && !keyword.trim().isEmpty())
                 ? dao.searchMedicines(keyword.trim())
                 : dao.getAll();
-
         request.setAttribute("list", list);
         request.setAttribute("keyword", keyword);
         request.getRequestDispatcher("/medicines.jsp").forward(request, response);
@@ -56,23 +54,20 @@ public class MedicineManagementServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!checkAdmin(request, response))
+        if (!checkAdmin(request, response)) {
             return;
+        }
         request.setCharacterEncoding("UTF-8");
-
         MedicineDAO dao = new MedicineDAO();
         String action = request.getParameter("action");
-
         try {
             String medicineName = request.getParameter("medicineName");
             BigDecimal price = new BigDecimal(request.getParameter("price"));
             int stockQuantity = Integer.parseInt(request.getParameter("stockQuantity"));
-
             Medicine medicine = new Medicine();
             medicine.setMedicineName(medicineName);
             medicine.setPrice(price);
             medicine.setStockQuantity(stockQuantity);
-
             if ("add".equals(action)) {
                 dao.addMedicine(medicine);
             } else if ("edit".equals(action)) {

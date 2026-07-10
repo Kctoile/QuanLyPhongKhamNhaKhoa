@@ -3,17 +3,17 @@ package com.dentalclinic.dao;
 import com.dentalclinic.model.User;
 import com.dentalclinic.model.Role;
 import com.dentalclinic.utils.DBConnection;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
 
-    // Convert ResultSet to User object
-    private User mapResultSetToUser(ResultSet rs) throws Exception {
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserId(rs.getInt("user_id"));
         user.setFullName(rs.getString("full_name"));
@@ -24,7 +24,6 @@ public class UserDAO {
         user.setDob(rs.getDate("dob"));
         user.setAddress(rs.getString("address"));
         user.setCreatedAt(rs.getTimestamp("created_at"));
-
         Integer roleId = rs.getObject("role_id") != null ? rs.getInt("role_id") : null;
         user.setRoleId(roleId);
         if (roleId != null && hasColumn(rs, "role_name")) {
@@ -33,7 +32,6 @@ public class UserDAO {
             role.setRoleName(rs.getString("role_name"));
             user.setRole(role);
         }
-
         return user;
     }
 
@@ -41,14 +39,14 @@ public class UserDAO {
         try {
             rs.findColumn(columnName);
             return true;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             return false;
         }
     }
 
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT u.*, r.role_name "
+        String sql = "SELECT u.user_id, u.full_name, u.email, u.password, u.phone, u.gender, u.dob, u.address, u.created_at, u.role_id, r.role_name "
                 + "FROM users u "
                 + "LEFT JOIN roles r ON u.role_id = r.role_id "
                 + "ORDER BY u.user_id ASC";
@@ -56,34 +54,29 @@ public class UserDAO {
             while (rs.next()) {
                 list.add(mapResultSetToUser(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
 
     public User login(String email, String password) {
-        String sql = "SELECT u.*, r.role_name "
+        String sql = "SELECT u.user_id, u.full_name, u.email, u.password, u.phone, u.gender, u.dob, u.address, u.created_at, u.role_id, r.role_name "
                 + "FROM users u "
                 + "LEFT JOIN roles r ON u.role_id = r.role_id "
                 + "WHERE u.email = ?";
-
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 String storedHash = rs.getString("password");
                 if (com.dentalclinic.utils.PasswordUtils.checkPassword(password, storedHash)) {
                     return mapResultSetToUser(rs);
                 }
             }
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -93,7 +86,7 @@ public class UserDAO {
             if (rs.next()) {
                 return rs.getInt(1);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
@@ -107,7 +100,7 @@ public class UserDAO {
             if (rs.next()) {
                 return rs.getInt(1);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
@@ -115,7 +108,7 @@ public class UserDAO {
 
     public List<User> getUsersByRole(String roleName) {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT u.*, r.role_name "
+        String sql = "SELECT u.user_id, u.full_name, u.email, u.password, u.phone, u.gender, u.dob, u.address, u.created_at, u.role_id, r.role_name "
                 + "FROM users u JOIN roles r ON u.role_id = r.role_id "
                 + "WHERE r.role_name = ? ORDER BY u.full_name";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -124,7 +117,7 @@ public class UserDAO {
             while (rs.next()) {
                 list.add(mapResultSetToUser(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
@@ -136,7 +129,7 @@ public class UserDAO {
 
     public List<User> searchDoctors(String keyword) {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT u.*, r.role_name "
+        String sql = "SELECT u.user_id, u.full_name, u.email, u.password, u.phone, u.gender, u.dob, u.address, u.created_at, u.role_id, r.role_name "
                 + "FROM users u JOIN roles r ON u.role_id = r.role_id "
                 + "WHERE r.role_name = 'DOCTOR' AND u.full_name LIKE ? ORDER BY u.full_name";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -145,7 +138,7 @@ public class UserDAO {
             while (rs.next()) {
                 list.add(mapResultSetToUser(rs));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
@@ -156,7 +149,7 @@ public class UserDAO {
     }
 
     public User getCustomerByName(String fullName) {
-        String sql = "SELECT u.*, r.role_name "
+        String sql = "SELECT u.user_id, u.full_name, u.email, u.password, u.phone, u.gender, u.dob, u.address, u.created_at, u.role_id, r.role_name "
                 + "FROM users u JOIN roles r ON u.role_id = r.role_id "
                 + "WHERE r.role_name = 'CUSTOMER' AND LOWER(u.full_name) = LOWER(?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -165,14 +158,14 @@ public class UserDAO {
             if (rs.next()) {
                 return mapResultSetToUser(rs);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public User getUserById(int id) {
-        String sql = "SELECT u.*, r.role_name "
+        String sql = "SELECT u.user_id, u.full_name, u.email, u.password, u.phone, u.gender, u.dob, u.address, u.created_at, u.role_id, r.role_name "
                 + "FROM users u LEFT JOIN roles r ON u.role_id = r.role_id "
                 + "WHERE u.user_id = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -181,7 +174,7 @@ public class UserDAO {
             if (rs.next()) {
                 return mapResultSetToUser(rs);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -204,7 +197,7 @@ public class UserDAO {
             ps.setDate(7, user.getDob());
             ps.setString(8, user.getAddress());
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -213,7 +206,7 @@ public class UserDAO {
     public int addUserReturnId(User user, Integer roleId) {
         String sql = "INSERT INTO users (full_name, email, password, phone, role_id, gender, dob, address) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getFullName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPassword());
@@ -233,7 +226,7 @@ public class UserDAO {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return -1;
@@ -256,7 +249,7 @@ public class UserDAO {
             ps.setString(8, user.getAddress());
             ps.setInt(9, user.getUserId());
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -267,14 +260,14 @@ public class UserDAO {
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
 
     public User getUserByEmail(String email) {
-        String sql = "SELECT u.*, r.role_name "
+        String sql = "SELECT u.user_id, u.full_name, u.email, u.password, u.phone, u.gender, u.dob, u.address, u.created_at, u.role_id, r.role_name "
                 + "FROM users u LEFT JOIN roles r ON u.role_id = r.role_id "
                 + "WHERE u.email = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -283,7 +276,7 @@ public class UserDAO {
             if (rs.next()) {
                 return mapResultSetToUser(rs);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -295,10 +288,9 @@ public class UserDAO {
             ps.setString(1, hashedPassword);
             ps.setInt(2, userId);
             return ps.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-
 }

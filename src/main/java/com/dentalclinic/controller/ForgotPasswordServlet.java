@@ -13,14 +13,15 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 
 @WebServlet("/forgot-password")
 public class ForgotPasswordServlet extends HttpServlet {
 
-    private static final String MESSAGE = "message";
-    private static final String CHECK_EMAIL_MSG = "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.";
+    private static final Logger LOGGER = Logger.getLogger(ForgotPasswordServlet.class.getName());
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -35,7 +36,6 @@ public class ForgotPasswordServlet extends HttpServlet {
         String email = request.getParameter("email");
         UserDAO userDAO = new UserDAO();
         User user = userDAO.getUserByEmail(email);
-
         if (user != null) {
             String token = UUID.randomUUID().toString();
             Timestamp expiry = Timestamp.valueOf(LocalDateTime.now().plusHours(1));
@@ -44,61 +44,56 @@ public class ForgotPasswordServlet extends HttpServlet {
             String resetLink = request.getRequestURL().toString()
                     .replace("/forgot-password", "/reset-password")
                     + "?token=" + token;
-
             boolean emailSent = false;
             try {
                 sendResetEmail(user.getEmail(), resetLink);
                 emailSent = true;
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Failed to send reset email", e);
             }
-
             if (emailSent) {
-                request.setAttribute(MESSAGE, CHECK_EMAIL_MSG);
+                request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
             } else {
                 request.setAttribute("resetLink", resetLink);
-                request.setAttribute(MESSAGE, "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
+                request.setAttribute("message", "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
             }
         } else {
-            request.setAttribute(MESSAGE, CHECK_EMAIL_MSG);
+            request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
         }
-
         request.getRequestDispatcher("forgot_password.jsp").forward(request, response);
     }
 
-    private void sendResetEmail(String recipientEmail, String resetLink) throws Exception {
+    private void sendResetEmail(String recipientEmail, String resetLink) throws MessagingException {
         String smtpHost = System.getenv("SMTP_HOST");
         String smtpPort = System.getenv("SMTP_PORT");
         String smtpUser = System.getenv("SMTP_USER");
         String smtpPass = System.getenv("SMTP_PASS");
-
         if (smtpHost == null || smtpHost.isEmpty()) {
-            throw new Exception("SMTP chưa được cấu hình");
+            throw new MessagingException("SMTP chưa được cấu hình");
         }
-
         Properties props = new Properties();
         props.put("mail.smtp.host", smtpHost);
         props.put("mail.smtp.port", smtpPort != null ? smtpPort : "587");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(smtpUser, smtpPass);
             }
         });
-
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(smtpUser));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
         message.setSubject("Đặt lại mật khẩu - Phòng khám nha khoa");
         String htmlContent = ""
+                + "<html><body>"
                 + "<h2>Yêu cầu đặt lại mật khẩu</h2>"
                 + "<p>Bạn nhận được email này vì đã yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>"
                 + "<p>Nhấp vào link bên dưới để đặt lại mật khẩu (link có hiệu lực trong 1 giờ):</p>"
                 + "<p><a href=\"" + resetLink + "\">" + resetLink + "</a></p>"
-                + "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>";
+                + "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>"
+                + "</body></html>";
         message.setContent(htmlContent, "text/html; charset=UTF-8");
         Transport.send(message);
     }

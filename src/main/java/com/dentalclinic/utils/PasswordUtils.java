@@ -1,9 +1,12 @@
-
 package com.dentalclinic.utils;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-public class PasswordUtils {
+public final class PasswordUtils {
+
+    private PasswordUtils() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static String hashPassword(String plainPassword) {
         return BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
