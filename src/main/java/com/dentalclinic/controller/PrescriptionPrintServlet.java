@@ -29,55 +29,85 @@ public class PrescriptionPrintServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("login.jsp");
             return;
         }
-        String role = session.getAttribute("role") != null
-                ? session.getAttribute("role").toString().toUpperCase().trim()
-                : "";
+
+        Appointment appointment = getValidAppointment(request, response);
+        if (appointment == null) {
+            return;
+        }
+
+        String role = getRole(session);
         Integer userId = (Integer) session.getAttribute("userId");
+
+        if (!isAuthorized(role, userId, appointment, response)) {
+            return;
+        }
+
+        loadPrescriptionData(request, appointment);
+        request.getRequestDispatcher("/prescription_print.jsp").forward(request, response);
+    }
+
+    private Appointment getValidAppointment(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int appointmentId;
         try {
             appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
         } catch (Exception e) {
             response.sendRedirect("appointments");
-            return;
+            return null;
         }
+
         Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
         if (appointment == null) {
             response.sendRedirect("appointments");
-            return;
+            return null;
         }
-        // Authorization check
+        return appointment;
+    }
+
+    private String getRole(HttpSession session) {
+        Object role = session.getAttribute("role");
+        return role == null ? "" : role.toString().toUpperCase().trim();
+    }
+
+    private boolean isAuthorized(String role, Integer userId, Appointment appointment, HttpServletResponse response) throws IOException {
         if ("CUSTOMER".equals(role)) {
             if (appointment.getPatientId() == null || !appointment.getPatientId().equals(userId)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền xem đơn thuốc này.");
-                return;
+                return false;
             }
         } else if ("DOCTOR".equals(role)) {
             if (appointment.getDoctorId() == null || !appointment.getDoctorId().equals(userId)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền xem đơn thuốc này.");
-                return;
+                return false;
             }
         } else if (!"ADMIN".equals(role) && !"STAFF".equals(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Quyền truy cập bị từ chối.");
-            return;
+            return false;
         }
+        return true;
+    }
+
+    private void loadPrescriptionData(HttpServletRequest request, Appointment appointment) {
+        int appointmentId = appointment.getAppointmentId();
         ExaminationResult result = examinationResultDAO.getResultByAppointmentId(appointmentId);
         Prescription prescription = null;
-        List details = null;
+        List<PrescriptionDetail> details = null;
+
         if (result != null) {
             prescription = prescriptionDAO.getPrescriptionByResultId(result.getResultId());
             if (prescription != null) {
                 details = prescriptionDetailDAO.getDetailsByPrescriptionId(prescription.getPrescriptionId());
             }
         }
+
         request.setAttribute("appointment", appointment);
         request.setAttribute("examinationResult", result);
         request.setAttribute("prescription", prescription);
         request.setAttribute("details", details);
-        request.getRequestDispatcher("/prescription_print.jsp").forward(request, response);
     }
 }

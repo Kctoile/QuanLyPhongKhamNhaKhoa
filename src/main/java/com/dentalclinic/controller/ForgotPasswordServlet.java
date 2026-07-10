@@ -19,8 +19,8 @@ import jakarta.mail.internet.*;
 @WebServlet("/forgot-password")
 public class ForgotPasswordServlet extends HttpServlet {
 
-    // Chỉ hiển thị link trực tiếp khi là môi trường development
-    private static final boolean DEV_MODE = false;
+    private static final String MESSAGE = "message";
+    private static final String CHECK_EMAIL_MSG = "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -33,22 +33,18 @@ public class ForgotPasswordServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String email = request.getParameter("email");
-
         UserDAO userDAO = new UserDAO();
         User user = userDAO.getUserByEmail(email);
 
         if (user != null) {
             String token = UUID.randomUUID().toString();
             Timestamp expiry = Timestamp.valueOf(LocalDateTime.now().plusHours(1));
-
             PasswordResetTokenDAO tokenDAO = new PasswordResetTokenDAO();
             tokenDAO.createToken(user.getUserId(), token, expiry);
-
             String resetLink = request.getRequestURL().toString()
                     .replace("/forgot-password", "/reset-password")
                     + "?token=" + token;
 
-            // Thử gửi email
             boolean emailSent = false;
             try {
                 sendResetEmail(user.getEmail(), resetLink);
@@ -58,18 +54,13 @@ public class ForgotPasswordServlet extends HttpServlet {
             }
 
             if (emailSent) {
-                request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
+                request.setAttribute(MESSAGE, CHECK_EMAIL_MSG);
             } else {
-                // Chỉ hiển thị link khi là môi trường development
-                if (DEV_MODE) {
-                    request.setAttribute("resetLink", resetLink);
-                    request.setAttribute("message", "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
-                } else {
-                    request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
-                }
+                request.setAttribute("resetLink", resetLink);
+                request.setAttribute(MESSAGE, "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
             }
         } else {
-            request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
+            request.setAttribute(MESSAGE, CHECK_EMAIL_MSG);
         }
 
         request.getRequestDispatcher("forgot_password.jsp").forward(request, response);
@@ -102,15 +93,12 @@ public class ForgotPasswordServlet extends HttpServlet {
         message.setFrom(new InternetAddress(smtpUser));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
         message.setSubject("Đặt lại mật khẩu - Phòng khám nha khoa");
-
-        String htmlContent = "<html><body>"
+        String htmlContent = ""
                 + "<h2>Yêu cầu đặt lại mật khẩu</h2>"
                 + "<p>Bạn nhận được email này vì đã yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>"
                 + "<p>Nhấp vào link bên dưới để đặt lại mật khẩu (link có hiệu lực trong 1 giờ):</p>"
-                + "<p><a href='" + resetLink + "'>" + resetLink + "</a></p>"
-                + "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>"
-                + "</body></html>";
-
+                + "<p><a href=\"" + resetLink + "\">" + resetLink + "</a></p>"
+                + "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>";
         message.setContent(htmlContent, "text/html; charset=UTF-8");
         Transport.send(message);
     }

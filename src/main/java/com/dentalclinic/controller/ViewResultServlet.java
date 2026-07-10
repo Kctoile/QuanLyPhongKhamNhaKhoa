@@ -18,63 +18,83 @@ import java.sql.ResultSet;
 @WebServlet("/ViewResultServlet")
 public class ViewResultServlet extends HttpServlet {
 
+    private static final String LOGIN_JSP = "/login.jsp";
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        // === KIỂM TRA ĐĂNG NHẬP ===
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("role") == null) {
             response.sendRedirect("login.jsp");
             return;
         }
+
         String role = (String) session.getAttribute("role");
         Integer userId = (Integer) session.getAttribute("userId");
 
+        Appointment appointment = getValidAppointment(request, response);
+        if (appointment == null) {
+            return;
+        }
+
+        if (!isAuthorized(role, userId, appointment, response)) {
+            return;
+        }
+
+        loadAndForwardResult(request, response, appointment);
+    }
+
+    private Appointment getValidAppointment(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String appointmentIdStr = request.getParameter("appointmentId");
         if (appointmentIdStr == null || appointmentIdStr.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/doctor");
-            return;
+            return null;
         }
 
         int appointmentId;
         try {
             appointmentId = Integer.parseInt(appointmentIdStr);
             if (appointmentId <= 0) {
-                response.sendRedirect(request.getContextPath() + "/login.jsp");
-                return;
+                response.sendRedirect(request.getContextPath() + LOGIN_JSP);
+                return null;
             }
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
-            return;
+            response.sendRedirect(request.getContextPath() + LOGIN_JSP);
+            return null;
         }
 
-        // Lấy thông tin appointment
         AppointmentDAO appointmentDAO = new AppointmentDAO();
         Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
         if (appointment == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
-            return;
+            response.sendRedirect(request.getContextPath() + LOGIN_JSP);
+            return null;
         }
+        return appointment;
+    }
 
-        // === KIỂM TRA QUYỀN XEM ===
+    private boolean isAuthorized(String role, Integer userId, Appointment appointment, HttpServletResponse response) throws IOException {
         if ("CUSTOMER".equalsIgnoreCase(role)) {
             if (appointment.getPatientId() == null || !Integer.valueOf(appointment.getPatientId()).equals(userId)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền xem kết quả này.");
-                return;
+                return false;
             }
         } else if ("DOCTOR".equalsIgnoreCase(role)) {
             if (appointment.getDoctorId() == null || !Integer.valueOf(appointment.getDoctorId()).equals(userId)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền xem kết quả này.");
-                return;
+                return false;
             }
         }
-        // ADMIN và STAFF được xem tất cả
+        return true;
+    }
 
-        // Lấy kết quả khám
+    private void loadAndForwardResult(HttpServletRequest request, HttpServletResponse response, Appointment appointment)
+            throws ServletException, IOException {
+        int appointmentId = appointment.getAppointmentId();
         ExaminationResult result = getExaminationResult(appointmentId);
+
         request.setAttribute("appointment", appointment);
         request.setAttribute("examinationResult", result);
 

@@ -14,14 +14,19 @@ import java.io.IOException;
 @WebServlet("/reset-password")
 public class ResetPasswordServlet extends HttpServlet {
 
+    private static final String TOKEN = "token";
+    private static final String ERROR = "error";
+    private static final String RESET_PASSWORD_JSP = "reset_password.jsp";
+    private static final String INVALID_LINK = "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.";
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String token = request.getParameter("token");
+        String token = request.getParameter(TOKEN);
 
         if (token == null || token.trim().isEmpty()) {
-            request.setAttribute("error", "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
-            request.getRequestDispatcher("reset_password.jsp").forward(request, response);
+            request.setAttribute(ERROR, INVALID_LINK);
+            request.getRequestDispatcher(RESET_PASSWORD_JSP).forward(request, response);
             return;
         }
 
@@ -29,13 +34,13 @@ public class ResetPasswordServlet extends HttpServlet {
         PasswordResetToken prt = tokenDAO.getValidToken(token);
 
         if (prt == null) {
-            request.setAttribute("error", "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
-            request.getRequestDispatcher("reset_password.jsp").forward(request, response);
+            request.setAttribute(ERROR, INVALID_LINK);
+            request.getRequestDispatcher(RESET_PASSWORD_JSP).forward(request, response);
             return;
         }
 
-        request.setAttribute("token", token);
-        request.getRequestDispatcher("reset_password.jsp").forward(request, response);
+        request.setAttribute(TOKEN, token);
+        request.getRequestDispatcher(RESET_PASSWORD_JSP).forward(request, response);
     }
 
     @Override
@@ -43,7 +48,7 @@ public class ResetPasswordServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        String token = request.getParameter("token");
+        String token = request.getParameter(TOKEN);
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
@@ -51,22 +56,22 @@ public class ResetPasswordServlet extends HttpServlet {
         PasswordResetToken prt = tokenDAO.getValidToken(token);
 
         if (prt == null) {
-            request.setAttribute("error", "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
-            request.getRequestDispatcher("reset_password.jsp").forward(request, response);
+            request.setAttribute(ERROR, INVALID_LINK);
+            request.getRequestDispatcher(RESET_PASSWORD_JSP).forward(request, response);
             return;
         }
 
         if (newPassword == null || newPassword.length() < 6) {
-            request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự.");
-            request.setAttribute("token", token);
-            request.getRequestDispatcher("reset_password.jsp").forward(request, response);
+            request.setAttribute(ERROR, "Mật khẩu phải có ít nhất 6 ký tự.");
+            request.setAttribute(TOKEN, token);
+            request.getRequestDispatcher(RESET_PASSWORD_JSP).forward(request, response);
             return;
         }
 
         if (!newPassword.equals(confirmPassword)) {
-            request.setAttribute("error", "Mật khẩu xác nhận không khớp.");
-            request.setAttribute("token", token);
-            request.getRequestDispatcher("reset_password.jsp").forward(request, response);
+            request.setAttribute(ERROR, "Mật khẩu xác nhận không khớp.");
+            request.setAttribute(TOKEN, token);
+            request.getRequestDispatcher(RESET_PASSWORD_JSP).forward(request, response);
             return;
         }
 
@@ -79,9 +84,9 @@ public class ResetPasswordServlet extends HttpServlet {
             request.setAttribute("message", "Đặt lại mật khẩu thành công! Vui lòng đăng nhập.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {
-            request.setAttribute("error", "Đã xảy ra lỗi. Vui lòng thử lại.");
-            request.setAttribute("token", token);
-            request.getRequestDispatcher("reset_password.jsp").forward(request, response);
+            request.setAttribute(ERROR, "Đã xảy ra lỗi. Vui lòng thử lại.");
+            request.setAttribute(TOKEN, token);
+            request.getRequestDispatcher(RESET_PASSWORD_JSP).forward(request, response);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.dentalclinic.dao;
 import com.dentalclinic.model.Appointment;
 import com.dentalclinic.model.User;
 import com.dentalclinic.utils.DBConnection;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -18,8 +19,9 @@ public class AppointmentDAO {
 
     public static final int BOOKING_SLOT_TAKEN = -2;
     public static final int BOOKING_FAILED = -1;
+    private static final String PATIENT_ID = "patient_id";
+    private static final String DOCTOR_ID = "doctor_id";
 
-    // Kiểm tra bác sĩ đã có lịch vào thời gian này chưa
     public boolean isDoctorSlotTaken(int doctorId, Date appointmentDate, java.sql.Time appointmentTime) {
         String sql = "SELECT COUNT(*) FROM appointments WHERE doctor_id = ? AND appointment_date = ? AND appointment_time = ? AND status <> 'Cancelled'";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -42,19 +44,16 @@ public class AppointmentDAO {
         if (normalizedServiceIds.isEmpty()) {
             return BOOKING_FAILED;
         }
-
-        String checkSql = "SELECT 1 FROM appointments  "
+        String checkSql = "SELECT 1 FROM appointments "
                 + "WHERE doctor_id = ? AND appointment_date = ? AND appointment_time = ? AND status <> 'Cancelled'";
         String insertAppointmentSql = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status, notes, room) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         String insertServiceSql = "INSERT INTO appointment_services (appointment_id, service_id) VALUES (?, ?)";
-
         Connection conn = null;
         try {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false);
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-
             try (PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
                 checkPs.setInt(1, appt.getDoctorId());
                 checkPs.setDate(2, appt.getAppointmentDate());
@@ -66,7 +65,6 @@ public class AppointmentDAO {
                     }
                 }
             }
-
             int appointmentId;
             try (PreparedStatement ps = conn.prepareStatement(insertAppointmentSql, Statement.RETURN_GENERATED_KEYS)) {
                 if (appt.getPatientId() == null) {
@@ -81,7 +79,6 @@ public class AppointmentDAO {
                 ps.setString(6, appt.getNotes());
                 ps.setString(7, appt.getRoom());
                 ps.executeUpdate();
-
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (!rs.next()) {
                         conn.rollback();
@@ -90,7 +87,6 @@ public class AppointmentDAO {
                     appointmentId = rs.getInt(1);
                 }
             }
-
             try (PreparedStatement ps = conn.prepareStatement(insertServiceSql)) {
                 for (Integer serviceId : normalizedServiceIds) {
                     ps.setInt(1, appointmentId);
@@ -99,7 +95,6 @@ public class AppointmentDAO {
                 }
                 ps.executeBatch();
             }
-
             conn.commit();
             return appointmentId;
         } catch (SQLException e) {
@@ -157,11 +152,11 @@ public class AppointmentDAO {
         if (hasColumn(rs, "appointment_id")) {
             appt.setAppointmentId(rs.getInt("appointment_id"));
         }
-        if (hasColumn(rs, "patient_id")) {
-            appt.setPatientId(rs.getObject("patient_id") != null ? rs.getInt("patient_id") : null);
+        if (hasColumn(rs, PATIENT_ID)) {
+            appt.setPatientId(rs.getObject(PATIENT_ID) != null ? rs.getInt(PATIENT_ID) : null);
         }
-        if (hasColumn(rs, "doctor_id")) {
-            appt.setDoctorId(rs.getObject("doctor_id") != null ? rs.getInt("doctor_id") : null);
+        if (hasColumn(rs, DOCTOR_ID)) {
+            appt.setDoctorId(rs.getObject(DOCTOR_ID) != null ? rs.getInt(DOCTOR_ID) : null);
         }
         if (hasColumn(rs, "appointment_date")) {
             appt.setAppointmentDate(rs.getDate("appointment_date"));
@@ -178,23 +173,18 @@ public class AppointmentDAO {
         if (hasColumn(rs, "room")) {
             appt.setRoom(rs.getString("room"));
         }
-
-        // Map Patient object if joined
         if (hasColumn(rs, "patient_name")) {
             User patient = new User();
             patient.setUserId(appt.getPatientId());
             patient.setFullName(rs.getString("patient_name"));
             appt.setPatient(patient);
         }
-
-        // Map Doctor object if joined
         if (hasColumn(rs, "doctor_name")) {
             User doctor = new User();
             doctor.setUserId(appt.getDoctorId());
             doctor.setFullName(rs.getString("doctor_name"));
             appt.setDoctor(doctor);
         }
-
         return appt;
     }
 
@@ -245,7 +235,7 @@ public class AppointmentDAO {
     public int addAppointmentReturnId(Appointment appt) {
         String sql = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status, notes, room) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             if (appt.getPatientId() == null) {
                 ps.setNull(1, java.sql.Types.INTEGER);
             } else {
@@ -261,7 +251,6 @@ public class AppointmentDAO {
             ps.setString(5, appt.getStatus());
             ps.setString(6, appt.getNotes());
             ps.setString(7, appt.getRoom());
-
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -344,9 +333,9 @@ public class AppointmentDAO {
                 + "LEFT JOIN users p ON a.patient_id = p.user_id "
                 + "WHERE a.doctor_id = ? "
                 + "ORDER BY CASE WHEN a.status = 'Checked In' THEN 0 "
-                + "              WHEN a.status = 'CONFIRMED' THEN 1 "
-                + "              WHEN a.status = 'Completed' THEN 2 "
-                + "              ELSE 3 END ASC, "
+                + " WHEN a.status = 'CONFIRMED' THEN 1 "
+                + " WHEN a.status = 'Completed' THEN 2 "
+                + " ELSE 3 END ASC, "
                 + "a.appointment_date ASC, a.appointment_time ASC";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, doctorId);
@@ -383,14 +372,11 @@ public class AppointmentDAO {
         String sql4 = "DELETE FROM examination_results WHERE appointment_id = ?";
         String sql5 = "DELETE FROM appointment_services WHERE appointment_id = ?";
         String sql6 = "DELETE FROM appointments WHERE appointment_id = ?";
-
         Connection conn = null;
         try {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false);
-
             try (PreparedStatement ps1 = conn.prepareStatement(sql1); PreparedStatement ps2 = conn.prepareStatement(sql2); PreparedStatement ps3 = conn.prepareStatement(sql3); PreparedStatement ps4 = conn.prepareStatement(sql4); PreparedStatement ps5 = conn.prepareStatement(sql5); PreparedStatement ps6 = conn.prepareStatement(sql6)) {
-
                 ps1.setInt(1, appointmentId);
                 ps1.executeUpdate();
                 ps2.setInt(1, appointmentId);
@@ -401,10 +387,8 @@ public class AppointmentDAO {
                 ps4.executeUpdate();
                 ps5.setInt(1, appointmentId);
                 ps5.executeUpdate();
-
                 ps6.setInt(1, appointmentId);
                 boolean result = ps6.executeUpdate() > 0;
-
                 conn.commit();
                 return result;
             } catch (Exception e) {
@@ -467,21 +451,4 @@ public class AppointmentDAO {
         }
         return list;
     }
-
-    public boolean hasAppointmentWithDoctor(int patientId, int doctorId) {
-        String sql = "SELECT COUNT(*) FROM appointments WHERE patient_id = ? AND doctor_id = ? AND status <> 'Cancelled'";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, patientId);
-            ps.setInt(2, doctorId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
 }
