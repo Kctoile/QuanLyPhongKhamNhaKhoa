@@ -404,31 +404,20 @@ public class AppointmentDAO {
     }
 
     public boolean deleteAppointment(int appointmentId) {
-        Connection conn = null;
-        try {
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-            boolean result = executeDeleteAppointment(conn, appointmentId);
-            conn.commit();
-            return result;
+        try (Connection conn = DBConnection.getConnection()) {
+            try {
+                conn.setAutoCommit(false);
+                boolean result = executeDeleteAppointment(conn, appointmentId);
+                conn.commit();
+                return result;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ignored) {
-                    // Ignored: rollback failure is non-critical
-                }
-            }
             e.printStackTrace();
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return false;
     }

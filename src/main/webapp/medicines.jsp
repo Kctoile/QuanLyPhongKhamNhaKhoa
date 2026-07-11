@@ -20,7 +20,7 @@ if (!"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
     <h2>QUẢN LÝ THUỐC</h2>
     <a href="add_medicine.jsp" style="display:inline-block; padding:8px 16px; background:#007bff; color:white; text-decoration:none; border-radius:4px; margin-bottom:15px;">+ Thêm Thuốc Mới</a>
 
-    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">
+    <table border="1" style="width:100%; border-collapse:collapse; padding: 8px;">
         <tr style="background:#1a2a4a; color:white;">
             <th>ID</th>
             <th>Tên thuốc</th>

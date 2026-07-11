@@ -19,7 +19,7 @@ if (!"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
 <div class="admin-content">
     <h2>QUẢN LÝ LỊCH HẸN (TỔNG HỢP)</h2>
 
-    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">
+    <table border="1" style="width:100%; border-collapse:collapse; padding: 8px;">
         <tr style="background:#1a2a4a; color:white;">
             <th>STT</th>
             <th>Bệnh nhân</th>

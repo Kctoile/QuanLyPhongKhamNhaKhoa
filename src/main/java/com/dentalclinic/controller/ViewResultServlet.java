@@ -31,9 +31,4 @@ public class ViewResultServlet extends HttpServlet {
         // Fix: bỏ parameter không dùng — gọi thẳng doGet thay vì method phụ có param thừa
         doGet(request, response);
     }
-
-    // Fix: loại bỏ unused parameter — phương thức nội bộ chỉ nhận đúng những gì cần
-    private List<ExaminationResult> loadResults(int patientId) {
-        return resultDAO.getByPatientID(patientId);
-    }
 }
