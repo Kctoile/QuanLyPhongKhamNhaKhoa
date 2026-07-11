@@ -142,6 +142,7 @@
                                 <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
                                 <input type="hidden" name="action" value="pay">
                                 <input type="hidden" name="method" value="BANK_TRANSFER">
+                                <label for="notesBankTransfer" style="display:none;">Ghi chú chuyển khoản</label>
                                 <textarea id="notesBankTransfer" name="notes" rows="2" placeholder="Ghi chú chuyển khoản nếu có"></textarea>
                                 <button type="submit" class="btn btn-outline">Tạo yêu cầu chuyển khoản</button>
                             </form>
@@ -160,7 +161,7 @@
                                 </div>
                             </c:if>
                         </div>
-
+ 
                         <c:if test="${canManagePayments}">
                             <div class="method-card compact">
                                 <div class="method-title">
@@ -170,11 +171,12 @@
                                     <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
                                     <input type="hidden" name="action" value="pay">
                                     <input type="hidden" name="method" value="CASH">
+                                    <label for="notesCash" style="display:none;">Ghi chú tiền mặt</label>
                                     <input id="notesCash" type="text" name="notes" placeholder="Ghi chú thu ngân">
                                     <button type="submit" class="btn btn-primary">Ghi nhận tiền mặt</button>
                                 </form>
                             </div>
-
+ 
                             <div class="method-card compact">
                                 <div class="method-title">
                                     <span>Thẻ tín dụng</span>
@@ -183,6 +185,7 @@
                                     <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
                                     <input type="hidden" name="action" value="pay">
                                     <input type="hidden" name="method" value="CREDIT_CARD">
+                                    <label for="cardBrand" style="display:none;">Loại thẻ</label>
                                     <select id="cardBrand" name="cardBrand" required>
                                         <option value="">Loại thẻ</option>
                                         <option value="VISA">VISA</option>
@@ -191,7 +194,9 @@
                                         <option value="AMEX">American Express</option>
                                         <option value="NAPAS">NAPAS</option>
                                     </select>
+                                    <label for="cardLast4" style="display:none;">4 số cuối</label>
                                     <input id="cardLast4" type="text" name="cardLast4" maxlength="4" pattern="[0-9]{4}" placeholder="4 số cuối" required>
+                                    <label for="notesCard" style="display:none;">Ghi chú thẻ</label>
                                     <input id="notesCard" type="text" name="notes" placeholder="Mã POS hoặc ghi chú">
                                     <button type="submit" class="btn btn-primary">Xác nhận thẻ</button>
                                 </form>

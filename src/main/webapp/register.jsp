@@ -116,7 +116,7 @@
                 <div class="form-group">
                     <label class="form-label" for="address">Địa chỉ</label>
                     <input type="text" id="address" name="address" class="form-control"
-                           placeholder="Số nhà, đường, quận, thành phố" autocomplete="street-address">
+                           placeholder="Số nhà, đường, quận, thành phố" autocomplete="address-line1">
                 </div>
                 <button type="submit" class="btn btn-register">Tạo tài khoản</button>
             </form>
