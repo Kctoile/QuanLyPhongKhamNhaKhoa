@@ -404,22 +404,31 @@ public class AppointmentDAO {
     }
 
     public boolean deleteAppointment(int appointmentId) {
-        try (Connection conn = DBConnection.getConnection()) {
-            try {
-                conn.setAutoCommit(false);
-                boolean result = executeDeleteAppointment(conn, appointmentId);
-                conn.commit();
-                return result;
-            } catch (SQLException e) {
-                conn.rollback();
-                throw e;
-            } finally {
-                conn.setAutoCommit(true);
-            }
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+            boolean result = executeDeleteAppointment(conn, appointmentId);
+            conn.commit();
+            return result;
         } catch (SQLException e) {
+            rollbackQuietly(conn);
             e.printStackTrace();
+        } finally {
+            closeQuietly(conn);
         }
         return false;
+    }
+
+    private void closeQuietly(Connection conn) {
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public List<Appointment> searchAppointments(String query) {
