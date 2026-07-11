@@ -74,7 +74,7 @@ public class AppointmentServlet extends HttpServlet {
         AppointmentDAO dao = new AppointmentDAO();
         Appointment appt = dao.getAppointmentById(appointmentId);
 
-        if (appt != null && appt.getPatient() != null && appt.getPatient().getUserId() == userId) {
+        if (appt != null && appt.getPatient() != null && appt.getPatient().getUserID() == userId) {
             ExaminationResultDAO examDAO = new ExaminationResultDAO();
             ExaminationResult result = examDAO.getResultByAppointmentId(appointmentId);
             request.setAttribute("appointment", appt);

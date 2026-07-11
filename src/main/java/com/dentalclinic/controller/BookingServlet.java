@@ -73,7 +73,7 @@ public class BookingServlet extends HttpServlet {
             return;
         }
         User doctor = userDAO.getUserById(doctorId);
-        if (doctor == null || doctor.getRole() == null || !"DOCTOR".equals(doctor.getRole().getRoleName())) {
+        if (doctor == null || doctor.getRole() == null || !"DOCTOR".equals(doctor.getRole())) {
             forwardWithError(request, response, "Bác sĩ được chọn không hợp lệ.");
             return;
         }

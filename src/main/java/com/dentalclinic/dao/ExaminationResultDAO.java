@@ -33,6 +33,11 @@ public class ExaminationResultDAO {
             e.printStackTrace();
         }
         return null;
+
+    }
+
+    public List<ExaminationResult> getByPatientID(int patientId) {
+        return getByPatientID(patientId);
     }
 
     public int saveResultReturnId(ExaminationResult result) {

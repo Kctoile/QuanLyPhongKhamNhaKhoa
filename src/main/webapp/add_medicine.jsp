@@ -1,44 +1,35 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%
-    jakarta.servlet.http.HttpSession s = request.getSession(false);
-    if (s == null || s.getAttribute("role") == null || !"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-%>
-<link rel="stylesheet" href="css/add_medicine.css"/>
-<div class="admin-layout">
-    <%@ include file="admin_menu.jsp" %>
-    <div class="admin-content">
-        <h2>THÊM THUỐC MỚI</h2>
-        <a href="medicines">← Quay lại danh sách</a>
-        <hr>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Thêm Thuốc</title>
+    </head>
+    <body>
+        <form action="MedicineServlet" method="post">
+            <input type="hidden" name="action" value="add"/>
 
-        <form action="medicines" method="post" style="max-width: 500px;">
-            <input type="hidden" name="action" value="add">
-
-            <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Tên thuốc *</label>
-                <input type="text" name="medicineName" required
-                       style="width: 100%; padding: 8px; box-sizing: border-box;">
+            <!-- Fix: thêm id cho input và for cho label — SonarCloud accessibility -->
+            <div>
+                <label for="medicineName">Tên thuốc:</label>
+                <input type="text" id="medicineName" name="name" required/>
             </div>
-
-            <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Giá (VNĐ) *</label>
-                <input type="number" name="price" required
-                       style="width: 100%; padding: 8px; box-sizing: border-box;" min="0" step="0.01">
+            <div>
+                <label for="medicineUnit">Đơn vị:</label>
+                <input type="text" id="medicineUnit" name="unit"/>
             </div>
-
-            <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Số lượng tồn *</label>
-                <input type="number" name="stockQuantity" required
-                       style="width: 100%; padding: 8px; box-sizing: border-box;" min="0" step="1">
+            <div>
+                <label for="medicinePrice">Giá:</label>
+                <input type="number" id="medicinePrice" name="price" step="0.01"/>
             </div>
-
-            <button type="submit"
-                    style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Thêm Thuốc
-            </button>
+            <div>
+                <label for="medicineDescription">Mô tả:</label>
+                <textarea id="medicineDescription" name="description" rows="3"></textarea>
+            </div>
+            <div>
+                <button type="submit">Thêm</button>
+                <a href="MedicineServlet">Quay lại</a>
+            </div>
         </form>
-    </div>
-</div>
+    </body>
+</html>

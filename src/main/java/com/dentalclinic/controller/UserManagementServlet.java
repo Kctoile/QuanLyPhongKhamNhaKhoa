@@ -60,7 +60,7 @@ public class UserManagementServlet extends HttpServlet {
                 if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
                     list = list.stream().filter(u -> u.getRole() == null).toList();
                 } else {
-                    list = list.stream().filter(u -> u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole().getRoleName())).toList();
+                    list = list.stream().filter(u -> u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole())).toList();
                 }
             }
             request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");

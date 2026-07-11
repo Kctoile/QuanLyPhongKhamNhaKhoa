@@ -237,7 +237,7 @@ public class StaffServlet extends HttpServlet {
     private int findOrCreatePatient(UserDAO userDAO, String patientName) {
         User existingCustomer = userDAO.getCustomerByName(patientName);
         if (existingCustomer != null) {
-            return existingCustomer.getUserId();
+            return existingCustomer.getUserID();
         }
         User newCustomer = new User();
         newCustomer.setFullName(patientName);

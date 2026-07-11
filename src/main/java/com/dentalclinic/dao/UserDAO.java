@@ -27,10 +27,7 @@ public class UserDAO {
         Integer roleId = rs.getObject("role_id") != null ? rs.getInt("role_id") : null;
         user.setRoleId(roleId);
         if (roleId != null && hasColumn(rs, "role_name")) {
-            Role role = new Role();
-            role.setRoleId(roleId);
-            role.setRoleName(rs.getString("role_name"));
-            user.setRole(role);
+            user.setRole(rs.getString("role_name"));
         }
         return user;
     }

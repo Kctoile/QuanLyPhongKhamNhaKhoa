@@ -1,75 +1,37 @@
 package com.dentalclinic.dao;
 
-import com.dentalclinic.model.Service;
+import com.dentalclinic.model.PrescribedService;
 import com.dentalclinic.utils.DBConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PrescribedServiceDAO {
 
-    public boolean addPrescribedServices(int resultId, String[] serviceIds) {
-        if (serviceIds == null || serviceIds.length == 0) {
-            return true;
+    // Tách nested try block thành method riêng — fix SonarCloud java:S2093 + nested try
+    private PreparedStatement prepareStatement(Connection conn, String sql, Object... params) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        for (int i = 0; i < params.length; i++) {
+            ps.setObject(i + 1, params[i]);
         }
-        String sql = "INSERT INTO prescribed_services (result_id, service_id, status, notes) VALUES (?, ?, 'Pending', '')";
+        return ps;
+    }
+
+
+
+    public void addPrescribedServices(int resultId, String[] serviceIds) {
+        if (serviceIds == null || serviceIds.length == 0) return;
+        String sql = "INSERT INTO prescribed_services (result_id, service_id) VALUES (?, ?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            conn.setAutoCommit(false);
-            for (String strId : serviceIds) {
-                try {
-                    int serviceId = Integer.parseInt(strId.trim());
-                    if (!isServicePrescribed(conn, resultId, serviceId)) {
-                        ps.setInt(2, serviceId);
-                        ps.addBatch();
-                    }
-                } catch (NumberFormatException ignored) {
-                    // Ignored: skip invalid service IDs
-                }
+            for (String id : serviceIds) {
+                ps.setInt(1, resultId);
+                ps.setInt(2, Integer.parseInt(id));
+                ps.addBatch();
             }
             ps.executeBatch();
-            conn.commit();
-            conn.setAutoCommit(true);
-            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
-    }
-
-    private boolean isServicePrescribed(Connection conn, int resultId, int serviceId) throws SQLException {
-        String checkSql = "SELECT 1 FROM prescribed_services WHERE result_id = ? AND service_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(checkSql)) {
-            ps.setInt(1, resultId);
-            ps.setInt(2, serviceId);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-
-    public List<Service> getPrescribedServicesByResultId(int resultId) {
-        List<Service> services = new ArrayList<>();
-        String sql = "SELECT s.service_id, s.service_name, s.description, s.price, s.duration_minutes FROM services s "
-                + "JOIN prescribed_services ps ON s.service_id = ps.service_id "
-                + "WHERE ps.result_id = ?";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, resultId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Service s = new Service();
-                s.setServiceId(rs.getInt("service_id"));
-                s.setServiceName(rs.getString("service_name"));
-                s.setDescription(rs.getString("description"));
-                s.setPrice(rs.getBigDecimal("price"));
-                s.setDurationMinutes(rs.getObject("duration_minutes") != null ? rs.getInt("duration_minutes") : null);
-                services.add(s);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return services;
     }
 }

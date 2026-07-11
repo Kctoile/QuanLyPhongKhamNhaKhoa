@@ -29,7 +29,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("fullName", user.getFullName());
-            String role = user.getRole().getRoleName().toUpperCase().trim();
+            String role = user.getRole().toUpperCase().trim();
             session.setAttribute("role", role);
             if (role == null || role.isEmpty()) {
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
