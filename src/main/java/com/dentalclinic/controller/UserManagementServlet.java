@@ -61,10 +61,10 @@ public class UserManagementServlet extends HttpServlet {
                     list = list.stream().filter(u -> u.getRole() == null).toList();
                 } else {
                     list = list.stream().filter(u -> u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole().getRoleName())).toList();
-                } 
+                }
             }
             request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");
-            request.setAttribute("users", list);
+            request.setAttribute(REDIRECT_USERS, list);
             request.getRequestDispatcher("users.jsp").forward(request, response);
         }
     }
