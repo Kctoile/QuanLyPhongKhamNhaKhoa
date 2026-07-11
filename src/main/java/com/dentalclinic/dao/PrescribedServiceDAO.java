@@ -15,8 +15,8 @@ public class PrescribedServiceDAO {
         if (serviceIds == null || serviceIds.length == 0) return;
         String sql = "INSERT INTO prescribed_services (result_id, service_id) VALUES (?, ?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, resultId);
             for (String id : serviceIds) {
-                ps.setInt(1, resultId);
                 ps.setInt(2, Integer.parseInt(id));
                 ps.addBatch();
             }
