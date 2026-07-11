@@ -9,15 +9,6 @@ import java.util.List;
 
 public class PrescribedServiceDAO {
 
-    // Tách nested try block thành method riêng — fix SonarCloud java:S2093 + nested try
-    private PreparedStatement prepareStatement(Connection conn, String sql, Object... params) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement(sql);
-        for (int i = 0; i < params.length; i++) {
-            ps.setObject(i + 1, params[i]);
-        }
-        return ps;
-    }
-
 
 
     public void addPrescribedServices(int resultId, String[] serviceIds) {

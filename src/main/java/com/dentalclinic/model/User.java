@@ -51,15 +51,8 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    // Alias tương thích ngược — sửa lỗi getUserID() ở AppointmentServlet,
-    // BookingServlet, ForgotPasswordServlet, LoginServlet
-    public int getUserID() {
-        return id;
-    }
-
-    public void setUserID(int userID) {
-        this.id = userID;
-    }
+    public int getUserId() { return id; }
+    public void setUserId(int id) { this.id = id; }
 
     public String getUsername() {
         return username;
@@ -101,8 +94,6 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    public int getUserId() { return id; }
-    public void setUserId(int id) { this.id = id; }
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }

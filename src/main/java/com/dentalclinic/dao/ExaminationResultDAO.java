@@ -37,32 +37,33 @@ public class ExaminationResultDAO {
     }
 
     public List<ExaminationResult> getByPatientID(int patientId) {
-        return getByPatientID(patientId);
+        return getResultsByPatientId(patientId);
     }
 
     public int saveResultReturnId(ExaminationResult result) {
         String checkSql = "SELECT result_id FROM examination_results WHERE appointment_id = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
             checkPs.setInt(1, result.getAppointmentId());
-            ResultSet rs = checkPs.executeQuery();
-            if (rs.next()) {
-                int resultId = rs.getInt(COL_RESULT_ID);
-                String updateSql = "UPDATE examination_results SET result_details = ? WHERE result_id = ?";
-                try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
-                    updatePs.setString(1, result.getResultDetails());
-                    updatePs.setInt(2, resultId);
-                    updatePs.executeUpdate();
-                }
-                return resultId;
-            } else {
-                String insertSql = "INSERT INTO examination_results (appointment_id, result_details) VALUES (?, ?)";
-                try (PreparedStatement insertPs = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
-                    insertPs.setInt(1, result.getAppointmentId());
-                    insertPs.setString(2, result.getResultDetails());
-                    insertPs.executeUpdate();
-                    try (ResultSet keys = insertPs.getGeneratedKeys()) {
-                        if (keys.next()) {
-                            return keys.getInt(1);
+            try (ResultSet rs = checkPs.executeQuery()) {
+                if (rs.next()) {
+                    int resultId = rs.getInt(COL_RESULT_ID);
+                    String updateSql = "UPDATE examination_results SET result_details = ? WHERE result_id = ?";
+                    try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
+                        updatePs.setString(1, result.getResultDetails());
+                        updatePs.setInt(2, resultId);
+                        updatePs.executeUpdate();
+                    }
+                    return resultId;
+                } else {
+                    String insertSql = "INSERT INTO examination_results (appointment_id, result_details) VALUES (?, ?)";
+                    try (PreparedStatement insertPs = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
+                        insertPs.setInt(1, result.getAppointmentId());
+                        insertPs.setString(2, result.getResultDetails());
+                        insertPs.executeUpdate();
+                        try (ResultSet keys = insertPs.getGeneratedKeys()) {
+                            if (keys.next()) {
+                                return keys.getInt(1);
+                            }
                         }
                     }
                 }

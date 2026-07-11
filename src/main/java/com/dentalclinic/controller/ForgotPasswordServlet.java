@@ -42,7 +42,7 @@ public class ForgotPasswordServlet extends HttpServlet {
             String token = UUID.randomUUID().toString();
             Timestamp expiry = Timestamp.valueOf(LocalDateTime.now().plusHours(1));
             PasswordResetTokenDAO tokenDAO = new PasswordResetTokenDAO();
-            tokenDAO.createToken(user.getUserID(), token, expiry);
+            tokenDAO.createToken(user.getUserId(), token, expiry);
             String resetLink = request.getRequestURL().toString()
                     .replace("/forgot-password", "/reset-password")
                     + "?token=" + token;
