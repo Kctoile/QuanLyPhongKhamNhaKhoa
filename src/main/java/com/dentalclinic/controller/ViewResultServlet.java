@@ -14,7 +14,7 @@ import java.util.List;
 @WebServlet("/ViewResultServlet")
 public class ViewResultServlet extends HttpServlet {
 
-    private final ExaminationResultDAO resultDAO = new ExaminationResultDAO();
+    private final transient ExaminationResultDAO resultDAO = new ExaminationResultDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
