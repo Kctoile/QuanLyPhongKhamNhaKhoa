@@ -22,8 +22,8 @@
             <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
 
             <div style="margin-bottom: 12px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Khách hàng: </label>
-                <select name="patientId" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="patientId" style="font-weight: bold; display: block; margin-bottom: 5px;">Khách hàng: </label>
+                <select id="patientId" name="patientId" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                     <c:forEach var="c" items="${customers}">
                         <option value="${c.userId}" ${c.userId == appointment.patientId ? 'selected' : ''}>${c.fullName}</option>
                     </c:forEach>
@@ -31,8 +31,8 @@
             </div>
 
             <div style="margin-bottom: 12px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Bác sĩ: </label>
-                <select name="doctorId" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="doctorId" style="font-weight: bold; display: block; margin-bottom: 5px;">Bác sĩ: </label>
+                <select id="doctorId" name="doctorId" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                     <c:forEach var="d" items="${doctors}">
                         <option value="${d.userId}" ${d.userId == appointment.doctorId ? 'selected' : ''}>${d.fullName}</option>
                     </c:forEach>
@@ -40,18 +40,18 @@
             </div>
 
             <div style="margin-bottom: 12px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Ngày hẹn: </label>
-                <input type="date" name="appointmentDate" value="${appointment.appointmentDate}" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="appointmentDate" style="font-weight: bold; display: block; margin-bottom: 5px;">Ngày hẹn: </label>
+                <input id="appointmentDate" type="date" name="appointmentDate" value="${appointment.appointmentDate}" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
 
             <div style="margin-bottom: 12px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Giờ hẹn: </label>
-                <input type="time" name="appointmentTime" value="${appointment.appointmentTime}" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="appointmentTime" style="font-weight: bold; display: block; margin-bottom: 5px;">Giờ hẹn: </label>
+                <input id="appointmentTime" type="time" name="appointmentTime" value="${appointment.appointmentTime}" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
 
             <div style="margin-bottom: 12px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Trạng thái: </label>
-                <select name="status" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="status" style="font-weight: bold; display: block; margin-bottom: 5px;">Trạng thái: </label>
+                <select id="status" name="status" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                     <option value="Pending" ${appointment.status == 'Pending' ? 'selected' : ''}>Pending</option>
                     <option value="CONFIRMED" ${appointment.status == 'CONFIRMED' ? 'selected' : ''}>CONFIRMED</option>
                     <option value="Checked In" ${appointment.status == 'Checked In' ? 'selected' : ''}>Checked In</option>
@@ -62,15 +62,15 @@
             </div>
 
             <div style="margin-bottom: 12px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Phòng khám: </label>
-                <input type="text" name="room" value="${appointment.room}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="room" style="font-weight: bold; display: block; margin-bottom: 5px;">Phòng khám: </label>
+                <input id="room" type="text" name="room" value="${appointment.room}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Ghi chú: </label>
+                <label for="notes" style="font-weight: bold; display: block; margin-bottom: 5px;">Ghi chú: </label>
                 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
                 ...
-                <textarea name="notes" rows="4" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">${fn:escapeXml(appointment.notes)}</textarea>
+                <textarea id="notes" name="notes" rows="4" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">${fn:escapeXml(appointment.notes)}</textarea>
 
             </div>
 

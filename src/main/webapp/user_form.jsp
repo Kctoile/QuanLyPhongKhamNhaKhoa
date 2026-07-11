@@ -33,26 +33,26 @@
             </c:if>
 
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Họ tên *</label>
-                <input type="text" name="fullName" value="${user.fullName}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+                <label for="fullName" style="display:block; font-weight:bold; margin-bottom:5px;">Họ tên *</label>
+                <input id="fullName" type="text" name="fullName" value="${user.fullName}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Email *</label>
-                <input type="email" name="email" value="${user.email}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+                <label for="email" style="display:block; font-weight:bold; margin-bottom:5px;">Email *</label>
+                <input id="email" type="email" name="email" value="${user.email}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Mật khẩu *</label>
-                <input type="text" name="password" value="${user.password}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+                <label for="password" style="display:block; font-weight:bold; margin-bottom:5px;">Mật khẩu *</label>
+                <input id="password" type="text" name="password" value="${user.password}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
                 <c:if test="${not empty user}">
                     <small style="color: gray;">Sửa mật khẩu nếu cần thay đổi.</small>
                 </c:if>
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Số điện thoại</label>
-                <input type="text" name="phone" value="${user.phone}" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                <label for="phone" style="display:block; font-weight:bold; margin-bottom:5px;">Số điện thoại</label>
+                <input id="phone" type="text" name="phone" value="${user.phone}" style="width: 100%; padding: 8px; box-sizing: border-box;">
             </div>
 
             <div style="margin-bottom: 15px;">

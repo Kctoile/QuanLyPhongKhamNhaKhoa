@@ -24,23 +24,23 @@ if (!"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="serviceId" value="${fn:escapeXml(param.id)}">
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Tên dịch vụ *</label>
-                <input type="text" name="serviceName" value="${fn:escapeXml(param.name)}" required
+                <label for="serviceName" style="display:block; font-weight:bold; margin-bottom:5px;">Tên dịch vụ *</label>
+                <input id="serviceName" type="text" name="serviceName" value="${fn:escapeXml(param.name)}" required
                        style="width: 100%; padding: 8px; box-sizing: border-box;">
             </div>
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Mô tả</label>
-                <textarea name="description" rows="4"
+                <label for="description" style="display:block; font-weight:bold; margin-bottom:5px;">Mô tả</label>
+                <textarea id="description" name="description" rows="4"
                           style="width: 100%; padding: 8px; box-sizing: border-box;">${fn:escapeXml(param.desc)}</textarea>
             </div>
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Giá (VNĐ) *</label>
-                <input type="number" name="price" value="${fn:escapeXml(param.price)}" required
+                <label for="price" style="display:block; font-weight:bold; margin-bottom:5px;">Giá (VNĐ) *</label>
+                <input id="price" type="number" name="price" value="${fn:escapeXml(param.price)}" required
                        style="width: 100%; padding: 8px; box-sizing: border-box;" min="0" step="0.01">
             </div>
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Thời lượng dự kiến (phút)</label>
-                <input type="number" name="durationMinutes" value="${fn:escapeXml(param.duration)}"
+                <label for="durationMinutes" style="display:block; font-weight:bold; margin-bottom:5px;">Thời lượng dự kiến (phút)</label>
+                <input id="durationMinutes" type="number" name="durationMinutes" value="${fn:escapeXml(param.duration)}"
                        style="width: 100%; padding: 8px; box-sizing: border-box;" min="1" step="1">
             </div>
             <button type="submit"

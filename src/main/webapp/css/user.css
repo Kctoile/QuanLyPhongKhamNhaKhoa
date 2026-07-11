@@ -6,6 +6,7 @@
     flex:1;
     padding:40px;
     background:#f3f4f6;
+    min-height:100vh;
 }
 /* tiêu đề */
 h2{
@@ -135,10 +136,4 @@ td:last-child a[href*="delete"]:hover{
     background:#dc2626;
 }
 
-.admin-content{
-    flex:1;
-    padding:40px;
-    background:#f3f4f6;
-    min-height:100vh;
-}
- /* quản lí người dùng */
+/* quản lí người dùng */

@@ -3,11 +3,6 @@
     padding:30px;
     background:#f4f6fb;
 }
-.admin-content{
-    flex:1;
-    padding:30px;
-    background:#f4f6fb;
-}
 
 /* chỉ form nổi lên */
 .admin-content form{
@@ -45,7 +40,7 @@
     padding:10px 18px;
     border:none;
     border-radius:6px;
-    background:#4CAF50;
+    background:#2e7d32;
     color:white;
     font-weight:500;
 }

@@ -24,18 +24,18 @@ if (!"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="medicineId" value="${fn:escapeXml(param.id)}">
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Tên thuốc *</label>
-                <input type="text" name="medicineName" value="${fn:escapeXml(param.name)}" required
+                <label for="medicineName" style="display:block; font-weight:bold; margin-bottom:5px;">Tên thuốc *</label>
+                <input id="medicineName" type="text" name="medicineName" value="${fn:escapeXml(param.name)}" required
                        style="width: 100%; padding: 8px; box-sizing: border-box;">
             </div>
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Giá (VNĐ) *</label>
-                <input type="number" name="price" value="${fn:escapeXml(param.price)}" required
+                <label for="price" style="display:block; font-weight:bold; margin-bottom:5px;">Giá (VNĐ) *</label>
+                <input id="price" type="number" name="price" value="${fn:escapeXml(param.price)}" required
                        style="width: 100%; padding: 8px; box-sizing: border-box;" min="0" step="0.01">
             </div>
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Số lượng tồn *</label>
-                <input type="number" name="stockQuantity" value="${fn:escapeXml(param.stock)}" required
+                <label for="stockQuantity" style="display:block; font-weight:bold; margin-bottom:5px;">Số lượng tồn *</label>
+                <input id="stockQuantity" type="number" name="stockQuantity" value="${fn:escapeXml(param.stock)}" required
                        style="width: 100%; padding: 8px; box-sizing: border-box;" min="0" step="1">
             </div>
             <button type="submit"

@@ -142,8 +142,8 @@
 
 
                 <div class="form-group">
-                    <label>Bệnh nhân</label>
-                    <input type="text" value="${appointment.patient.fullName}" readonly />
+                    <label for="patientName">Bệnh nhân</label>
+                    <input id="patientName" type="text" value="${appointment.patient.fullName}" readonly />
                 </div>
                 <div class="form-group">
                     <label for="doctorId">Bác sĩ</label>

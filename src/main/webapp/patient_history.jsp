@@ -34,7 +34,7 @@
 
             <c:choose>
                 <c:when test="${not empty examinationResults}">
-                    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">
+                    <table border="1" style="width:100%; border-collapse:collapse; padding: 8px;">
                         <tr style="background:#1a2a4a; color:white;">
                             <th>Ngày khám</th>
                             <th>Chẩn đoán / Kết quả</th>
