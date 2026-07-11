@@ -56,8 +56,8 @@
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px;">Vai trò *</label>
-                <select name="roleId" style="width: 100%; padding: 8px; box-sizing: border-box;" required>
+                <label for="roleId" style="display:block; font-weight:bold; margin-bottom:5px;">Vai trò *</label>
+                <select id="roleId" name="roleId" style="width: 100%; padding: 8px; box-sizing: border-box;" required>
                     <option value="1" ${user.role !=null && user.role.roleId==1 ? 'selected' : '' }>ADMIN
                     </option>
                     <option value="2" ${user.role !=null && user.role.roleId==2 ? 'selected' : '' }>DOCTOR

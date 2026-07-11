@@ -61,7 +61,7 @@
 
         <hr>
 
-        <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+        <table border="1" style="border-collapse: collapse; width: 100%;">
             <tr style="background-color: #f2f2f2;">
                 <th>STT</th>
                 <th>Họ tên</th>

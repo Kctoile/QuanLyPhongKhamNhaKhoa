@@ -48,7 +48,7 @@
                 gap: 12px;
                 margin-bottom: 24px;
             }
-            .info-item label {
+            .info-item .item-label {
                 font-size: 12px;
                 color: #888;
                 display: block;
@@ -100,10 +100,10 @@
         <div class="card">
             <h1>Kết quả khám bệnh</h1>
             <div class="info-grid">
-                <div class="info-item"><label>Bệnh nhân</label><span><%= appt.getPatient() != null ? appt.getPatient().getFullName() : "N/A" %></span></div>
-                <div class="info-item"><label>Bác sĩ</label><span><%= appt.getDoctor() != null ? appt.getDoctor().getFullName() : "N/A" %></span></div>
-                <div class="info-item"><label>Ngày khám</label><span><%= appt.getAppointmentDate() != null ? appt.getAppointmentDate().toString() : "N/A" %></span></div>
-                <div class="info-item"><label>Phòng</label><span><%= appt.getRoom() != null ? appt.getRoom() : "—" %></span></div>
+                <div class="info-item"><span class="item-label">Bệnh nhân</span><span><%= appt.getPatient() != null ? appt.getPatient().getFullName() : "N/A" %></span></div>
+                <div class="info-item"><span class="item-label">Bác sĩ</span><span><%= appt.getDoctor() != null ? appt.getDoctor().getFullName() : "N/A" %></span></div>
+                <div class="info-item"><span class="item-label">Ngày khám</span><span><%= appt.getAppointmentDate() != null ? appt.getAppointmentDate().toString() : "N/A" %></span></div>
+                <div class="info-item"><span class="item-label">Phòng</span><span><%= appt.getRoom() != null ? appt.getRoom() : "—" %></span></div>
             </div>
 
             <% if (er != null) { %>

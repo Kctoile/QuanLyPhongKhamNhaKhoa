@@ -18,13 +18,12 @@ public class AppointmentServiceDAO {
         String sql = "INSERT INTO appointment_services (appointment_id, service_id) VALUES (?, ?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             conn.setAutoCommit(false);
+            ps.setInt(1, appointmentId);
             for (String strId : serviceIds) {
-                try {
-                    int serviceId = Integer.parseInt(strId.trim());
+                Integer serviceId = tryParseInt(strId);
+                if (serviceId != null) {
                     ps.setInt(2, serviceId);
                     ps.addBatch();
-                } catch (NumberFormatException ignored) {
-                    // Ignored: skip invalid service IDs
                 }
             }
             ps.executeBatch();
@@ -35,6 +34,14 @@ public class AppointmentServiceDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private Integer tryParseInt(String str) {
+        try {
+            return Integer.parseInt(str.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public List<Service> getServicesByAppointmentId(int appointmentId) {
