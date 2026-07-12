@@ -3,11 +3,6 @@
     padding:30px;
     background:#f4f6fb;
 }
-.admin-content{
-    flex:1;
-    padding:30px;
-    background:#f4f6fb;
-}
 
 /* chỉ form nổi lên */
 .admin-content form{
@@ -19,7 +14,7 @@
     max-width:480px;
     width:100%;
 
-    margin-top:20px;   /* chỉ cách trên */
+    margin-top:20px;
 }
 
 /* tiêu đề */
@@ -35,11 +30,13 @@
 
 /* input đẹp hơn */
 .admin-content input,
-.admin-content select{
+.admin-content select,
+.admin-content textarea{
     width:100%;
     padding:10px;
     border:1px solid #ddd;
     border-radius:6px;
+    box-sizing:border-box;
 }
 
 /* button */
@@ -48,8 +45,8 @@
     padding:10px 18px;
     border:none;
     border-radius:6px;
-    background:#4CAF50;
-    color:white;
+    background:#2e7d32;
+    color:#ffffff;
     font-weight:500;
 }
 
@@ -74,13 +71,4 @@
 /* hover bảng */
 .admin-content tr:hover{
     background:#fafafa;
-}
-.admin-content input,
-.admin-content select,
-.admin-content textarea{
-    width:100%;
-    padding:10px;
-    border:1px solid #ddd;
-    border-radius:6px;
-    box-sizing:border-box;
 }

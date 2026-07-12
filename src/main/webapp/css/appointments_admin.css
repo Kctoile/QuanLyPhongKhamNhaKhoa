@@ -12,7 +12,6 @@
 .appointment-table th,
 .appointment-table td{
     padding:12px;
-     
 }
 
 .appointment-table th{
@@ -30,15 +29,12 @@
 .appointment-table th:first-child{
     text-align:center;
 }
+
 .appointment-container{
     background:white;
     border-radius:14px;
     padding:30px;
     box-shadow:0 6px 18px rgba(0,0,0,0.12);
-    max-width:1200px;
-}
-
-.appointment-container{
     width: calc(100% - 260px);
     max-width: none;
 }
@@ -52,6 +48,7 @@
     padding:20px;
     text-align:center;
 }
+
 .admin-layout{
     width:100%;
 }
