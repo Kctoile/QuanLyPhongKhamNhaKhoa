@@ -1,19 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
-// === KIỂM TRA QUYỀN ADMIN ===
-jakarta.servlet.http.HttpSession s = request.getSession(false);
-if (s == null || s.getAttribute("role") == null) {
-    response.sendRedirect("login.jsp");
-    return;
-}
-if (!"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
-    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-    return;
-}
+    jakarta.servlet.http.HttpSession s = request.getSession(false);
+    if (s == null || s.getAttribute("role") == null
+            || !"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
 %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ include file="admin_menu.jsp" %>
 
 <div class="admin-content">
@@ -34,13 +30,13 @@ if (!"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
         <c:forEach var="h" items="${appointments}" varStatus="status">
             <tr>
                 <td>${status.count}</td>
-                <td>${h.patient != null ? h.patient.fullName : 'Khách vãng lai'}</td>
-                <td>${h.doctor != null ? h.doctor.fullName : 'Chưa phân công'}</td>
+                <td>${h.patient != null ? fn:escapeXml(h.patient.fullName) : 'Khách vãng lai'}</td>
+                <td>${h.doctor != null ? fn:escapeXml(h.doctor.fullName) : 'Chưa phân công'}</td>
                 <td><fmt:formatDate value="${h.appointmentDate}" pattern="dd/MM/yyyy"/></td>
                 <td>${h.appointmentTime}</td>
                 <td>${h.status}</td>
-                <td>${h.room}</td>
-                <td>${h.notes}</td>
+                <td>${fn:escapeXml(h.room)}</td>
+                <td>${fn:escapeXml(h.notes)}</td>
                 <td>
                     <a href="appointment_admin?action=edit&id=${h.appointmentId}" title="Sửa">Sửa</a>
                 </td>

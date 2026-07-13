@@ -25,7 +25,12 @@ public class StaffServlet extends HttpServlet {
 
     private boolean checkRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
-        if (session == null || !"STAFF".equalsIgnoreCase((String) session.getAttribute("role"))) {
+        if (session == null) {
+            response.sendRedirect("login.jsp");
+            return false;
+        }
+        String role = (String) session.getAttribute("role");
+        if (role == null || (!"STAFF".equalsIgnoreCase(role) && !"ADMIN".equalsIgnoreCase(role))) {
             response.sendRedirect("login.jsp");
             return false;
         }

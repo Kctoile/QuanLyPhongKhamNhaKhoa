@@ -1,4 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    jakarta.servlet.http.HttpSession s = request.getSession(false);
+    if (s == null || s.getAttribute("role") == null || !"ADMIN".equalsIgnoreCase((String) s.getAttribute("role"))) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="vi">
     <head>

@@ -55,7 +55,7 @@ public class RegisterServlet extends HttpServlet {
             }
         }
 
-        Integer unassignedRoleId = null;
+        int unassignedRoleId = 4;
         boolean isSuccess = userDAO.addUser(user, unassignedRoleId);
         if (isSuccess) {
             request.setAttribute("message", "Đăng ký thành công! Bạn có thể đăng nhập.");

@@ -80,7 +80,11 @@ public class ServiceManagementServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            request.setAttribute("error", "Lỗi: " + e.getMessage());
+            request.getRequestDispatcher("/services").forward(request, response);
+            return;
         }
         response.sendRedirect("services");
+
     }
 }

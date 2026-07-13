@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @WebServlet("/booking")
@@ -58,12 +59,27 @@ public class BookingServlet extends HttpServlet {
         try {
             doctorId = Integer.parseInt(request.getParameter("doctorId"));
             LocalDate selectedDate = LocalDate.parse(request.getParameter("appointmentDate"));
+            LocalTime selectedTime = LocalTime.parse(request.getParameter("appointmentTime"));
+
             if (selectedDate.isBefore(LocalDate.now())) {
                 forwardWithError(request, response, "Vui lòng chọn ngày khám từ hôm nay trở đi.");
                 return;
             }
+            // THÊM: kiểm tra giờ quá khứ nếu là ngày hôm nay
+            if (selectedDate.equals(LocalDate.now()) && selectedTime.isBefore(LocalTime.now())) {
+                forwardWithError(request, response, "Vui lòng chọn giờ khám sau thời điểm hiện tại.");
+                return;
+            }
+            // THÊM: kiểm tra khung giờ làm việc 08:00-20:00
+            LocalTime openTime = LocalTime.of(8, 0);
+            LocalTime closeTime = LocalTime.of(20, 0);
+            if (selectedTime.isBefore(openTime) || selectedTime.isAfter(closeTime)) {
+                forwardWithError(request, response, "Vui lòng chọn giờ trong khung 08:00 - 20:00.");
+                return;
+            }
+
             appointmentDate = Date.valueOf(selectedDate);
-            appointmentTime = Time.valueOf(request.getParameter("appointmentTime") + ":00");
+            appointmentTime = Time.valueOf(selectedTime);
         } catch (Exception e) {
             forwardWithError(request, response, "Thông tin đặt lịch không hợp lệ. Vui lòng kiểm tra ngày, giờ và bác sĩ.");
             return;

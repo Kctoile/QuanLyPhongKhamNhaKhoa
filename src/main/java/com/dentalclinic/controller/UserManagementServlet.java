@@ -51,7 +51,13 @@ public class UserManagementServlet extends HttpServlet {
             request.getRequestDispatcher("user_form.jsp").forward(request, response);
         } else if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
-            dao.deleteUser(id);
+            try {
+                dao.deleteUser(id);
+            } catch (Exception e) {
+                request.setAttribute("error", "Không thể xóa user vì đang có lịch hẹn hoặc dữ liệu liên quan.");
+                request.getRequestDispatcher("users").forward(request, response);
+                return;
+            }
             response.sendRedirect(REDIRECT_USERS);
         } else {
             List<User> list = dao.getAllUsers();

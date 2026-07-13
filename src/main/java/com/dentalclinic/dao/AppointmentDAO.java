@@ -95,6 +95,7 @@ public class AppointmentDAO {
             // Set appointmentId once before the loop (loop-invariant)
             try (PreparedStatement ps = conn.prepareStatement(insertServiceSql)) {
                 for (Integer serviceId : normalizedServiceIds) {
+                    ps.setInt(1, appointmentId);
                     ps.setInt(2, serviceId);
                     ps.addBatch();
                 }

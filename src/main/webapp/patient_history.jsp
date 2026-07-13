@@ -4,10 +4,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%
+    // THÊM: kiểm tra quyền DOCTOR (vì trang này chỉ dành cho bác sĩ xem HSBA)
     jakarta.servlet.http.HttpSession s = request.getSession(false);
-    if (s == null || s.getAttribute("role") == null ||
-        (!"DOCTOR".equalsIgnoreCase((String) s.getAttribute("role")) &&
-         !"ADMIN".equalsIgnoreCase((String) s.getAttribute("role")))) {
+    if (s == null || s.getAttribute("role") == null
+            || !"DOCTOR".equalsIgnoreCase((String) s.getAttribute("role"))) {
         response.sendRedirect("login.jsp");
         return;
     }
@@ -17,51 +17,36 @@
     <head>
         <meta charset="UTF-8">
         <title>Lịch sử khám bệnh</title>
-        <link rel="stylesheet" href="css/doctor.css">
     </head>
     <body>
-        <div class="header">
-            <h2>Cổng Thông Tin Bác Sĩ</h2>
-            <span>Xin chào, BS. ${sessionScope.user.fullName}</span>
-            <a href="${pageContext.request.contextPath}/">Trang chủ</a>
-            <a href="logout">Đăng xuất</a>
-        </div>
+        <h2>Cổng Thông Tin Bác Sĩ</h2>
+        <p>Chi tiết hồ sơ bệnh án (HSBA) cũ của Bệnh nhân</p>
+        <p>Xin chào, BS. ${sessionScope.user.fullName}</p>
+        <p><a href="${pageContext.request.contextPath}/">Trang chủ</a> | <a href="logout">Đăng xuất</a></p>
 
-        <div class="container">
-            <h3>Lịch Sử Khám Bệnh - Hồ Sơ Bệnh Án</h3>
-            <a href="doctor">← Quay lại lịch khám</a>
-            <br/><br/>
+        <h3>Lịch Sử Khám Bệnh - Hồ Sơ Bệnh Án</h3>
+        <p><a href="doctor">← Quay lại lịch khám</a></p>
 
-            <c:choose>
-                <c:when test="${not empty examinationResults}">
-                    <table border="1" style="width:100%; border-collapse:collapse; padding: 8px;">
-                        <tr style="background:#1a2a4a; color:white;">
-                            <th>Ngày khám</th>
-                            <th>Chẩn đoán / Kết quả</th>
-                            <th>Đơn thuốc</th>
-                            <th>Ghi chú Bác sĩ</th>
-                        </tr>
-                        <c:forEach var="result" items="${examinationResults}">
-                            <tr>
-                                <td><fmt:formatDate value="${result.examinationDate}" pattern="dd/MM/yyyy HH:mm"/></td>
-                                <td>${fn:escapeXml(result.resultDetails)}</td>
-                                <td>
-                                    <c:if test="${not empty result.prescription}">
-                                        ${fn:escapeXml(result.prescription)}
-                                    </c:if>
-                                    <c:if test="${empty result.prescription}">
-                                        Không kê toa
-                                    </c:if>
-                                </td>
-                                <td>${fn:escapeXml(result.doctorNotes)}</td>
-                            </tr>
-                        </c:forEach>
-                    </table>
-                </c:when>
-                <c:otherwise>
-                    <p>Bệnh nhân này chưa có lịch sử khám bệnh lưu trong hệ thống.</p>
-                </c:otherwise>
-            </c:choose>
-        </div>
+        <table border="1">
+            <tr>
+                <th>Ngày khám</th>
+                <th>Chẩn đoán / Kết quả</th>
+                <th>Đơn thuốc</th>
+                <th>Ghi chú Bác sĩ</th>
+            </tr>
+            <c:forEach var="result" items="${history}">
+                <tr>
+                    <td>${result.examinationDate}</td>
+                    <td>${fn:escapeXml(result.resultDetails)}</td>
+                    <td>${fn:escapeXml(result.prescription)}</td>
+                    <td>${fn:escapeXml(result.doctorNotes)}</td>
+                </tr>
+            </c:forEach>
+            <c:if test="${empty history}">
+                <tr>
+                    <td colspan="4">Bệnh nhân này chưa có lịch sử khám bệnh lưu trong hệ thống.</td>
+                </tr>
+            </c:if>
+        </table>
     </body>
 </html>

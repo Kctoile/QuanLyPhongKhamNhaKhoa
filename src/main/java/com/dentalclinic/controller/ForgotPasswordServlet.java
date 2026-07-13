@@ -54,10 +54,10 @@ public class ForgotPasswordServlet extends HttpServlet {
                 LOGGER.log(Level.SEVERE, "Failed to send reset email", e);
             }
             if (emailSent) {
-                request.setAttribute(ATTR_MESSAGE, "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
+                request.setAttribute("message", "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
             } else {
-                request.setAttribute(ATTR_RESET_LINK, resetLink);
-                request.setAttribute(ATTR_MESSAGE, "Không thể gửi email. Bạn có thể dùng link bên dưới để đặt lại mật khẩu:");
+                // KHÔNG hiện link trực tiếp — chỉ thông báo chung
+                request.setAttribute("message", "Không thể gửi email. Vui lòng thử lại sau hoặc liên hệ quản trị viên.");
             }
         } else {
             request.setAttribute(ATTR_MESSAGE, "Vui lòng kiểm tra email để nhận hướng dẫn đặt lại mật khẩu.");
