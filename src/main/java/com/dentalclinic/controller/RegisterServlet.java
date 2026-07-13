@@ -16,7 +16,7 @@ public class RegisterServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(RegisterServlet.class.getName());
-    private transient final UserDAO userDAO = new UserDAO();
+    private final transient UserDAO userDAO = new UserDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

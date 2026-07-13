@@ -3,8 +3,6 @@ package com.dentalclinic.dao;
 import com.dentalclinic.model.PrescriptionDetail;
 import com.dentalclinic.model.Medicine;
 import com.dentalclinic.utils.DBConnection;
-import java.sql.Statement;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

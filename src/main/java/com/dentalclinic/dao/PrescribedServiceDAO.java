@@ -1,18 +1,15 @@
 package com.dentalclinic.dao;
 
-import com.dentalclinic.model.PrescribedService;
 import com.dentalclinic.utils.DBConnection;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PrescribedServiceDAO {
 
-
-
     public void addPrescribedServices(int resultId, String[] serviceIds) {
-        if (serviceIds == null || serviceIds.length == 0) return;
+        if (serviceIds == null || serviceIds.length == 0) {
+            return;
+        }
         String sql = "INSERT INTO prescribed_services (result_id, service_id) VALUES (?, ?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, resultId);

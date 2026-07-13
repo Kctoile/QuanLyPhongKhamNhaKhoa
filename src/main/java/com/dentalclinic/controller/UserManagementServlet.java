@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @WebServlet("/users")
 public class UserManagementServlet extends HttpServlet {
@@ -17,6 +18,8 @@ public class UserManagementServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(UserManagementServlet.class.getName());
     private static final String REDIRECT_USERS = "users";
+    private static final String PAGE_USER_FORM = "user_form.jsp";
+    private static final String PAGE_USERS = "users.jsp";
 
     private boolean checkAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
@@ -33,56 +36,86 @@ public class UserManagementServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         if (!checkAdmin(request, response)) {
             return;
         }
+
         String action = request.getParameter("action");
-        UserDAO dao = new UserDAO();
         if ("edit".equals(action)) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            User user = dao.getUserById(id);
-            request.setAttribute("user", user);
-            request.setAttribute("formAction", "update");
-            request.getRequestDispatcher("user_form.jsp").forward(request, response);
+            handleEdit(request, response);
         } else if ("add".equals(action)) {
-            request.setAttribute("user", new User());
-            request.setAttribute("formAction", "add");
-            request.getRequestDispatcher("user_form.jsp").forward(request, response);
+            handleAdd(request, response);
         } else if ("delete".equals(action)) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            try {
-                dao.deleteUser(id);
-            } catch (Exception e) {
-                request.setAttribute("error", "Không thể xóa user vì đang có lịch hẹn hoặc dữ liệu liên quan.");
-                request.getRequestDispatcher("users").forward(request, response);
-                return;
-            }
-            response.sendRedirect(REDIRECT_USERS);
+            handleDelete(request, response);
         } else {
-            List<User> list = dao.getAllUsers();
-            String roleFilter = request.getParameter("role");
-            if (roleFilter != null && !roleFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(roleFilter)) {
-                if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
-                    list = list.stream().filter(u -> u.getRole() == null).toList();
-                } else {
-                    list = list.stream().filter(u -> u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole())).toList();
-                }
-            }
-            request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");
-            request.setAttribute(REDIRECT_USERS, list);
-            request.getRequestDispatcher("users.jsp").forward(request, response);
+            handleList(request, response);
         }
     }
 
+    private void handleEdit(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        UserDAO dao = new UserDAO();
+        int id = Integer.parseInt(request.getParameter("id"));
+        User user = dao.getUserById(id);
+        request.setAttribute("user", user);
+        request.setAttribute("formAction", "update");
+        request.getRequestDispatcher(PAGE_USER_FORM).forward(request, response);
+    }
+
+    private void handleAdd(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("user", new User());
+        request.setAttribute("formAction", "add");
+        request.getRequestDispatcher(PAGE_USER_FORM).forward(request, response);
+    }
+
+    private void handleDelete(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        UserDAO dao = new UserDAO();
+        int id = Integer.parseInt(request.getParameter("id"));
+        dao.deleteUser(id);
+        response.sendRedirect(REDIRECT_USERS);
+    }
+
+    private void handleList(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        UserDAO dao = new UserDAO();
+        List<User> list = dao.getAllUsers();
+        String roleFilter = request.getParameter("role");
+
+        if (roleFilter != null && !roleFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(roleFilter)) {
+            list = filterUsersByRole(list, roleFilter);
+        }
+
+        request.setAttribute("currentRole", roleFilter != null ? roleFilter.toUpperCase() : "ALL");
+        request.setAttribute("users", list);
+        request.getRequestDispatcher(PAGE_USERS).forward(request, response);
+    }
+
+    private List<User> filterUsersByRole(List<User> list, String roleFilter) {
+        if ("UNASSIGNED".equalsIgnoreCase(roleFilter)) {
+            return list.stream()
+                    .filter(u -> u.getRole() == null)
+                    .collect(Collectors.toList());
+        }
+        return list.stream()
+                .filter(u -> u.getRole() != null && roleFilter.equalsIgnoreCase(u.getRole()))
+                .collect(Collectors.toList());
+    }
+
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         if (!checkAdmin(request, response)) {
             return;
         }
+
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         UserDAO dao = new UserDAO();
+
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
@@ -91,6 +124,7 @@ public class UserManagementServlet extends HttpServlet {
         String dobStr = request.getParameter("dob");
         String address = request.getParameter("address");
         String roleIdStr = request.getParameter("roleId");
+
         Integer roleId = null;
         if (roleIdStr != null && !roleIdStr.trim().isEmpty()) {
             try {
@@ -103,6 +137,7 @@ public class UserManagementServlet extends HttpServlet {
         } else {
             LOGGER.log(Level.WARNING, "roleId is missing or empty.");
         }
+
         User user = new User();
         user.setFullName(fullName);
         user.setEmail(email);
@@ -116,6 +151,7 @@ public class UserManagementServlet extends HttpServlet {
         if (roleId != null) {
             user.setRoleId(roleId);
         }
+
         if ("update".equals(action)) {
             int id = Integer.parseInt(request.getParameter("userId"));
             user.setUserId(id);

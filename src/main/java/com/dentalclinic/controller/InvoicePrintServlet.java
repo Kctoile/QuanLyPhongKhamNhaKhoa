@@ -4,7 +4,6 @@ import com.dentalclinic.dao.AppointmentDAO;
 import com.dentalclinic.dao.PaymentDAO;
 import com.dentalclinic.model.Appointment;
 import com.dentalclinic.model.Payment;
-import com.dentalclinic.model.PaymentItem;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

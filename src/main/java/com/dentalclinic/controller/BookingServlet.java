@@ -4,7 +4,6 @@ import com.dentalclinic.dao.AppointmentDAO;
 import com.dentalclinic.dao.ServiceDAO;
 import com.dentalclinic.dao.UserDAO;
 import com.dentalclinic.model.Appointment;
-import com.dentalclinic.model.Service;
 import com.dentalclinic.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

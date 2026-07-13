@@ -1,7 +1,6 @@
 package com.dentalclinic.dao;
 
 import com.dentalclinic.model.User;
-import com.dentalclinic.model.Role;
 import com.dentalclinic.utils.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
